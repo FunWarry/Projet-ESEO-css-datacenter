@@ -1,56 +1,29 @@
-# Projet Infrastructure et Logiciels
+## Déploiement d'un Serveur DNS - Projet ESEO Teaching Cloud
 
-Les fichiers pour la mise en place du projet Infrastructure et Logiciels su semestre 7
+Permet de déployer automatiquement une machine virtuelle qui servira de **serveur DNS** au sein d’un réseau. L’installation et la configuration sont réalisées à l’aide de Vagrant et de plusieurs scripts bash.
 
-## Les pré-requis
+Dans ce projet, nous allons configurer un serveur DNS nommé **srv-dns.dns.local** en utilisant **BIND9**, un serveur DNS largement utilisé.
 
-### Les ressources informatiques
+## Déploiement Automatisé
+Le déploiement repose sur un fichier Vagrantfile qui configure la machine et exécute automatiquement les scripts suivants :
 
-Pour faire fonctionner ce Labs il faut prévoir au moins 2 CPU /coeurs et 4Go de Ram (8Go est plus judicieux). L'espace disque est de l'ordre des 16 Go.
-La virtualisation doit être activée sur le PC hôte (machine physique )
-<https://support.bluestacks.com/hc/fr-fr/articles/115003174386-Comment-puis-je-activer-la-virtualisation-VT-sur-mon-PC->
+## script_ssh (variable dans le Vagrantfile)
+    Active l’authentification SSH pour permettre la connexion sécurisée à la machine.
 
-### Les applications obligatoires
+## install_bind.sh (script Bash dans scripts/)
+    Installe et configure BIND9 pour transformer la machine en un serveur DNS nommé srv-dns.dns.local.
 
-* Oracle Virtualbox (version 6.1) (<https://www.virtualbox.org/wiki/Downloads>)
-* Oracle VM VirtualBox Extension Pack (adapté à la version de virtualbox installée précédement)
-* HashiCorp Vagrant (<https://www.vagrantup.com/>)
+## config_sys.sh (script Bash dans scripts/)
+    Configure l’interface réseau enp0s8 avec le bon masque en fonction de la machine.
 
-### Les fichiers obligatoires
+## script_route (variable dans le Vagrantfile)
+    Supprime la route NAT par défaut et la remplace par la passerelle appropriée pour assurer une bonne connectivité.
 
-* choisir le zip en haut à gauche
-* cloner avec git : git clone <https://github.com/chavinje/S7-projet-il.git>
+## 
+Lancer le déploiement
 
-Vous trouverez les reperoires/fichiers :
-
-* ./Vagrantfile : qui contient l'ensemble des déclarations pour la construction du Labs
-* scripts/install_sys.sh : mise en place des configurations de base sur toutes les VMs
-* scripts/install_bdd.sh : Mise en place de la base de données mysql
-* scripts/install_moodle.sh : Mise en place de l'application Moodle
-* scripts/install_myadmin.sh : Mise en place de l'application PhpMyAdmin
-* scripts/install_web.sh : Mise en place du serveur Apache2
-
-## Description du Labs
-
-Le labs est constitué de 1 machine virtuelle Virtualbox basé sur la box fr-bull-64
-Cette machine est reliée à votre machine réelle par un réseau privé hôte via l'adresse 192.168.56.80
-
-* L'application Moodle est accéssible par l'adresse <http://192.168.56.80/moodle>
-* L'application PhpMyAdmin est accéssible par l'adresse <http://192.168.56.80/myadmin>
-
-## Utilisation des commandes vagrant
-
-Télécharger la box modèle
-    ```vagrant box add chavinje/fr-bull-64```
-
-Activer une VM uniquement (srv-web par exemple)
-    ```vagrant up srv-web```
-
-Se connecter à une VM (firewall par exemple)
-    ```vagrant ssh firewall```
-
-Arréter une VM (victime par exemple)
-    ```vagrant halt victime```
-
-Détruire toutes les VMs (sans demande de confirmation)
-    ```vagrant destroy -f```
+Pour déployer la machine, il suffit d’exécuter :
+```bash
+vagrant up
+```
+Cela créera et configurera automatiquement le serveur DNS.
