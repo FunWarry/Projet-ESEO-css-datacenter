@@ -1,85 +1,0 @@
-Get:1 http://security.debian.org/debian-security bookworm-security InRelease [48.0 kB]
-Get:2 http://deb.debian.org/debian bookworm InRelease [151 kB]
-Get:3 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-Get:4 http://security.debian.org/debian-security bookworm-security/main Sources [147 kB]
-Get:5 http://security.debian.org/debian-security bookworm-security/main amd64 Packages [250 kB]
-Get:6 http://deb.debian.org/debian bookworm/main Sources [9,495 kB]
-Get:7 http://security.debian.org/debian-security bookworm-security/main Translation-en [150 kB]
-Get:8 http://deb.debian.org/debian bookworm-updates/main Sources.diff/Index [16.2 kB]
-Get:9 http://deb.debian.org/debian bookworm-updates/main amd64 Packages.diff/Index [16.2 kB]
-Get:10 http://deb.debian.org/debian bookworm-updates/main Translation-en.diff/Index [16.2 kB]
-Get:11 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
-Get:12 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
-Get:11 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
-Get:12 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
-Get:13 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
-Get:13 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
-Get:14 http://deb.debian.org/debian bookworm/non-free-firmware Sources [6,440 B]
-Get:15 http://deb.debian.org/debian bookworm/main amd64 Packages [8,792 kB]
-Get:16 http://deb.debian.org/debian bookworm/main Translation-en [6,109 kB]
-Get:17 http://deb.debian.org/debian bookworm/non-free-firmware amd64 Packages [6,240 B]
-Fetched 25.3 MB in 6s (4,390 kB/s)
-Reading package lists...
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following additional packages will be installed:
-  bind9-dnsutils bind9-host bind9-libs bind9-utils dns-root-data
-Suggested packages:
-  bind-doc resolvconf ufw
-The following NEW packages will be installed:
-  bind9 bind9-utils dns-root-data dnsutils
-The following packages will be upgraded:
-  bind9-dnsutils bind9-host bind9-libs
-3 upgraded, 4 newly installed, 0 to remove and 36 not upgraded.
-Need to get 1,811 kB of archives.
-After this operation, 867 kB of additional disk space will be used.
-Get:1 http://deb.debian.org/debian bookworm/main amd64 bind9-host amd64 1:9.18.33-1~deb12u2 [54.1 kB]
-Get:2 http://deb.debian.org/debian bookworm/main amd64 bind9-dnsutils amd64 1:9.18.33-1~deb12u2 [155 kB]
-Get:3 http://deb.debian.org/debian bookworm/main amd64 bind9-libs amd64 1:9.18.33-1~deb12u2 [1,181 kB]
-Get:4 http://deb.debian.org/debian bookworm/main amd64 bind9-utils amd64 1:9.18.33-1~deb12u2 [159 kB]
-Get:5 http://deb.debian.org/debian bookworm/main amd64 dns-root-data all 2024071801~deb12u1 [5,752 B]
-Get:6 http://deb.debian.org/debian bookworm/main amd64 bind9 amd64 1:9.18.33-1~deb12u2 [246 kB]
-Get:7 http://deb.debian.org/debian bookworm/main amd64 dnsutils all 1:9.18.33-1~deb12u2 [10.5 kB]
-apt-listchanges: Reading changelogs...
-dpkg-preconfigure: unable to re-open stdin: No such file or directory
-Fetched 1,811 kB in 0s (3,703 kB/s)
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 74440 files and directories currently installed.)
-Preparing to unpack .../0-bind9-host_1%3a9.18.33-1~deb12u2_amd64.deb ...
-Unpacking bind9-host (1:9.18.33-1~deb12u2) over (1:9.18.28-1~deb12u2) ...
-Preparing to unpack .../1-bind9-dnsutils_1%3a9.18.33-1~deb12u2_amd64.deb ...
-Unpacking bind9-dnsutils (1:9.18.33-1~deb12u2) over (1:9.18.28-1~deb12u2) ...
-Preparing to unpack .../2-bind9-libs_1%3a9.18.33-1~deb12u2_amd64.deb ...
-Unpacking bind9-libs:amd64 (1:9.18.33-1~deb12u2) over (1:9.18.28-1~deb12u2) ...
-Selecting previously unselected package bind9-utils.
-Preparing to unpack .../3-bind9-utils_1%3a9.18.33-1~deb12u2_amd64.deb ...
-Unpacking bind9-utils (1:9.18.33-1~deb12u2) ...
-Selecting previously unselected package dns-root-data.
-Preparing to unpack .../4-dns-root-data_2024071801~deb12u1_all.deb ...
-Unpacking dns-root-data (2024071801~deb12u1) ...
-Selecting previously unselected package bind9.
-Preparing to unpack .../5-bind9_1%3a9.18.33-1~deb12u2_amd64.deb ...
-Unpacking bind9 (1:9.18.33-1~deb12u2) ...
-Selecting previously unselected package dnsutils.
-Preparing to unpack .../6-dnsutils_1%3a9.18.33-1~deb12u2_all.deb ...
-Unpacking dnsutils (1:9.18.33-1~deb12u2) ...
-Setting up bind9-libs:amd64 (1:9.18.33-1~deb12u2) ...
-Setting up dns-root-data (2024071801~deb12u1) ...
-Setting up bind9-utils (1:9.18.33-1~deb12u2) ...
-Setting up bind9 (1:9.18.33-1~deb12u2) ...
-Adding group `bind' (GID 112) ...
-Done.
-Adding system user `bind' (UID 104) ...
-Adding new user `bind' (UID 104) with group `bind' ...
-Not creating home directory `/var/cache/bind'.
-wrote key file "/etc/bind/rndc.key"
-named-resolvconf.service is a disabled or a static unit, not starting it.
-Created symlink /etc/systemd/system/bind9.service → /lib/systemd/system/named.service.
-Created symlink /etc/systemd/system/multi-user.target.wants/named.service → /lib/systemd/system/named.service.
-Setting up bind9-host (1:9.18.33-1~deb12u2) ...
-Setting up bind9-dnsutils (1:9.18.33-1~deb12u2) ...
-Setting up dnsutils (1:9.18.33-1~deb12u2) ...
-Processing triggers for libc-bin (2.36-9+deb12u9) ...
-Processing triggers for man-db (2.11.2-2) ...
-Synchronizing state of named.service with SysV service script with /lib/systemd/systemd-sysv-install.
-Executing: /lib/systemd/systemd-sysv-install enable named
