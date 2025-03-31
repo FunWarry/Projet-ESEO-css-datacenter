@@ -2,7 +2,66 @@
 
 # Guide d'installation Complet du système - ESEO Teaching Cloud
 
-## I. Guide d'installation du réseau
+## I. Guide d'installation d'OPNSense
+
+### Prérequis :
+
+* Un ordinateur avec :
+    * \> 4 cœurs
+    * \> 8 Go de RAM
+    * \> 40 Go d'espace libre
+    * 2 cartes Ethernet
+    * Une connexion vers le routeur de l'ESEO
+    * Une connexion vers le switch de votre LAN
+
+### Obtention de l'ISO OPNSense :
+
+1.  Allez sur [opnsense.org/downloads](https://opnsense.org/downloads)
+2.  Sélectionnez l'image DVD.
+3.  Après le téléchargement, lancez la commande `bzip2 -d OPNsense-<nomdefichier>.bz2` en ajustant `<nomdefichier>` avec le nom du fichier téléchargé.
+
+### Mise en place de VirtualBox :
+
+4.  Sur VirtualBox, créez une nouvelle machine FreeBSD (64-bit) en sélectionnant l'ISO décompressé précédemment.
+5.  Dans l'onglet "Hardware", mettez au minimum 2 Go de RAM et 2 cœurs de CPU. Si possible, utilisez 8 Go et 4 cœurs.
+6.  Dans l'onglet "Hard Disk", mettez au minimum 40 Go. Si possible, utilisez 120 Go.
+7.  Cliquez sur "Finish".
+8.  Dans le menu principal de VirtualBox, cliquez sur "Configuration".
+9.  Donnez deux interfaces bridge à OPNSense pour chaque interface réseau : une pour le LAN (enp1s0) et l'autre pour le WAN (eno1).
+
+### Installation d'OPNSense :
+
+10. Lancez la machine virtuelle.
+11. L'invite de commande peut vous demander d'assigner des interfaces. WAN doit être l'interface connectée à l'extérieur de votre réseau, et LAN celle connectée à l'intérieur.
+12. Attendez que l'invite vous demande un mot de passe.
+13. Entrez le mot de passe "installer".
+14. Vous devriez voir un menu pour choisir la disposition du clavier. Utilisez la flèche du bas pour sélectionner "French", puis validez avec Tab et "Continue".
+15. Dans le menu suivant, choisissez "ZFS".
+16. Sélectionnez le disque.
+17. Confirmez que vous voulez continuer avec le swap de la taille recommandée.
+18. Confirmez que vous voulez effacer le contenu du disque.
+
+Le logiciel va maintenant installer OPNSense. Cela peut prendre un certain temps.
+
+19. L'interface vous donnera deux options : changer le mot de passe ou continuer l'installation. Choisissez "Continue". Le mot de passe pourra être modifié plus tard.
+20. Après le redémarrage, éteignez la machine en tapant "5" dans l'invite de commande.
+21. Allez dans les paramètres de la machine sur VirtualBox, et dans l'onglet "Storage", retirez le disque ISO.
+22. Relancez la machine virtuelle.
+23. Depuis votre réseau, accédez à l'interface web à l'adresse indiquée dans l'invite de commande.
+24. Connectez-vous avec le mot de passe que vous avez choisi.
+25. Allez dans `System -> Firmware -> Status`.
+
+### Fichier de Configuration OPNSense
+Le fichier de configuration OPNSense se trouve dans le dossier "Configuration Opnsense". Pour importer cette configuration :
+1.  Se connecter à l'interface web d'OPNSense.
+2.  Aller dans `System` -> `Configuration` -> `Backup / Restore`.
+3.  Choisir l'option "Restore Configuration".
+4.  Sélectionner le fichier de configuration à importer.
+5.  Cliquer sur "Restore".
+6.  Redémarrer le système.
+
+
+## II. Guide d'installation du réseau
 
 Ce guide décrit les étapes à suivre pour installer et configurer la partie réseau de votre système, en utilisant les scripts de configuration du routeur et du switch, ainsi que le schéma de branchement réseau.
 
@@ -64,7 +123,7 @@ Se trouve dans le dossier "scripte réseau" pour le rendu Incrément 1.
 
 ---
 
-## II. Guide d'installation des VMs
+## III. Guide d'installation des VMs
 
 ### 1. Déploiement d'un Cluster Galera avec HAProxy via Vagrant  
 
