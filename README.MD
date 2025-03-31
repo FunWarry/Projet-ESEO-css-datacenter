@@ -1,0 +1,1 @@
+[liens vers la documentation d'installation complette](http://20.86.62.213:3000/gevraima/Projet-ESEO/wiki/Guide_installation)
