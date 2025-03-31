@@ -1,0 +1,100 @@
+en
+conf t
+hostname SW3
+ip domain-name groupe1.css.eseo.fr
+crypto key generate rsa general-keys modulus 1024
+
+line vty 0 4
+ transport input ssh
+ login local
+exit
+
+username admin secret N3twork!
+
+ip ssh version 2
+
+enable secret N3twork!
+
+service password-encryption
+
+snmp-server community MyCommunity RO
+
+vlan 10
+ name reseau
+vlan 20
+ name web
+vlan 30
+ name bdd
+vlan 40
+ name sauvegarde
+vlan 50
+ name supervision
+vlan 60
+ name dns
+vlan 99
+ name native
+exit
+
+interface vlan 10
+ ip address 192.168.239.252 255.255.255.248
+ no shutdown
+
+interface f0/21
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 1,10,99
+ spanning-tree portfast trunk
+ spanning-tree bpduguard enable
+
+interface range f0/22-24
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface g0/1
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface range f0/1-4
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface range f0/5-8
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface range f0/9-12
+ switchport mode access
+ switchport access vlan 40
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface range f0/13-16
+ switchport mode access
+ switchport access vlan 50
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface range f0/17-20
+ switchport mode access
+ switchport access vlan 60
+ spanning-tree portfast
+ spanning-tree bpduguard enable
+
+interface g0/2
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 1,20,30,40,50,60,99
+ spanning-tree portfast trunk
+ spanning-tree bpduguard enable
+
+end
+
+copy running-config startup-config

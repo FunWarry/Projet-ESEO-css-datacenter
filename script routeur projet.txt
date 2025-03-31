@@ -1,0 +1,99 @@
+en
+conf t
+hostname R1
+ip domain-name groupe1.css.eseo.fr
+crypto key generate rsa general-keys modulus 1024
+
+line vty 0 4
+transport input ssh
+login local
+exit
+
+username admin secret N3twork!
+
+ip ssh version 2
+
+enable secret N3twork!
+
+service password-encryption
+
+snmp-server community MyCommunity RO
+
+interface g0/0.10
+encapsulation dot1q 10
+ip address 192.168.239.249 255.255.255.248
+
+interface g0/0
+no shutdown
+
+interface g0/1.20
+encapsulation dot1q 20
+ip address 192.168.232.1 255.255.254.0
+
+interface g0/1.30
+encapsulation dot1q 30
+ip address 192.168.234.1 255.255.254.0
+
+interface g0/1.40
+encapsulation dot1q 40
+ip address 192.168.236.1 255.255.254.0
+
+interface g0/1.50
+encapsulation dot1q 50
+ip address 192.168.238.1 255.255.255.248
+
+interface g0/1.60
+encapsulation dot1q 60
+ip address 192.168.238.9 255.255.255.248
+
+interface g0/1
+no shutdown
+
+exit
+
+ip DHCP excluded-address 192.168.239.249 192.168.239.252
+ip DHCP pool LAN-POOL-Vlan-10
+network 192.168.239.248 255.255.255.248
+default-router 192.168.239.249
+dns-server 192.168.238.10
+exit
+
+ip DHCP excluded-address 192.168.232.1 192.168.232.8
+ip DHCP pool LAN-POOL-Vlan-20
+network 192.168.232.0 255.255.254.0
+default-router 192.168.232.1
+dns-server 192.168.238.10
+exit
+
+ip DHCP excluded-address 192.168.234.1 192.168.234.10
+ip DHCP pool LAN-POOL-Vlan-30
+network 192.168.234.0 255.255.254.0
+default-router 192.168.234.1
+dns-server 192.168.238.10
+exit
+
+ip DHCP excluded-address 192.168.236.1 192.168.236.8
+ip DHCP pool LAN-POOL-Vlan-40
+network 192.168.236.0 255.255.254.0
+default-router 192.168.236.1
+dns-server 192.168.238.10
+exit
+
+ip DHCP excluded-address 192.168.238.1 192.168.238.4
+ip DHCP pool LAN-POOL-Vlan-50
+network 192.168.238.0 255.255.255.248
+default-router 192.168.238.1
+dns-server 192.168.238.10
+exit
+
+ip DHCP excluded-address 192.168.238.9 192.168.238.12
+ip DHCP pool LAN-POOL-Vlan-60
+network 192.168.238.8 255.255.255.248
+default-router 192.168.238.9
+dns-server 192.168.238.10
+exit
+
+ip route 0.0.0.0 0.0.0.0 192.168.239.250
+
+exit
+copy running-config startup-config
