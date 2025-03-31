@@ -1,1 +1,290 @@
 [liens vers la documentation d'installation complette](http://20.86.62.213:3000/gevraima/Projet-ESEO/wiki/Guide_installation)
+
+# Guide d'installation Complet du système - ESEO Teaching Cloud
+
+## I. Guide d'installation du réseau
+
+Ce guide décrit les étapes à suivre pour installer et configurer la partie réseau de votre système, en utilisant les scripts de configuration du routeur et du switch, ainsi que le schéma de branchement réseau.
+
+### 1. Prérequis
+
+Avant de commencer, assurez-vous d'avoir les éléments suivants :
+
+* Les scripts de configuration du routeur et du switch.
+* Le schéma de branchement réseau.
+* Les équipements réseau (routeur, switch, câbles Ethernet).
+* Un ordinateur avec une interface réseau et un logiciel de terminal (par exemple, PuTTY).
+
+### 2. Étapes d'installation
+
+1.  **Branchement des équipements :**
+
+	![Description de l'image](http://20.86.62.213:3000/gevraima/Projet-ESEO/raw/commit/b74c1875816d3d1f7da28785210a8f82089c980d/plan%20de%20branchement.png)
+    
+    * Suivez le schéma de branchement réseau pour connecter les équipements entre eux à l'aide des câbles Ethernet.
+    * Assurez-vous que tous les équipements sont correctement alimentés.
+
+2.  **Configuration du routeur :**
+
+    * Connectez votre ordinateur au routeur à l'aide d'un câble serial.
+    * Ouvrez un logiciel de terminal et configurez la connexion avec les paramètres suivants :
+        * Type de connexion : Série (ou Telnet si le routeur est configuré pour le permettre)
+        * Débit en bauds : 9600 (ou autre valeur spécifiée par le fabricant)
+        * Bits de données : 8
+        * Parité : Aucune
+        * Bits d'arrêt : 1
+        * Contrôle de flux : Aucun
+    * Mettez le routeur sous tension et attendez qu'il démarre.
+    * Copiez et collez le script de configuration du routeur dans le terminal (clique droit pour coller sur une console putty).
+    * Enregistrez la configuration en tapant sur "entrer" pour la commande `copy running-config startup-config`.
+
+3.  **Configuration du switch :**
+
+    * Connectez votre ordinateur au switch à l'aide d'un câble serial.
+    * Ouvrez un logiciel de terminal et configurez la connexion de la même manière que pour le routeur.
+    * Mettez le switch sous tension et attendez qu'il démarre.
+    * Copiez et collez le script de configuration du switch dans le terminal (clique droit pour coller sur une console putty).
+    * Enregistrez la configuration en tapant sur "entrer" pour la commande `copy running-config startup-config`.
+
+4.  **Vérification de la connectivité :**
+
+    * Une fois les configurations du routeur et du switch terminées, vérifiez la connectivité entre les différents équipements.
+    * Utilisez la commande `ping` sur votre ordinateur pour tester la connectivité avec le routeur, le switch et les autres équipements du réseau.
+    * Si la connectivité n'est pas établie, vérifiez les branchements, les configurations et les adresses IP.
+
+
+
+### 3. Scripts de configuration
+
+[Script du routeur](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/réseau/script%20routeur%20projet.txt)
+
+[Script du switch](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/réseau/script%20switch%20projet.txt)
+
+Se trouve dans le dossier "scripte réseau" pour le rendu Incrément 1.
+
+---
+
+## II. Guide d'installation des VMs
+
+### 1. Déploiement d'un Cluster Galera avec HAProxy via Vagrant  
+
+Permet de déployer **automatiquement un cluster Galera** pour le gestionnaire de base de données **MariaDB**, accompagné d'un **load balancer HAProxy**. L'installation et la configuration sont réalisées à l’aide de **Vagrant** et de plusieurs scripts bash.  
+
+#### Qu'est-ce que Galera ?  
+
+**Galera Cluster** est une solution de **réplication synchrone** pour MariaDB qui permet de :  
+
+- [x] Assurer la haute disponibilité des bases de données.  
+- [x] Répliquer les données en **temps réel** entre plusieurs nœuds.
+- [x] Offrir une **tolérance aux pannes** en cas de défaillance d’un serveur.
+- [x] Permettre un **scaling horizontal** en répartissant la charge sur plusieurs serveurs.  
+
+Dans ce projet, **trois machines** seront configurées pour former un **cluster Galera**, avec un **HAProxy** en guise de load balancer pour gérer les connexions de manière équilibrée.  
+
+#### Déploiement Automatisé  
+
+**Pré-requis :**  
+- **Vagrant** et **VirtualBox** doivent être installés avant de lancer le script.  
+
+Le **Vagrantfile** est conçu pour **déployer 4 machines** et exécuter automatiquement les scripts suivants :  
+
+1. `script_host` (variable dans le Vagrantfile)  
+Associe un **nom d’hôte** à chaque machine en mettant à jour le fichier `/etc/hosts` :  
+```sh
+echo '192.168.234.3 galeranode1' >> /etc/hosts
+echo '192.168.234.4 galeranode2' >> /etc/hosts
+echo '192.168.234.5 galeranode3' >> /etc/hosts
+echo '192.168.234.6 haproxynode1' >> /etc/hosts
+```  
+
+2. `script_ssh` (variable dans le Vagrantfile)  
+Active la **connexion SSH** avec authentification pour chaque machine.  
+
+3. `config_sys.sh` (script Bash dans `scripts/`)  
+Configure l’interface réseau **enp0s8** avec le bon **masque** en fonction de la machine.  
+
+4. `script_route` (variable dans le Vagrantfile)  
+Supprime la **route NAT par défaut** et la remplace par la **passerelle appropriée**.  
+
+5. `install_galera.sh` (script Bash dans `scripts/`)  
+Installe et configure **Galera Cluster** sur les **trois machines Galera** :  
+Déploie **MariaDB** et **Galera** sur chaque nœud.  
+Initialise le **cluster Galera** sur `galeranode1`.  
+Crée **deux utilisateurs** (`etudiant1`, `etudiant2`).  
+Crée **deux bases de données** (`etudiant1`, `etudiant2`).  
+
+6. `install_ha.sh` (script Bash dans `scripts/`)  
+Installe et configure **HAProxy** sur `haproxynode1` :  
+Déploie un **load balancer** pour distribuer la charge entre les nœuds Galera.  
+Facilite l’accès aux bases de données en redirigeant les connexions automatiquement.  
+
+---
+
+#### Lancer le déploiement  
+
+***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms galera***
+
+Pour **démarrer** toutes les machines et exécuter les scripts automatiquement :  
+```sh
+vagrant up
+```  
+
+---
+
+#### Remarques  
+
+- Les configurations peuvent être personnalisées en modifiant les fichiers de configuration MariaDB et HAProxy.  
+
+**Pourquoi utiliser HAProxy ?**  
+HAProxy assure une **répartition équilibrée** des connexions aux bases de données et améliore la **disponibilité** du cluster.  
+
+**Où voir les logs ?**  
+- Logs MariaDB/Galera : `/var/log/mysql/error.log`  
+- Logs HAProxy : `/var/log/haproxy.log`  
+
+---
+
+#### Références  
+
+🔗 [Documentation Galera Cluster](https://www.it-connect.fr/comment-mettre-en-place-mariadb-galera-cluster-sur-debian-11/)  
+🔗 [Documentation HAProxy](https://www.haproxy.com/blog/haproxy-configuration-basics-load-balance-your-servers)  
+
+---
+
+### 2. Déploiement d'un Serveur DNS - Projet ESEO Teaching Cloud  
+
+Permet de déployer automatiquement une machine virtuelle qui servira de **serveur DNS** au sein d’un réseau. L’installation et la configuration sont réalisées à l’aide de **Vagrant** et de plusieurs scripts bash.  
+
+#### Pourquoi un serveur DNS ?  
+
+Un **serveur DNS (Domain Name System)** est un élément clé dans un réseau. Il permet de **traduire les noms de domaine en adresses IP**, facilitant ainsi l'accès aux services sans avoir à retenir des adresses numériques complexes.  
+
+Dans ce projet, nous allons configurer un serveur DNS nommé **srv-dns.dns.local** en utilisant **BIND9**, un serveur DNS largement utilisé.  
+
+#### Déploiement Automatisé  
+
+Le déploiement repose sur un fichier **Vagrantfile** qui configure la machine et exécute automatiquement les scripts suivants :  
+
+1. **script_ssh** (variable dans le Vagrantfile)  
+   - Active l’authentification SSH pour permettre la connexion sécurisée à la machine.  
+
+2. **install_bind.sh** (script Bash dans `scripts/`)  
+   - Installe et configure **BIND9** pour transformer la machine en un **serveur DNS nommé srv-dns.dns.local**.
+   
+3. **config_sys.sh** (script Bash dans `scripts/`)  
+   - Configure l’interface réseau **enp0s8** avec le bon masque en fonction de la machine.  
+
+4. **script_route** (variable dans le Vagrantfile)  
+   - Supprime la route NAT par défaut et la remplace par la **passerelle appropriée** pour assurer une bonne connectivité.  
+ 
+
+#### Lancer le déploiement  
+
+***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des de la VM DNS***
+
+Pour déployer la machine, il suffit d’exécuter :  
+
+```bash
+vagrant up
+```
+
+Cela créera et configurera automatiquement le serveur DNS.  
+
+
+#### Remarque  
+
+- Vous pouvez personnaliser la configuration DNS en modifiant le fichier de configuration de **BIND9** après l’installation.
+
+---
+
+### 3. Déploiement des Machines Étudiants
+
+Ce projet utilise **Vagrant** pour déployer deux machines virtuelles, **etudiant1** et **etudiant2**. Lors du déploiement, quatre scripts seront exécutés afin de configurer les machines, définir les paramètres réseau, et d'installer un serveur web avec du contenu spécifique sur chaque machine.
+
+#### Structure
+```
+.
+├── Vagrantfile
+├── scripts/
+│   ├── config_sys.sh
+│   ├── install_web.sh
+```
+
+#### Déploiement
+
+***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms etudiant***
+
+Pour déployer les machines, exécutez simplement la commande suivante :
+```bash
+vagrant up
+```
+Cela créera et configurera les machines virtuelles avec les paramètres définis.
+
+#### Scripts déployés
+Quatre scripts principaux sont exécutés lors du déploiement :
+
+1. **Activation de la connexion SSH** (`script_ssh`)
+Ce script, défini sous forme de variable dans le `Vagrantfile`, active la connexion SSH avec authentification pour les machines virtuelles.
+
+2. **Configuration réseau** (`config_sys.sh`)
+- Localisé dans le répertoire `scripts/`
+- Configure l'interface **bridge** (`enp0s8`) avec le bon masque réseau en fonction de la machine.
+
+3. **Gestion des routes** (`script_route`)
+- Défini sous forme de variable dans le `Vagrantfile`
+- Supprime la route NAT par défaut et la remplace par la passerelle par défaut du serveur concerné.
+
+4. **Installation du serveur web** (`install_web.sh`)
+- Localisé dans le répertoire `scripts/`
+- Déploie un serveur web sur chaque machine et configure le contenu :
+  - **etudiant1** : Installe **phpMyAdmin** et le met à disposition sur le port **80**
+  - **etudiant2** : Déploie une page HTML simple sur le port **80**
+
+#### Accès aux Machines
+Une fois le déploiement terminé, vous pouvez accéder aux machines via SSH :
+```bash
+vagrant ssh etudiant1
+vagrant ssh etudiant2
+```
+Ou visiter les sites déployés dans un navigateur :
+- **etudiant1** : [http://192.168.232.3] (phpMyAdmin)
+- **etudiant2** : [http://192.168.232.4] (Page HTML)
+
+---
+
+### 4. Déploiement de la Machine Zabbix server
+
+Ce projet utilise **Vagrant** pour déployer deux machines virtuelles, **etudiant1** et **etudiant2**. Lors du déploiement, quatre scripts seront exécutés afin de configurer les machines, définir les paramètres réseau, et d'installer un serveur web avec du contenu spécifique sur chaque machine.
+
+#### Déploiement
+
+***A faire dans le répertoire où se situe le vagrantfile pour le déploiment de la VM serveur Zabbix***
+
+Pour déployer les machines, exécutez simplement la commande suivante :
+```bash
+vagrant up
+```
+Cela créera et configurera les machines virtuelles avec les paramètres définis.
+
+#### Accès aux Machines
+
+Une fois l'installation terminée, accédez à l'interface web à l'adresse:
+```
+http://adresse-ip-serveur/zabbix
+```
+
+Identifiants par défaut:
+- Utilisateur: Admin
+- Mot de passe: zabbix
+
+#### Notes importantes
+
+- Remplacez 'password' par un mot de passe sécurisé
+- Modifiez le mot de passe par défaut après la première connexion
+- Vérifiez les logs en cas de problème dans `/var/log/zabbix/`
+
+#### Liens utiles
+
+- [Documentation officielle Zabbix](https://www.zabbix.com/documentation/)
+
+---
