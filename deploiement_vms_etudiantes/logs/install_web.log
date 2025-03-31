@@ -1,0 +1,36 @@
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Hit:1 http://security.debian.org/debian-security bookworm-security InRelease
+Hit:2 http://deb.debian.org/debian bookworm InRelease
+Hit:3 http://deb.debian.org/debian bookworm-updates InRelease
+Reading package lists...
+Building dependency tree...
+Reading state information...
+38 packages can be upgraded. Run 'apt list --upgradable' to see them.
+
+WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
+
+Reading package lists...
+Building dependency tree...
+Reading state information...
+apache2 is already the newest version (2.4.62-1~deb12u2).
+mariadb-client is already the newest version (1:10.11.11-0+deb12u1).
+php is already the newest version (2:8.2+93).
+libapache2-mod-php is already the newest version (2:8.2+93).
+php-mysql is already the newest version (2:8.2+93).
+php-intl is already the newest version (2:8.2+93).
+php-curl is already the newest version (2:8.2+93).
+php-xmlrpc is already the newest version (3:1.0.0~rc3-6).
+php-soap is already the newest version (2:8.2+93).
+php-gd is already the newest version (2:8.2+93).
+php-json is already the newest version (2:8.2+93).
+php-cli is already the newest version (2:8.2+93).
+php-pear is already the newest version (1:1.10.13+submodules+notgz+2022032202-2).
+php8.2-xml is already the newest version (8.2.28-1~deb12u1).
+php-zip is already the newest version (2:8.2+93).
+php-mbstring is already the newest version (2:8.2+93).
+openssl is already the newest version (3.0.15-1~deb12u1).
+php-xml is already the newest version (2:8.2+93).
+php-cgi is already the newest version (2:8.2+93).
+0 upgraded, 0 newly installed, 0 to remove and 38 not upgraded.
