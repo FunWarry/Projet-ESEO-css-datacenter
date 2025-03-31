@@ -14,7 +14,7 @@ sudo dpkg -i zabbix-release_latest_7.0+debian12_all.deb
 sudo apt update -y
 
 # Install Zabbix packages
-sudo apt install -y zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent
+sudo apt install -y zabbix-server-mysql zabbix-frontend-php zabbix-apache-conf zabbix-sql-scripts zabbix-agent snmp
 
 # Configure MariaDB
 sudo systemctl start mariadb
