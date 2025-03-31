@@ -1,25 +1,53 @@
-# Projet Infrastructure et Logiciels
 
-Ce projet met en place une infrastructure virtualisée composée de trois machines virtuelles, configurées avec **Vagrant** et **VirtualBox**, pour offrir un environnement de développement sécurisé, fiable et performant. Le déploiement de l’ensemble de l’infrastructure se fait en une seule commande :
+
+Ce projet utilise **Vagrant** pour déployer deux machines virtuelles, etudiant1 et etudiant2. Lors du déploiement, quatre scripts seront exécutés afin de configurer les machines, définir les paramètres réseau, et d'installer un serveur web avec du contenu spécifique sur chaque machine.
+
+## Structure
+.
+├── Vagrantfile
+├── scripts/
+│   ├── config_sys.sh
+│   ├── install_web.sh
+
+## Déploiement
+
+Pour déployer les machines, exécutez simplement la commande suivante dans le répertoire contenant le Vagrantfile :
 ```bash
 vagrant up
 ```
-## Connexion SSH
-Se connecter à une VM (firewall par exemple)
-    ```vagrant ssh firewall```
+Cela créera et configurera les machines virtuelles avec les paramètres définis.
+Scripts déployés
 
-Arréter une VM (victime par exemple)
-    ```vagrant halt victime```
+Quatre scripts principaux sont exécutés lors du déploiement :
 
-Détruire toutes les VMs (sans demande de confirmation)
-    ```vagrant destroy -f```
+## Activation de la connexion SSH (script_ssh) 
 
-## Serveur de Base de Données (srv-bdd)
-Le serveur **srv-bdd** héberge la base de données **MariaDB**. Placé dans un réseau privé (IP : `192.168.56.81`), il garantit la sécurité des données tout en restant accessible aux développeurs. Un mécanisme de sauvegarde automatique exécute chaque nuit à 00h00 des sauvegardes de la base de données, offrant une solution de restauration rapide en cas de problème.
+Ce script, défini sous forme de variable dans le Vagrantfile, active la connexion SSH avec authentification pour les machines virtuelles.
 
-## Serveur Web (srv-web)
-Le serveur **srv-web** exécute **Apache2** et permet le déploiement d’applications via un dépôt Git. Accessible à l’adresse `192.168.56.80`, ce serveur est chargé de récupérer, déployer et gérer les applications des développeurs. Une fois l’application déployée, elle est disponible à l’adresse sécurisée suivante :
-`https://192.168.56.82/HomePage.php`.
+## Configuration réseau (config_sys.sh)
 
-## Proxy Inverse Sécurisé (reverse-proxy)
-La machine **reverse-proxy** joue un rôle clé dans la sécurisation des échanges. Fonctionnant comme un intermédiaire entre les utilisateurs et les serveurs backend, elle utilise des certificats SSL auto-signés pour chiffrer les communications. Accessible à l’adresse `192.168.56.82`, ce proxy gère la création des certificats SSL et configure **Apache** pour assurer un trafic HTTPS sécurisé. Elle limite les connexions aux autres machines en jouant le rôle d'un bastion.
+Localisé dans le répertoire scripts/ .
+Configure l'interface bridge (enp0s8) avec le bon masque réseau en fonction de la machine.
+
+## Gestion des routes (script_route)
+
+Défini sous forme de variable dans le Vagrantfile
+Supprime la route NAT par défaut et la remplace par la passerelle par défaut du serveur concerné.
+
+## Installation du serveur web (install_web.sh)
+
+Localisé dans le répertoire scripts/
+Déploie un serveur web sur chaque machine et configure le contenu :
+    etudiant1 : Installe phpMyAdmin et le met à disposition sur le port 80
+    etudiant2 : Déploie une page HTML simple sur le port 80
+
+## Accès aux Machines
+
+Une fois le déploiement terminé, vous pouvez accéder aux machines via SSH :
+vagrant ssh etudiant1
+vagrant ssh etudiant2
+
+Ou visiter les sites déployés dans un navigateur :
+
+    etudiant1 : [http://192.168.232.3] (phpMyAdmin)
+    etudiant2 : [http://192.168.232.4] (Page HTML)
