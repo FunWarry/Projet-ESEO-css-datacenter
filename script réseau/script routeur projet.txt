@@ -56,6 +56,7 @@ ip DHCP pool LAN-POOL-Vlan-10
 network 192.168.239.248 255.255.255.248
 default-router 192.168.239.249
 dns-server 192.168.238.10
+no lease
 exit
 
 ip DHCP excluded-address 192.168.232.1 192.168.232.8
