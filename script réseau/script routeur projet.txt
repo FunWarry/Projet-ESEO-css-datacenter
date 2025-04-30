@@ -19,9 +19,132 @@ service password-encryption
 
 snmp-server community MyCommunity RO
 
+
+ip access-list extended vlan-10
+permit udp any 192.168.239.248 0.0.0.15 eq 123
+permit tcp any 192.168.239.248 0.0.0.15 eq 80
+permit ip any host 192.168.239.250
+permit udp any 192.168.239.248 0.0.0.15 eq 161
+permit udp any 192.168.239.248 0.0.0.15 eq 162
+permit udp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.10 eq 53
+permit icmp 192.168.239.248 0.0.0.15 192.168.239.248 0.0.0.15
+deny ip any 192.168.239.248 0.0.0.15 log
+permit ip any any
+exit
+
+ip access-list extended vlan-20
+permit udp any 192.168.232.0 0.0.1.255 eq 123
+permit tcp any 192.168.232.0 0.0.1.255 eq 80
+permit tcp any 192.168.232.0 0.0.1.255 eq 443
+permit tcp any 192.168.232.0 0.0.1.255 eq 22
+permit tcp 192.168.232.0 0.0.1.255 any eq 80
+permit tcp 192.168.232.0 0.0.1.255 any eq 443
+permit udp any 192.168.232.0 0.0.1.255 eq 161
+permit udp any 192.168.232.0 0.0.1.255 eq 162
+permit udp 192.168.232.0 0.0.1.255 any eq 161
+permit udp 192.168.232.0 0.0.1.255 any eq 162
+permit tcp any 192.168.232.0 0.0.1.255 eq 10050
+permit tcp any 192.168.232.0 0.0.1.255 eq 10051
+permit tcp 192.168.238.3 eq 10050 192.168.232.0 0.0.1.255 any
+permit tcp 192.168.238.3 eq 10051 192.168.232.0 0.0.1.255 any
+permit tcp 192.168.232.0 0.0.1.255 any eq 10050
+permit tcp 192.168.232.0 0.0.1.255 any eq 10051
+permit udp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.6 eq 1514
+deny ip any any log
+exit
+
+ip access-list extended vlan-30
+permit udp any 192.168.234.0 0.0.1.255 eq 123
+permit tcp 192.168.234.0 0.0.1.255 any eq 80
+permit tcp any 192.168.234.0 0.0.1.255 eq 80
+permit tcp 192.168.234.0 0.0.1.255 any eq 443
+permit tcp any 192.168.234.0 0.0.1.255 eq 443
+permit tcp any 192.168.234.0 0.0.1.255 eq 22
+permit tcp any 192.168.234.0 0.0.1.255 eq 3306
+permit udp any 192.168.234.0 0.0.1.255 eq 161
+permit udp any 192.168.234.0 0.0.1.255 eq 162
+permit udp 192.168.234.0 0.0.1.255 any eq 161
+permit udp 192.168.234.0 0.0.1.255 any eq 162
+permit tcp any 192.168.234.0 0.0.1.255 eq 10050
+permit tcp any 192.168.234.0 0.0.1.255 eq 10051
+permit tcp 192.168.238.3 eq 10050 192.168.234.0 0.0.1.255 any
+permit tcp 192.168.238.3 eq 10051 192.168.234.0 0.0.1.255 any
+permit tcp 192.168.234.0 0.0.1.255 any eq 10050
+permit tcp 192.168.234.0 0.0.1.255 any eq 10051
+permit udp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.6 eq 1514
+deny ip any any log
+exit
+
+ip access-list extended vlan-40
+permit udp any 192.168.236.0 0.0.1.255 eq 123
+permit tcp any 192.168.236.0 0.0.1.255 eq 80
+permit tcp 192.168.236.0 0.0.1.255 any eq 80
+permit tcp any 192.168.236.0 0.0.1.255 eq 443
+permit tcp 192.168.236.0 0.0.1.255 any eq 443
+permit tcp any 192.168.236.0 0.0.1.255 eq 22
+permit udp any 192.168.236.0 0.0.1.255 eq 161
+permit udp any 192.168.236.0 0.0.1.255 eq 162
+permit udp 192.168.236.0 0.0.1.255 any eq 161
+permit udp 192.168.236.0 0.0.1.255 any eq 162
+permit tcp any 192.168.236.0 0.0.1.255 eq 10050
+permit tcp any 192.168.236.0 0.0.1.255 eq 10051
+permit tcp 192.168.238.3 eq 10050 192.168.236.0 0.0.1.255 any
+permit tcp 192.168.238.3 eq 10051 192.168.236.0 0.0.1.255 any
+permit tcp 192.168.236.0 0.0.1.255 any eq 10050
+permit tcp 192.168.236.0 0.0.1.255 any eq 10051
+permit udp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.6 eq 1514
+deny ip any any log
+exit
+
+ip access-list extended vlan-50
+permit udp any 192.168.238.0 0.0.0.15 eq 123
+permit tcp any 192.168.238.0 0.0.0.15 eq 80
+permit tcp 192.168.238.0 0.0.0.15 any eq 80
+permit tcp any 192.168.238.0 0.0.0.15 eq 443
+permit tcp 192.168.238.0 0.0.0.15 any eq 443
+permit tcp any 192.168.238.0 0.0.0.15 eq 22
+permit udp any host 192.168.238.10 eq 53
+permit tcp any host 192.168.238.10 eq 53
+permit tcp any 192.168.238.0 0.0.0.15 eq 10050
+permit tcp any 192.168.238.0 0.0.0.15 eq 10051
+permit tcp 192.168.238.3 eq 10050 192.168.238.0 0.0.1.255 any
+permit tcp 192.168.238.3 eq 10051 192.168.238.0 0.0.1.255 any
+permit tcp 192.168.238.0 0.0.0.15 any eq 10050
+permit tcp 192.168.238.0 0.0.0.15 any eq 10051
+permit tcp 192.168.238.0 0.0.0.15 any eq 1514
+deny ip any any log
+exit
+
+ip access-list extended vlan-60
+permit udp any 192.168.238.8 0.0.0.15 eq 123
+permit tcp any 192.168.238.8 0.0.0.15 eq 80
+permit tcp 192.168.238.8 0.0.0.15 any eq 80
+permit tcp any 192.168.238.8 0.0.0.15 eq 443
+permit tcp 192.168.238.8 0.0.0.15 any eq 443
+permit udp any 192.168.238.8 0.0.0.15 eq 53
+permit tcp any 192.168.238.8 0.0.0.15 eq 53
+permit udp 192.168.238.8 0.0.0.15 any eq 53
+permit tcp 192.168.238.8 0.0.0.15 any eq 53
+permit ip host 192.168.238.10 any
+permit tcp any 192.168.238.8 0.0.0.15 eq 22
+permit tcp any 192.168.238.8 0.0.0.15 eq 10050
+permit tcp 192.168.238.8 0.0.0.15 any eq 10051
+permit tcp any 192.168.238.8 0.0.0.15 eq 10050
+permit tcp 192.168.238.8 0.0.0.15 any eq 10051
+deny ip any any log
+exit
+
 interface g0/0.10
 encapsulation dot1q 10
 ip address 192.168.239.249 255.255.255.248
+ip access-group vlan-10 in
 
 interface g0/0
 no shutdown
@@ -29,22 +152,27 @@ no shutdown
 interface g0/1.20
 encapsulation dot1q 20
 ip address 192.168.232.1 255.255.254.0
+ip access-group vlan-20 in
 
 interface g0/1.30
 encapsulation dot1q 30
 ip address 192.168.234.1 255.255.254.0
+ip access-group vlan-30 in
 
 interface g0/1.40
 encapsulation dot1q 40
 ip address 192.168.236.1 255.255.254.0
+ip access-group vlan-40 in
 
 interface g0/1.50
 encapsulation dot1q 50
 ip address 192.168.238.1 255.255.255.248
+ip access-group vlan-50 in
 
 interface g0/1.60
 encapsulation dot1q 60
 ip address 192.168.238.9 255.255.255.248
+ip access-group vlan-60 in
 
 interface g0/1
 no shutdown
