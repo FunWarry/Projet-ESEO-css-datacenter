@@ -24,6 +24,7 @@ ip access-list extended vlan-10
 permit udp any 192.168.239.248 0.0.0.15 eq 123
 permit udp 192.168.239.248 0.0.0.15 any eq 123
 permit tcp any 192.168.239.248 0.0.0.15 eq 80
+permit tcp any 192.168.239.248 0.0.0.15 eq 22
 permit ip any host 192.168.239.250
 permit udp any 192.168.239.248 0.0.0.15 eq 161
 permit udp any 192.168.239.248 0.0.0.15 eq 162
@@ -43,6 +44,7 @@ ip access-list extended vlan-20
 permit udp any 192.168.232.0 0.0.1.255 eq 123
 permit udp 192.168.232.0 0.0.1.255 any eq 123
 permit tcp any 192.168.232.0 0.0.1.255 eq 80
+permit tcp 192.168.232.0 0.0.1.255 eq 80 any
 permit tcp any 192.168.232.0 0.0.1.255 eq 443
 permit tcp any 192.168.232.0 0.0.1.255 eq 22
 permit tcp 192.168.232.0 0.0.1.255 eq 22 any
@@ -142,6 +144,10 @@ permit udp 192.168.238.0 0.0.0.15 any eq 161
 permit tcp any 192.168.238.0 0.0.0.15 eq 80
 permit tcp 192.168.238.0 0.0.0.15 any eq 80
 permit tcp 192.168.238.0 0.0.0.15 eq 80 any
+permit tcp 192.168.238.0 0.0.0.15 any eq 587
+permit tcp any 192.168.238.0 0.0.0.15 eq 587
+permit tcp 192.168.238.0 0.0.0.15 any eq 25
+permit tcp any 192.168.238.0 0.0.0.15 eq 25
 permit tcp any 192.168.238.0 0.0.0.15 eq 443
 permit tcp 192.168.238.0 0.0.0.15 any eq 443
 permit tcp 192.168.238.0 0.0.0.15 eq 443 any
