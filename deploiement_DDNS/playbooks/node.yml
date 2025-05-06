@@ -11,7 +11,7 @@
 - name: Attente des machines distantes
   hosts:
     - dns
-    - dhcp
+    - relais
   gather_facts: false
   tasks:
     - name: Attendre que la machine soit accessible en SSH
