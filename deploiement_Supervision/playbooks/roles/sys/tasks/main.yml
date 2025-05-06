@@ -1,0 +1,52 @@
+---
+- name: Mise a jour des paquets
+  apt:
+    update_cache: yes
+    upgrade: no
+
+- name: Installation des outils
+  apt:
+    name:
+      - wget
+      - gnupg
+      - unzip
+      - pkg-config
+      - gzip
+      - mariadb-server
+      - apache2
+      - php
+      - libapache2-mod-php
+      - php-mysql
+    state: present
+
+- name: Demarrer et activer MariaDB
+  systemd:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Creation base de donnees + utilisateur Zabbix en une commande
+  shell: |
+    mysql -uroot <<EOF
+    CREATE DATABASE zabbix CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
+    CREATE USER 'zabbix'@'localhost' IDENTIFIED BY 'password';
+    GRANT ALL PRIVILEGES ON zabbix.* TO 'zabbix'@'localhost';
+    SET GLOBAL log_bin_trust_function_creators = 1;
+    EOF
+  args:
+    executable: /bin/bash
+
+
+- name: Telecharger le depot Zabbix
+  get_url:
+    url: "https://repo.zabbix.com/zabbix/7.0/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.0+debian12_all.deb"
+    dest: "/tmp/zabbix-release.deb"
+
+- name: Installer le depot Zabbix
+  apt:
+    deb: "/tmp/zabbix-release.deb"
+    state: present
+
+- name: Mettre a jour a nouveau les depots
+  apt:
+    update_cache: yes

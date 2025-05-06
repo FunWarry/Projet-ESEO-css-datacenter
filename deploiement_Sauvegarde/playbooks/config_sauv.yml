@@ -1,0 +1,7 @@
+- name: Configuration sauv
+  hosts: sauv
+  become: true
+  vars:
+  roles:
+    - sauv
+

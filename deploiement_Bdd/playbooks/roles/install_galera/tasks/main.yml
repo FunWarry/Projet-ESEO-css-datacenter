@@ -1,0 +1,12 @@
+---
+- name: Installation de galera
+  apt:
+    name:
+      - wget
+      - gnupg
+      - unzip
+      - mariadb-server
+      - galera-4
+    state: present
+    update_cache: yes
+

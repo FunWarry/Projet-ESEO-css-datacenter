@@ -1,0 +1,11 @@
+hostname,ip,role
+client1,192.168.236.5,client
+etudiant1,192.168.232.3,client
+etudiant2,192.168.232.4,client
+galeranode1,192.168.234.3,client
+galeranode2,192.168.234.4,client
+galeranode3,192.168.234.5,client
+haproxynode1,192.168.234.6,client
+haproxynode2,192.168.234.7,client
+sauvegarde,192.168.236.3,backup_repo
+

@@ -1,0 +1,23 @@
+acl "lan" {
+        192.168.239.248/29;  #vlan10
+        192.168.232.0/23; #vlan20
+        192.168.234.0/23; #vlan30
+        192.168.236.0/23; #vlan40
+        192.168.238.0/29; #vlan50
+        192.168.238.8/29; #vlan60
+        localhost;
+};
+
+options {
+    directory "/var/cache/bind";
+
+  forwarders {
+        192.168.4.2;
+    };
+
+    dnssec-validation no;
+
+    listen-on { any; };
+    allow-query { lan; };
+
+};

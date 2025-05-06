@@ -1,0 +1,6 @@
+- name: Installation Apache
+  hosts: localhost
+  vars:
+    name: "nomVM"
+  roles:
+    - creer_VM

@@ -1,0 +1,7 @@
+- name: Configuration proxy
+  hosts: proxy
+  become: true
+  vars:
+  roles:
+    - proxy
+

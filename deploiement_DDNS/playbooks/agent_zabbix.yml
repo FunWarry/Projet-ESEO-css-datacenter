@@ -1,0 +1,8 @@
+- name: Installation Systeme
+  hosts:
+    - dns
+  become: true
+  vars:
+  roles:
+    - agent_zabbix
+

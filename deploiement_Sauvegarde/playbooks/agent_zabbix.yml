@@ -1,0 +1,9 @@
+- name: Installation Systeme
+  hosts:
+    - sauv
+    - proxy
+  become: true
+  vars:
+  roles:
+    - agent_zabbix
+

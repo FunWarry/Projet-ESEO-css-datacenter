@@ -1,0 +1,12 @@
+- name: Installation Systeme
+  hosts:
+    - galeranode1
+    - galeranode2
+    - galeranode3
+    - haproxynode1
+    - haproxynode2
+  become: true
+  vars:
+  roles:
+    - agent_zabbix
+

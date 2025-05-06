@@ -1,0 +1,13 @@
+---
+- name: Creer le fichier de configuration Galera
+  template:
+    src: 60-galera.cnf
+    dest: /etc/mysql/mariadb.conf.d/60-galera.cnf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Redemarrer MariaDB
+  service:
+    name: mariadb
+    state: restarted

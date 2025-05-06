@@ -1,0 +1,12 @@
+zone "dns.local" {
+    type master;
+    file "/etc/bind/db.dns.local";
+    allow-update { none; };
+};
+
+zone "238.168.192.in-addr.arpa" {
+    type master;
+    file "/etc/bind/db.reverse.dns.local";
+    allow-update { none; };
+
+};

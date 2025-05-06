@@ -1,0 +1,38 @@
+---
+- name: Mettre a jour les paquets
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Installer les paquets necessaires
+  ansible.builtin.apt:
+    name:
+      - borgbackup
+      - ansible
+      - vagrant
+    state: present
+  become: true
+
+
+- name: Créer l'utilisateur backup avec home directory
+  ansible.builtin.user:
+    name: backup
+    home: /home/backup
+    shell: /bin/bash
+    password: "{{ 'changeme' | password_hash('sha512') }}"
+    state: present
+  become: true
+
+- name: Executer le script send_keys.sh
+  shell: |
+    sudo bash /vagrant/scripts/send_keys.sh
+  args:
+    chdir: /vagrant/scripts/
+
+- name: Executer le script deploy_backup_env.sh
+  shell: |
+    sudo bash /vagrant/scripts/deploy_backup_env.sh
+
+  args:
+    chdir: /vagrant/scripts/

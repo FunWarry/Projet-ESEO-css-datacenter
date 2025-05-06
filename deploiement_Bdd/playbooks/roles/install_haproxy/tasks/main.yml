@@ -1,0 +1,53 @@
+---
+- name: Installation des outils
+  apt:
+    name:
+      - wget
+      - gnupg
+      - unzip
+      - haproxy
+      - pacemaker
+      - corosync
+      - pcs
+    state: present
+    update_cache: yes
+
+- name: Creer le fichier de configuration haproxy.cfg
+  template:
+    src: haproxy.cfg
+    dest: /etc/haproxy/haproxy.cfg
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Definir le mot de passe pour l utilisateur hacluster
+  shell: echo -e "CHANGEME\nCHANGEME" | passwd hacluster
+  args:
+    executable: /bin/bash
+
+- name: Activer et demarrer pacemaker
+  systemd:
+    name: pacemaker
+    enabled: yes
+    state: started
+
+- name: Activer et demarrer corosync
+  systemd:
+    name: corosync
+    enabled: yes
+    state: started
+
+- name: Activer et demarrer pcsd
+  systemd:
+    name: pcsd
+    enabled: yes
+    state: started
+
+- name: Arreter HAProxy
+  systemd:
+    name: haproxy
+    state: stopped
+
+- name: Detruire le cluster existant
+  shell: sudo pcs cluster destroy
+  ignore_errors: yes

@@ -1,0 +1,7 @@
+- name: Installation Systeme
+  hosts: zabbix
+  become: true
+  vars:
+  roles:
+    - sys
+

@@ -1,0 +1,811 @@
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+ssh: connect to host 192.168.232.3 port 22: Connection timed out
+ssh: connect to host 192.168.232.4 port 22: Connection timed out
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+ssh: connect to host 192.168.232.3 port 22: Connection timed out
+Host key verification failed.
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:ewFho7H6tvLq6OxwtHsK+wz/nglG7sIarzQuDCZbzoU backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|      . +        |
+|       = o       |
+|      o .        |
+|     .   .       |
+|  o..   S .      |
+|o=E...   . .     |
+|@B*.  o . .      |
+|*^++o+ . .       |
+|*B&*B+o          |
++----[SHA256]-----+
+/tmp/vagrant-shell: line 35: mkdir -p /home/proxy/.ssh && chmod 700 /home/proxy/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChQLPX7RyE5CC7RSNJy7PLnhGXzNEdZMEWWv3mNWH+L+JVKSky4sJ6YYkhq6AS3ovKRXhSPIqS7jz7uS5YRuU/qlFgTACMARpsUIrh2fCrg0h5iDEH42lLrzndbOzVENCzxosDeDvd/bCopYfCiVrH+rDW6WP9eD9a5lpc544JgUWEdHNOCSDz4ch2mmqJAIvfkWBpG2nGdzJ/hgkxV5OBL49U9iCgHsoVhLcVhsf7UaOTMRFEVAOyIU5u8b6UPLyIdLEqBaf4sxU8OqdLJobXQqYl0pF7eaoMWgWVCT1xwldSf2+r8CT02QA2QjnW7sgKZARy15+AZwx383qZZaUt backup@sauvegarde1' >> /home/proxy/.ssh/authorized_keys && chmod 600 /home/proxy/.ssh/authorized_keys: No such file or directory
+/tmp/vagrant-shell: line 49: mkdir -p /home/agent/.ssh && chmod 700 /home/agent/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChQLPX7RyE5CC7RSNJy7PLnhGXzNEdZMEWWv3mNWH+L+JVKSky4sJ6YYkhq6AS3ovKRXhSPIqS7jz7uS5YRuU/qlFgTACMARpsUIrh2fCrg0h5iDEH42lLrzndbOzVENCzxosDeDvd/bCopYfCiVrH+rDW6WP9eD9a5lpc544JgUWEdHNOCSDz4ch2mmqJAIvfkWBpG2nGdzJ/hgkxV5OBL49U9iCgHsoVhLcVhsf7UaOTMRFEVAOyIU5u8b6UPLyIdLEqBaf4sxU8OqdLJobXQqYl0pF7eaoMWgWVCT1xwldSf2+r8CT02QA2QjnW7sgKZARy15+AZwx383qZZaUt backup@sauvegarde1' >> /home/agent/.ssh/authorized_keys && chmod 600 /home/agent/.ssh/authorized_keys: No such file or directory
+/tmp/vagrant-shell: line 49: mkdir -p /home/agent/.ssh && chmod 700 /home/agent/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChQLPX7RyE5CC7RSNJy7PLnhGXzNEdZMEWWv3mNWH+L+JVKSky4sJ6YYkhq6AS3ovKRXhSPIqS7jz7uS5YRuU/qlFgTACMARpsUIrh2fCrg0h5iDEH42lLrzndbOzVENCzxosDeDvd/bCopYfCiVrH+rDW6WP9eD9a5lpc544JgUWEdHNOCSDz4ch2mmqJAIvfkWBpG2nGdzJ/hgkxV5OBL49U9iCgHsoVhLcVhsf7UaOTMRFEVAOyIU5u8b6UPLyIdLEqBaf4sxU8OqdLJobXQqYl0pF7eaoMWgWVCT1xwldSf2+r8CT02QA2QjnW7sgKZARy15+AZwx383qZZaUt backup@sauvegarde1' >> /home/agent/.ssh/authorized_keys && chmod 600 /home/agent/.ssh/authorized_keys: No such file or directory
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:ojQ8bWJLqmMqidvne7eNUre6ZZPZTuFh6qc7CtzIXEU backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|          E      |
+|         .       |
+|          .      |
+|   . .   .       |
+|    O + S   +    |
+|   = @ =. .B o   |
+|... o *...B.+    |
+|=+  . o..*o+.    |
+|Bo.ooo o*===.    |
++----[SHA256]-----+
+/tmp/vagrant-shell: line 35: mkdir -p /home/proxy/.ssh && chmod 700 /home/proxy/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCk1xZVj8ZIo9BX6j3PhEGPmYcRmQFd05/HwBtIN+bIxr0Lclt1uUoByY8zhYy7buFXy4icG21lnli0sVIZn5+5N5TWGM4cm4pQ+MUe27iY0VUxGrEmjrMGJK5sohNqDd1zUTekAytU4oZtH6slmzAmXFJ1jKd71n1GBOs8KdMFHlG7bL9XtbQ2i8S9g6VphAf5v7aDP7MP1QjuWIiq3oeKbfrelFSwX953clGoDyQ/SW4Lp+/o8WwGzKz4DtGJgXfrm70dxLFVjnqgBvSTQNCRuOHc3tA3T3oBEfJVgeJzVGU6Wpi3pgLLMlQ6iaXCDYOACW3bHPdiMRl5b/Dt5OoZ backup@sauvegarde1' >> /home/proxy/.ssh/authorized_keys && chmod 600 /home/proxy/.ssh/authorized_keys: No such file or directory
+/tmp/vagrant-shell: line 49: mkdir -p /home/agent/.ssh && chmod 700 /home/agent/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCk1xZVj8ZIo9BX6j3PhEGPmYcRmQFd05/HwBtIN+bIxr0Lclt1uUoByY8zhYy7buFXy4icG21lnli0sVIZn5+5N5TWGM4cm4pQ+MUe27iY0VUxGrEmjrMGJK5sohNqDd1zUTekAytU4oZtH6slmzAmXFJ1jKd71n1GBOs8KdMFHlG7bL9XtbQ2i8S9g6VphAf5v7aDP7MP1QjuWIiq3oeKbfrelFSwX953clGoDyQ/SW4Lp+/o8WwGzKz4DtGJgXfrm70dxLFVjnqgBvSTQNCRuOHc3tA3T3oBEfJVgeJzVGU6Wpi3pgLLMlQ6iaXCDYOACW3bHPdiMRl5b/Dt5OoZ backup@sauvegarde1' >> /home/agent/.ssh/authorized_keys && chmod 600 /home/agent/.ssh/authorized_keys: No such file or directory
+/tmp/vagrant-shell: line 49: mkdir -p /home/agent/.ssh && chmod 700 /home/agent/.ssh && echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCk1xZVj8ZIo9BX6j3PhEGPmYcRmQFd05/HwBtIN+bIxr0Lclt1uUoByY8zhYy7buFXy4icG21lnli0sVIZn5+5N5TWGM4cm4pQ+MUe27iY0VUxGrEmjrMGJK5sohNqDd1zUTekAytU4oZtH6slmzAmXFJ1jKd71n1GBOs8KdMFHlG7bL9XtbQ2i8S9g6VphAf5v7aDP7MP1QjuWIiq3oeKbfrelFSwX953clGoDyQ/SW4Lp+/o8WwGzKz4DtGJgXfrm70dxLFVjnqgBvSTQNCRuOHc3tA3T3oBEfJVgeJzVGU6Wpi3pgLLMlQ6iaXCDYOACW3bHPdiMRl5b/Dt5OoZ backup@sauvegarde1' >> /home/agent/.ssh/authorized_keys && chmod 600 /home/agent/.ssh/authorized_keys: No such file or directory
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:BmiWBkSanWXxLBDF2hmAbR/difIjhO3Z5FpA891FVk0 backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+| =BOBo o . .+..oE|
+|.++*OB+.o. o    .|
+|o.o*B%= . .      |
+|  .+B.*.         |
+|     + .S        |
+|    .  .         |
+|                 |
+|                 |
+|                 |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 17: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:T0nUYK9HhYP9QjIzO+T2kjhofN9Sl1Gm/vTp55xXarI backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|          += ..  |
+|         oB.*.  o|
+|         o.Boo + |
+|         .=+. +  |
+|     . .So++.o o |
+|      + +oo.o + o|
+|     . . o.+ . ++|
+|          o o oo*|
+|           .E+.+=|
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 17: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:Amsmz9hTw+ErH93UlMvEa7q3xz4kQR6lOw+YydB06nQ backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|          . ...  |
+|         o +oo   |
+|    . . . +oE.   |
+|     = . = Xo+   |
+|  . + * S B X.   |
+|   O . = o o.+.  |
+|  . * o . o  +.  |
+|     + .   .. +  |
+|      .   ...+.. |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 17: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:blzbercE4go11r/H7M8wkU/KkAsfJoiNeBxoQ0wsr/M backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|   +o            |
+|  ..o.           |
+|   o+ .          |
+|   ..+ = o   . . |
+|   .. = S * * o .|
+|  o  . = + X * = |
+|   o  . + o =o* .|
+|    E  o . ..o=+ |
+|        . ...+ooo|
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 17: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 17: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 17: sshpass: command not found
+/tmp/vagrant-shell: line 24: sshpass: command not found
+/tmp/vagrant-shell: line 24: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 24: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 24: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 24: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:g0nkmR4I6BVgDEq5dmcbC23AJ8+SwZ8VzQhTBNRxDrw backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|+=*.o=O**.       |
+|=o O =.B+o       |
+|o o % O ..       |
+| + = & E         |
+|. . * B S        |
+|     o   .       |
+|                 |
+|                 |
+|                 |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:C5JIr3YylBziVW8M9fidwQl8C17rQX5mShmYlmuG3/o backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|     o....+      |
+|    . + oBo=.    |
+|. o.   =+.B+=    |
+|.+.= ....=.Bo+   |
+| .= + . S.+o*    |
+| . . . . o +     |
+|  = .   . .      |
+| . +     .       |
+|          .E     |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:zS6FElarzKGAiQfh1E1KhBOVd3OStPOe2S7FFfT3jLo backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|o+*++...o   ..   |
+|+*.o.o *.o   ..  |
+|+.+.. =o=     ...|
+| . . = +o+   . oo|
+|    . = S.= . . o|
+|       ..o+o .   |
+|        .+o..    |
+|         o.  .   |
+|          ..E    |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:QyD4RmMBL+UCZr9pWUI32qWvmwf9+GZpqpvuL64KCbM backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|.o.+++..         |
+|o.++B.+.         |
+|  oBo=  .        |
+|   oO ..         |
+|o  *  ..S        |
+|.+.  ... .       |
+|E    .. o .      |
+|.    .+o *       |
+| ...=X*o*.       |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+Created directory '/home/backup/.ssh'.
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:QdFNkb+bmlgZltAiZfs4hwuUOu3sTwFel5mxDvw6bW4 backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|        oooo+o   |
+|       . =.oo*   |
+|        * B B.   |
+|       = = @ ..  |
+|      o S = O  . |
+|       + . O o.  |
+|        o = =  o |
+|       . . *E.o  |
+|        ..o.+.   |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+Created directory '/home/backup/.ssh'.
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:6mP6HyJ+4qG8DKYEZOjCgPRfiOe/wxvUwyVOL/twqpo backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+| .               |
+|+ . . .          |
+|+o o o . o .     |
+|*   + . = +      |
+|oo   o .S* .     |
+|o     o.  +      |
+|.o  o +o.o .     |
+|++ o.+=+o.=      |
+|. =o+E+*=. .     |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+Saving key "/home/backup/.ssh/id_rsa" failed: No such file or directory
+Generating public/private rsa key pair.
+/tmp/vagrant-shell: line 16: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+/tmp/vagrant-shell: line 23: sshpass: command not found
+/tmp/vagrant-shell: line 27: sshpass: command not found
+Created directory '/home/backup/.ssh'.
+Generating public/private rsa key pair.
+Your identification has been saved in /home/backup/.ssh/id_rsa
+Your public key has been saved in /home/backup/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:4p/6GYRd14yjW6VOZGiN+4v/19RZ0imTCpcBNe6QCDY backup@sauvegarde1
+The key's randomart image is:
++---[RSA 2048]----+
+|     E   .oo     |
+|    . o . o=.+   |
+|       . o=.X =..|
+|       o +oO B..o|
+|      o S =.= o.+|
+|     . o   B   .o|
+|      . . . o  ..|
+|       . + . .  o|
+|      .o= ..o... |
++----[SHA256]-----+
+/vagrant/scripts/send_keys.sh: line 16: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 23: sshpass: command not found
+/vagrant/scripts/send_keys.sh: line 27: sshpass: command not found

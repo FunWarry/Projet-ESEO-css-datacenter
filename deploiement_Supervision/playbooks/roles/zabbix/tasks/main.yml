@@ -1,0 +1,56 @@
+---
+- name: Installer les paquets Zabbix
+  apt:
+    name:
+      - zabbix-server-mysql
+      - zabbix-frontend-php
+      - zabbix-apache-conf
+      - zabbix-sql-scripts
+      - zabbix-agent
+      - snmp
+    update_cache: yes
+    state: present
+
+- name: Importer le schema initial
+  shell: |
+    sudo zcat /usr/share/zabbix-sql-scripts/mysql/server.sql.gz | mysql --default-character-set=utf8mb4 -uzabbix -ppassword zabbix
+  args:
+    executable: /bin/bash
+
+- name: Desactiver log_bin_trust_function_creators
+  shell: |
+    sudo mysql -uroot -e "SET GLOBAL log_bin_trust_function_creators = 0;"
+  args:
+    executable: /bin/bash
+    
+- name: Modifier la configuration de Zabbix Server (DBPassword, ListenIP, AllowRoot)
+  shell: |
+    sed -i "s/# DBPassword=/DBPassword=password/" /etc/zabbix/zabbix_server.conf
+    sed -i "s/# ListenIP=0.0.0.0/ListenIP=0.0.0.0/" /etc/zabbix/zabbix_server.conf
+    sed -i "s/# AllowRoot=0/AllowRoot=1/" /etc/zabbix/zabbix_server.conf
+  args:
+    executable: /bin/bash
+
+- name: Redémarrer les services Zabbix et Apache
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+  loop:
+    - zabbix-server
+    - zabbix-agent
+    - apache2
+    
+- name: Dump de la config
+  shell: |
+    sudo tar -xzvf /vagrant/zabbix_configs.tar.gz -C /
+  args:
+    executable: /bin/bash
+
+- name: Dump de la base de donnée
+  shell: |
+    sudo mysqldump -uzabbix -ppassword zabbix < /vagrant/backup.sql
+  args:
+    executable: /bin/bash
+    
+    

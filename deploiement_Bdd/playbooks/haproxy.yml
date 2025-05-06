@@ -1,0 +1,25 @@
+- name: Installation de Haproxy
+  hosts:
+    - haproxynode1
+    - haproxynode2
+  become: true
+  vars:
+  roles:
+    - install_haproxy
+
+- name: Configuration de Haproxy node 1
+  hosts:
+    - haproxynode1
+  become: true
+  vars:
+  roles:
+    - haproxynode1
+
+
+- name: Configuration de Haproxy node 1
+  hosts:
+    - haproxynode2
+  become: true
+  vars:
+  roles:
+    - haproxynode2

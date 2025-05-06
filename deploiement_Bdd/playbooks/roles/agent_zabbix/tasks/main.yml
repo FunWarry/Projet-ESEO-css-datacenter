@@ -1,0 +1,29 @@
+---
+- name: Telecharger le depot Zabbix
+  get_url:
+    url: "https://repo.zabbix.com/zabbix/7.0/debian/pool/main/z/zabbix-release/zabbix-release_latest_7.0+debian12_all.deb"
+    dest: "/tmp/zabbix-release_latest.deb"
+
+- name: Installer le depot Zabbix
+  apt:
+    deb: "/tmp/zabbix-release_latest.deb"
+
+- name: Mise a jour apres ajout du depot
+  apt:
+    update_cache: yes
+
+- name: Installation de l agent Zabbix
+  apt:
+    name: zabbix-agent
+    state: present
+
+- name: Configuration du fichier zabbix_agentd.conf sans verification
+  shell: |
+    sed -i 's/^Server=127.0.0.1/Server=192.168.238.3/' /etc/zabbix/zabbix_agentd.conf
+    sed -i 's/^# ListenIP=0.0.0.0/ListenIP=0.0.0.0/' /etc/zabbix/zabbix_agentd.conf
+    sed -i 's/^ServerActive=127.0.0.1/ServerActive=192.168.238.3/' /etc/zabbix/zabbix_agentd.conf
+    sed -i "s/^Hostname=Zabbix server/Hostname=$(hostname)/" /etc/zabbix/zabbix_agentd.conf
+  become: yes
+  notify:
+    - Redemarrer l agent Zabbix
+

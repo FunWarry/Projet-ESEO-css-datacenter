@@ -1,0 +1,6 @@
+---
+- name: Configuration DNS avec BIND9
+  hosts: dhcp
+  become: true
+  roles:
+    - config_dhcp

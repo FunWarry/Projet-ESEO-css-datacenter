@@ -1,0 +1,33 @@
+- name: Installation des outils
+  hosts:
+    - galeranode1
+    - galeranode2
+    - galeranode3
+  become: true
+  vars:
+  roles:
+    - install_galera
+
+- name: Configuration galera node 1
+  hosts:
+    - galeranode1
+  become: true
+  vars:
+  roles:
+    - galeranode1
+
+- name: Configuration galera node 2
+  hosts:
+    - galeranode2
+  become: true
+  vars:
+  roles:
+    - galeranode2
+
+- name: Configuration galera node 3
+  hosts:
+    - galeranode3
+  become: true
+  vars:
+  roles:
+    - galeranode3

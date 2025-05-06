@@ -1,0 +1,31 @@
+---
+- name: Authentifier les hotes du cluster
+  shell: sudo pcs host auth haproxynode1-cluster haproxynode2-cluster -u hacluster -p CHANGEME
+  args:
+    executable: /bin/bash
+    
+- name: Configurer le cluster
+  shell: sudo pcs cluster setup --force haproxycluster haproxynode1-cluster haproxynode2-cluster
+
+- name: Activer et demarrer pacemaker
+  systemd:
+    name: pacemaker
+    state: restarted
+
+- name: Desactiver STONITH
+  shell: sudo pcs property set stonith-enabled=false
+
+- name: Ignorer le quorum
+  shell: sudo pcs property set no-quorum-policy=ignore
+
+- name: Creer la ressource IP virtuelle
+  shell: sudo pcs resource create VirtualIPBDD IPaddr2 ip=192.168.234.10 cidr_netmask=24
+
+- name: Creer la ressource HAProxy
+  shell: sudo pcs resource create HAProxy systemd:haproxy
+
+- name: Ajouter la contrainte de colocation
+  shell: sudo pcs constraint colocation add VirtualIPBDD with HAProxy score=INFINITY
+
+- name: Ajouter la contrainte dordre
+  shell: sudo pcs constraint order set VirtualIPBDD HAProxy

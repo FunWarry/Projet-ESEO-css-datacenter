@@ -1,0 +1,34 @@
+---
+- name: Installer isc-dhcp-server
+  apt:
+    name:
+      - isc-dhcp-server
+    state: present
+    update_cache: yes
+
+- name: Executer le script config_sys.sh
+  shell: |
+    sudo echo 'INTERFACESv4="enp0s8"' > /etc/default/isc-dhcp-server
+    sudo echo 'DHCPDv4_CONF=/etc/dhcp/dhcpd.conf' >> /etc/default/isc-dhcp-server
+  args:
+    chdir: /
+    
+- name: Copier dhcpd.conf
+  copy:
+    src: dhcpd.conf
+    dest: /etc/dhcp/dhcpd.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+
+- name: Démarrer le service BIND9
+  systemd:
+    name: isc-dhcp-server
+    state: started
+    enabled: true
+
+- name: Redémarrer le service BIND9
+  systemd:
+    name: isc-dhcp-server
+    state: restarted

@@ -1,0 +1,20 @@
+include "/etc/bind/tsig-isc-bind.key";
+
+zone "dns.local" {
+    type master;
+    #allow-update { none; };
+    file "/var/lib/bind/db.dns.local";
+    update-policy {
+        grant tsig-isc-bind wildcard *.srv-dns.dns.local A DHCID;
+    };
+};
+
+zone "238.168.192.in-addr.arpa" {
+    type master;
+    #allow-update { none; };
+    file "/var/lib/bind/db.reverse.dns.local";
+    update-policy {
+        grant tsig-isc-bind wildcard *.db.reverse.dns.local A DHCID;
+    };
+
+};

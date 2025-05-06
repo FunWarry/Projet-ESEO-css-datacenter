@@ -1,0 +1,24 @@
+---
+- name: Creer le dossier de la machine Vagrant
+  shell: |
+    mkdir -p "/home/etudis/Bureau/VMs/{{ name }}"
+    chmod 755 "/home/etudis/Bureau/VMs/{{ name }}"
+  args:
+    executable: /bin/bash
+
+- name: Generer le Vagrantfile
+  template:
+    src: Vagrantfile.j2
+    dest: "/home/etudis/Bureau/VMs/{{ name }}/Vagrantfile"
+    mode: '0644'
+    
+- name: Creer le dossier de la machine Vagrant
+  shell: |
+    sed -i "s/nomVM/{{ name }}/g" "/home/etudis/Bureau/VMs/{{ name }}/Vagrantfile"
+  args:
+    executable: /bin/bash
+    
+- name: Lancer la machine Vagrant
+  command: vagrant up
+  args:
+    chdir: "/home/etudis/Bureau/VMs/{{ name }}"
