@@ -60,6 +60,7 @@ Le fichier de configuration OPNSense se trouve dans le dossier "Configuration Op
 5.  Cliquer sur "Restore".
 6.  Redémarrer le système.
 
+---
 
 ## II. Guide d'installation du réseau
 
@@ -115,9 +116,9 @@ Avant de commencer, assurez-vous d'avoir les éléments suivants :
 
 ### 3. Scripts de configuration
 
-[Script du routeur](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/réseau/script%20routeur%20projet.txt)
+[Script du routeur](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/incrément2/script%20réseau/script%20routeur%20projet.txt)
 
-[Script du switch](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/réseau/script%20switch%20projet.txt)
+[Script du switch](http://20.86.62.213:3000/gevraima/Projet-ESEO/src/branch/incrément2/script%20réseau/script%20switch%20projet.txt)
 
 Se trouve dans le dossier "scripte réseau" pour le rendu Incrément 1.
 
@@ -313,24 +314,38 @@ Ou visiter les sites déployés dans un navigateur :
 
 ### 4. Déploiement de la Machine Zabbix server
 
-Ce projet utilise **Vagrant** pour déployer deux machines virtuelles, **etudiant1** et **etudiant2**. Lors du déploiement, quatre scripts seront exécutés afin de configurer les machines, définir les paramètres réseau, et d'installer un serveur web avec du contenu spécifique sur chaque machine.
+
+#### Récupération du projet Zabbix
+
+##### Cloner le dépôt Git
+Pour accéder au projet de déploiement Zabbix :
+
+1. Ouvrez un terminal
+2. Clonez le dépôt (branche `Increment1` ou `main`) :
+   ```bash
+   git clone -b Increment1 http://20.86.62.213:3000/gevraima/Projet-ESEO.git
+3. Puis récupérer uniquement le répertoire deploiment_zabbix 
 
 #### Déploiement
 
 ***A faire dans le répertoire où se situe le vagrantfile pour le déploiment de la VM serveur Zabbix***
 
-Pour déployer les machines, exécutez simplement la commande suivante :
+Pour déployer le serveur supervision, exécutez simplement la commande suivante :
 ```bash
 vagrant up
 ```
-Cela créera et configurera les machines virtuelles avec les paramètres définis.
+Cela créera et configurera la machine virtuelle avec les paramètres définis.
 
 #### Accès aux Machines
 
 Une fois l'installation terminée, accédez à l'interface web à l'adresse:
 ```
-http://adresse-ip-serveur/zabbix
+http://192.168.238.3/zabbix
 ```
+pour l'ip publique donc hors de notre reseau de projet:
+````
+http://192.168.4.240:1000/zabbix
+````
 
 Identifiants par défaut:
 - Utilisateur: Admin
@@ -346,4 +361,82 @@ Identifiants par défaut:
 
 - [Documentation officielle Zabbix](https://www.zabbix.com/documentation/)
 
+#### Accès aux Dashboards
+
+Après connexion :
+
+1. Allez dans **Monitoring > Dashboards**
+2. Vous trouverez plusieurs dashboards préconfigurés :
+
+   - **Global View** : Vue d'ensemble de l'infrastructure
+   - **Sécurité** : État des firewalls, IDS, règles réseau
+   - **Réseaux** : Surveillance des équipements réseau (trafic, interfaces)
+   - **BDD** : Suivi des bases de données (MySQL, PostgreSQL, etc.)
+   - **LB et Web** : Charge sur les Load Balancers, disponibilité des sites web
+
+Chaque dashboard offre :
+- Une **visualisation graphique** claire des indicateurs de performance
+- Une **liste des alertes récentes** classées par gravité
+
+#### Voir les hôtes existants
+
+Pour explorer les hôtes surveillés :
+
+1. Cliquez sur **Monitoring > Hosts**
+2. Une liste d’hôtes s’affiche (serveurs, équipements réseau, etc.)
+3. Cliquez sur un hôte pour accéder aux détails suivants :
+   - **Items** : Voir les éléments surveillés (CPU, mémoire, services, etc.)
+   - **Graphs** : Visualiser les graphiques de performance
+   - **Problems** : Vérifier les alertes et incidents en cours
+
+#### Ajouter un nouvel hôte
+
+1. Allez dans **Monitoring > Hosts**
+2. En haut à droite cliquez sur **Create host**
+3. Remplissez les informations suivantes :
+   - **Host name** : Nom de l’hôte (ex. `srv-web-01`)
+   - **Groups** : Ajouter à un groupe existant (ex : `Linux servers`)
+   - **Interfaces** : Saisissez l’IP ou le DNS selon le type d’interface (**Agent**, **SNMP**, etc.)
+
+4. Lier un **Template** :
+   - Allez dans l’onglet **Templates**
+   - Cliquez sur **Add**
+   - Sélectionnez un template adapté (ex : `Template OS Linux by Zabbix agent`)
+
+5. Cliquez sur **Add**
+
+L’hôte sera automatiquement surveillé et apparaîtra parmi les hôtes dès que des données seront reçues car implicitement chaque VM dans notre infrastructure à un agent Zabbix d'installé qui va remonter les métriques vers notre serveur Zabbix.
+
+Selon le **type d’hôte** que vous souhaitez ajouter, la méthode varie :
+
 ---
+
+#### Ajouter un **serveur Linux** (Zabbix Agent)
+
+1. Allez dans **Configuration > Hosts**
+2. Cliquez sur **Create host**
+3. Remplissez :
+   - **Host name** : ex. `srv-database-01`
+   - **Group** : ex. `Linux servers`
+   - **Interfaces** : IP + sélectionnez le type **Agent**
+4. Lier un template :
+   - Onglet **Templates**
+   - Cliquez sur **Add**
+   - Choisissez **Template OS Linux by Zabbix agent**
+5. Cliquez sur **Add**
+
+---
+
+#### Ajouter un **équipement réseau** (switch, routeur...)
+
+1. Allez dans **Configuration > Hosts**
+2. Cliquez sur **Discovery** (ou utilisez une règle de découverte déjà active)
+3. Sélectionnez un hôte détecté automatiquement
+4. Cliquez sur **Create host** ou **Convert to host**
+5. Remplissez :
+   - **Host name** : ex. `switch-core`
+   - **Group** : `Network devices`
+   - Interface : **SNMP**, avec IP correcte
+6. Lier un template :
+   - Exemple : **Template Net Cisco SNMP** (ou un template SNMP générique adapté)
+7. Cliquez sur **Add**
