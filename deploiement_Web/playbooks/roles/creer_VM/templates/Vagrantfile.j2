@@ -1,0 +1,37 @@
+$script_ssh = <<-SCRIPT
+sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config    
+sleep 3
+service ssh restart
+SCRIPT
+
+$script_apache = <<-SCRIPT
+sudo apt update
+sudo apt install -y apache2
+SCRIPT
+
+Vagrant.configure("2") do |config|
+  # Configuration du provider VirtualBox
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["modifyvm", :id, "--groups", "/VMetu"]
+    v.customize ["modifyvm", :id, "--cpus", "1"]
+    v.customize ["modifyvm", :id, "--memory", "512"]
+    v.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+    v.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+  end
+
+  # Nom de la VM injecté par Ansible
+  nodeName = ("nomVM").to_sym
+
+  config.vm.define nodeName do |node|
+    node.vm.hostname = nodeName.to_s
+    node.vm.box = "chavinje/fr-book-64"
+    node.vm.network :public_network, bridge: "eno1", type: "dhcp"
+
+    node.vm.provider "virtualbox" do |v|
+      v.name = nodeName.to_s
+    end
+
+    node.vm.provision "shell", inline: $script_ssh
+    node.vm.provision "shell", inline: $script_apache
+  end
+end
