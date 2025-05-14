@@ -51,8 +51,10 @@ if [ "$HOSTNAME" == "galeranode3" ]; then
     SQL_COMMANDS="
     CREATE DATABASE IF NOT EXISTS etudiant1;
     CREATE DATABASE IF NOT EXISTS etudiant2;
+    CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'network';
     CREATE USER IF NOT EXISTS 'etudiant1'@'%' IDENTIFIED BY 'network';
     CREATE USER IF NOT EXISTS 'etudiant2'@'%' IDENTIFIED BY 'network';
+    GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%';
     GRANT ALL PRIVILEGES ON etudiant1.* TO 'etudiant1'@'%';
     GRANT ALL PRIVILEGES ON etudiant2.* TO 'etudiant2'@'%';
     FLUSH PRIVILEGES;
