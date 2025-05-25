@@ -1,0 +1,20 @@
+- name: Attente des machines distantes
+  hosts:
+    - Web
+  gather_facts: false
+  tasks:
+    - name: Attendre que la machine soit accessible en SSH
+      wait_for_connection:
+        timeout: 5
+      register: ssh_check
+      until: ssh_check is succeeded
+      retries: 30
+      delay: 5
+      
+- name: Deploiement Web
+  hosts:
+    - Web
+  become: false
+  roles:
+    - Web
+

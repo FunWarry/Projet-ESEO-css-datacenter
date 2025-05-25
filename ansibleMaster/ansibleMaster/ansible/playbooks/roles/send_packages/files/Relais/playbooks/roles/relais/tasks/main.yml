@@ -1,0 +1,22 @@
+---
+- name: Installer isc-dhcp-relay
+  apt:
+    name: isc-dhcp-relay
+    state: present
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Copier la configuration du relais DHCP
+  copy:
+    src: isc-dhcp-relay
+    dest: /etc/default/isc-dhcp-relay
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Redémarrer le service isc-dhcp-relay
+  service:
+    name: isc-dhcp-relay
+    state: restarted
+    enabled: yes

@@ -1,0 +1,37 @@
+---
+- name: Mettre a jour les paquets
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Installer les paquets necessaires
+  ansible.builtin.apt:
+    name:
+      - ansible
+      - vagrant
+      - sshpass
+    state: present
+  become: true
+
+
+- name: Creer l utilisateur backup avec home directory
+  shell: |
+    sudo useradd -m -d /home/backup1 -s /bin/bash backup1
+    echo "backup1:changeme" | sudo chpasswd
+    echo "backup1 ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/backup1 > /dev/null
+    sudo chmod 440 /etc/sudoers.d/backup1
+  args:
+    chdir: /
+    
+- name: Executer le script send_keys.sh (sauvegarde1 → proxy1)
+  shell: |
+    sudo bash /vagrant/scripts/send_keys.sh
+  args:
+    chdir: /vagrant/scripts/
+    
+- name: Executer le script deploy_backup_env.sh
+  shell: |
+    sudo bash /vagrant/scripts/deploy_backup_env.sh
+  args:
+    chdir: /vagrant/scripts/

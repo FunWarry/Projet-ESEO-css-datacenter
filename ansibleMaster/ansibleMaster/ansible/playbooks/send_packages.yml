@@ -1,0 +1,31 @@
+- name: Attente des machines distantes
+  hosts:
+    - Dns
+    - Web
+    - Sauvegarde
+    - Bdd
+    - Supervision
+    - Firewall
+  gather_facts: false
+  tasks:
+    - name: Attendre que la machine soit accessible en SSH
+      wait_for_connection:
+        timeout: 5
+      register: ssh_check
+      until: ssh_check is succeeded
+      retries: 30
+      delay: 5
+      
+- name: Envoie des paquets vers les machines physiques
+  hosts:
+    - Dns
+    - Web
+    - Sauvegarde
+    - Bdd
+    - Supervision
+    - Firewall
+  become: false
+
+  roles:
+    - send_packages
+

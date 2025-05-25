@@ -1,0 +1,117 @@
+---
+- name: Generer la cle SSH si elle n existe pas
+  shell: |
+    if [ ! -f ~/.ssh/id_rsa ]; then
+      ssh-keygen -t rsa -b 2048 -f ~/.ssh/id_rsa -N ""
+    fi
+  args:
+    creates: ~/.ssh/id_rsa
+
+- name: Copier les configurations du DNS vers le PC physique
+  when: "'Dns' in group_names"
+  copy:
+    src: Dns
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+    
+- name: Copier la clé publique vers DNS
+  when: "'Dns' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Dns/dns/files/
+
+
+- name: Copier les configurations de la base de donnees vers le PC physique
+  when: "'Bdd' in group_names"
+  copy:
+    src: Bdd
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Bdd
+  when: "'Bdd' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Bdd/bdd/files/
+
+
+- name: Copier les configurations du Web vers le PC physique
+  when: "'Web' in group_names"
+  copy:
+    src: Web
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Web
+  when: "'Web' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Web/etudiant/files/
+
+
+- name: Copier les configurations de la Supervision vers le PC physique
+  when: "'Supervision' in group_names"
+  copy:
+    src: Supervision
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Supervision
+  when: "'Supervision' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Supervision/supervision/files/
+  
+
+- name: Copier les configurations de la Sauvegarde vers le PC physique
+  when: "'Sauvegarde' in group_names"
+  copy:
+    src: Sauvegarde
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Sauvegarde
+  when: "'Sauvegarde' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Sauvegarde/sauvegarde/files/
+  
+
+- name: Copier les configurations de DHCP si le host est dans le groupe Firewall
+  when: "'Firewall' in group_names"
+  copy:
+    src: DHCP
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers DHCP
+  when: "'Firewall' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/DHCP/dhcp/files/
+
+- name: Copier les configurations du relais si pas dans Firewall
+  when: inventory_hostname not in groups['Firewall']
+  copy:
+    src: Relais
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Relais
+  when: inventory_hostname not in groups['Firewall']
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Relais/relais/files/
+
+- name: Copier les configurations du relais si pas dans Firewall
+  when: "'Web' in group_names"
+  copy:
+    src: Squash
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+    
+- name: Copier la cle publique vers Bdd
+  when: "'Web' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Squash/squash/files/

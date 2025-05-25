@@ -1,0 +1,27 @@
+---
+- name: Lancer la VM avec Vagrant
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Lancer la machine Vagrant
+      command: vagrant up
+      args:
+        chdir: /home/etudis/Bureau/Sauvegarde/sauvegarde/
+
+- name: Attente des machines distantes
+  hosts:
+    - sauv
+    - proxy
+  gather_facts: false
+  tasks:
+    - name: Attendre que la machine soit accessible en SSH
+      wait_for_connection:
+        timeout: 5
+      register: ssh_check
+      until: ssh_check is succeeded
+      retries: 30
+      delay: 5
+- import_playbook: config_proxy.yml
+- import_playbook: config_sauv.yml
+
+- import_playbook: agent_zabbix.yml

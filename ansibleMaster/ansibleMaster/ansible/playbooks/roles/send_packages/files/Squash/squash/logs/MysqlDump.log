@@ -1,0 +1,7 @@
+Hit:2 https://security.debian.org/debian-security bullseye-security InRelease
+Hit:4 https://deb.debian.org/debian bullseye InRelease
+Hit:5 https://deb.debian.org/debian bullseye-updates InRelease
+Hit:1 https://downloads.mariadb.com/Tools/debian bullseye InRelease
+Hit:3 https://dlm.mariadb.com/repo/mariadb-server/10.6/repo/debian bullseye InRelease
+Hit:6 https://dlm.mariadb.com/repo/maxscale/latest/apt bullseye InRelease
+Reading package lists...

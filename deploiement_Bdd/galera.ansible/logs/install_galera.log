@@ -1,60 +1,0 @@
-Get:1 http://security.debian.org/debian-security bookworm-security InRelease [48.0 kB]
-Get:2 http://deb.debian.org/debian bookworm InRelease [151 kB]
-Get:3 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-Get:4 http://security.debian.org/debian-security bookworm-security/main Sources [148 kB]
-Get:5 http://security.debian.org/debian-security bookworm-security/main amd64 Packages [250 kB]
-Get:6 http://security.debian.org/debian-security bookworm-security/main Translation-en [150 kB]
-Get:7 http://deb.debian.org/debian bookworm/main Sources [9,495 kB]
-Get:8 http://deb.debian.org/debian bookworm-updates/main Sources.diff/Index [16.2 kB]
-Get:9 http://deb.debian.org/debian bookworm-updates/main amd64 Packages.diff/Index [16.2 kB]
-Get:10 http://deb.debian.org/debian bookworm-updates/main Translation-en.diff/Index [16.2 kB]
-Get:11 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
-Get:12 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
-Get:11 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
-Get:12 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
-Get:13 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
-Get:13 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
-Get:14 http://deb.debian.org/debian bookworm/non-free-firmware Sources [6,440 B]
-Get:15 http://deb.debian.org/debian bookworm/main amd64 Packages [8,792 kB]
-Get:16 http://deb.debian.org/debian bookworm/main Translation-en [6,109 kB]
-Get:17 http://deb.debian.org/debian bookworm/non-free-firmware amd64 Packages [6,240 B]
-Fetched 25.3 MB in 6s (4,559 kB/s)
-Reading package lists...
-Reading package lists...
-Building dependency tree...
-Reading state information...
-The following additional packages will be installed:
-  liblua5.3-0 libopentracing-c-wrapper0 libopentracing1
-Suggested packages:
-  vim-haproxy haproxy-doc
-The following NEW packages will be installed:
-  haproxy liblua5.3-0 libopentracing-c-wrapper0 libopentracing1
-0 upgraded, 4 newly installed, 0 to remove and 39 not upgraded.
-Need to get 2,248 kB of archives.
-After this operation, 5,135 kB of additional disk space will be used.
-Get:1 http://deb.debian.org/debian bookworm/main amd64 liblua5.3-0 amd64 5.3.6-2 [123 kB]
-Get:2 http://deb.debian.org/debian bookworm/main amd64 libopentracing1 amd64 1.6.0-4 [53.4 kB]
-Get:3 http://deb.debian.org/debian bookworm/main amd64 libopentracing-c-wrapper0 amd64 1.1.3-3+b1 [29.6 kB]
-Get:4 http://deb.debian.org/debian bookworm/main amd64 haproxy amd64 2.6.12-1+deb12u1 [2,042 kB]
-dpkg-preconfigure: unable to re-open stdin: No such file or directory
-Fetched 2,248 kB in 1s (4,222 kB/s)
-Selecting previously unselected package liblua5.3-0:amd64.
-(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 74440 files and directories currently installed.)
-Preparing to unpack .../liblua5.3-0_5.3.6-2_amd64.deb ...
-Unpacking liblua5.3-0:amd64 (5.3.6-2) ...
-Selecting previously unselected package libopentracing1:amd64.
-Preparing to unpack .../libopentracing1_1.6.0-4_amd64.deb ...
-Unpacking libopentracing1:amd64 (1.6.0-4) ...
-Selecting previously unselected package libopentracing-c-wrapper0:amd64.
-Preparing to unpack .../libopentracing-c-wrapper0_1.1.3-3+b1_amd64.deb ...
-Unpacking libopentracing-c-wrapper0:amd64 (1.1.3-3+b1) ...
-Selecting previously unselected package haproxy.
-Preparing to unpack .../haproxy_2.6.12-1+deb12u1_amd64.deb ...
-Unpacking haproxy (2.6.12-1+deb12u1) ...
-Setting up liblua5.3-0:amd64 (5.3.6-2) ...
-Setting up libopentracing1:amd64 (1.6.0-4) ...
-Setting up libopentracing-c-wrapper0:amd64 (1.1.3-3+b1) ...
-Setting up haproxy (2.6.12-1+deb12u1) ...
-Created symlink /etc/systemd/system/multi-user.target.wants/haproxy.service → /lib/systemd/system/haproxy.service.
-Processing triggers for libc-bin (2.36-9+deb12u9) ...
-Processing triggers for man-db (2.11.2-2) ...

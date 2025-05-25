@@ -1,0 +1,3 @@
+---
+- import_playbook: creer_VM.yml
+- import_playbook: agent_zabbix.yml

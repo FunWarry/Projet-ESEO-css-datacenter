@@ -1,0 +1,53 @@
+---
+- name: Déclencher la sauvegarde sur les clients
+  hosts: clients
+  become: yes
+  
+  
+  tasks:
+    - name: Exécuter le script de sauvegarde des fichiers sur les clients
+      shell: /home/vagrant/backup_scripts/backup_files.sh
+      register: backup_files_result
+      
+    - name: Afficher le résultat de la sauvegarde des fichiers
+      debug:
+        var: backup_files_result.stdout
+        
+    #- name: Exécuter le script de sauvegarde de la base de données sur les clients
+     # shell: /home/vagrant/backup_scripts/backup_bdd.sh
+      #register: backup_files_result
+      
+    #- name: Afficher le résultat de la sauvegarde des fichiers
+     # debug:
+      #  var: backup_files_result.stdout   
+             
+    - name: Créer la tâche cron pour la sauvegarde des fichiers tous les jours à 2h
+      cron:
+        name: "Sauvegarde automatique des fichiers"
+        user: vagrant
+        minute: "0"
+        hour: "2"
+        job: "/home/vagrant/backup_scripts/backup_files.sh >> /var/log/backup_files_cron.log 2>&1"
+
+   # - name: Créer la tâche cron pour la sauvegarde de la base de données toutes les 6h
+    #  cron:
+     #   name: "Sauvegarde automatique de la base de données"
+      #  user: vagrant
+       # minute: "0"
+        #hour: "*/6"
+        #job: "/home/vagrant/backup_scripts/backup_bdd.sh >> /var/log/backup_db_cron.log 2>&1"
+        
+        
+- name: (Optionnel) Vérifier le dépôt de sauvegarde sur srv-sau
+  hosts: backup_repo
+  become: yes
+  
+  
+  tasks:
+    - name: Lister les sauvegardes dans le dépôt Borg sur srv-sau
+      shell: borg list /home/proxy/borg_repo
+      register: borg_list
+      
+    - name: Afficher la liste des sauvegardes
+      debug:
+        var: borg_list.stdout

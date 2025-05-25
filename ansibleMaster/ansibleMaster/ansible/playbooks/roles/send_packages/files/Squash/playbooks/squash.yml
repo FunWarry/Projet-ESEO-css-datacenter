@@ -1,0 +1,6 @@
+- name: Installation Squash
+  hosts: squash
+  become: true
+  vars:
+  roles:
+    - squash

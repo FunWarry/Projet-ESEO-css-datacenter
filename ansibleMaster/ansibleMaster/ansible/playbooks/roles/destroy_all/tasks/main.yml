@@ -1,0 +1,103 @@
+---
+- name: Supression des machines Dns
+  when: "'Dns' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Dns/dns/
+    
+- name: Supprimer le dossier Dns
+  when: "'Dns' in group_names"
+  file:
+    path: /home/etudis/Bureau/Dns
+    state: absent
+    
+- name: Supression des machines DHCP
+  when: "'DHCP' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/DHCP/dhcp/
+
+- name: Supprimer le dossier DHCP
+  when: "'DHCP' in group_names"
+  file:
+    path: /home/etudis/Bureau/DHCP
+    state: absent
+
+- name: Supression des machines Bdd
+  when: "'Bdd' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Bdd/bdd/
+
+- name: Supprimer le dossier Bdd
+  when: "'Bdd' in group_names"
+  file:
+    path: /home/etudis/Bureau/Bdd
+    state: absent
+    
+- name: Supression des machines Web
+  when: "'Web' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Web/etudiant/
+
+- name: Supprimer le dossier Web
+  when: "'Web' in group_names"
+  file:
+    path: /home/etudis/Bureau/Web
+    state: absent
+
+- name: Supression des machines Supervision
+  when: "'Supervision' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Supervision/supervision/
+
+- name: Supprimer le dossier Supervision
+  when: "'Supervision' in group_names"
+  file:
+    path: /home/etudis/Bureau/Supervision
+    state: absent
+    
+- name: Supression des machines Sauvegarde
+  when: "'Sauvegarde' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Sauvegarde/sauvegarde/
+
+- name: Supprimer le dossier Sauvegarde
+  when: "'Sauvegarde' in group_names"
+  file:
+    path: /home/etudis/Bureau/Sauvegarde
+    state: absent
+
+- name: Supression des machines Squash
+  when: "'Web' in group_names"
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Squash/squash/
+
+- name: Supprimer le dossier Squash
+  when: "'Web' in group_names"
+  file:
+    path: /home/etudis/Bureau/Squash
+    state: absent
+    
+- name: Supression des machines Relais
+  ansible.builtin.shell: |
+    vagrant destroy -f
+  args:
+    chdir: /home/etudis/Bureau/Relais/relais/
+
+- name: Supprimer le dossier Relais
+  file:
+    path: /home/etudis/Bureau/Relais
+    state: absent
+

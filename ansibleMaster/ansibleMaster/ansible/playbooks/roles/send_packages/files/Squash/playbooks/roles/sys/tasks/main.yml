@@ -1,0 +1,60 @@
+---
+- name: Installation des outils
+  apt:
+    name:
+      - wget
+      - gnupg
+      - unzip
+      - curl
+      - openjdk-17-jdk
+      - openjdk-17-jre
+      - software-properties-common
+      - dirmngr
+    state: present
+    update_cache: yes
+
+- name: Installer MariaDB 10.6
+  shell: |
+    curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+    chmod +x mariadb_repo_setup
+    sudo bash mariadb_repo_setup --mariadb-server-version=10.6
+  args:
+    executable: /bin/bash
+    warn: false
+
+
+- name: Installation des outils
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+    state: present
+    update_cache: yes
+
+- name: Activer et redemarrer mariadb
+  systemd:
+    name: mariadb
+    state: restarted
+    enabled: yes
+
+
+- name: Copie de la base de donnee de base
+  copy:
+    src: mariadb-full-install-version-6.0.1.RELEASE.sql
+    dest: /tmp/mariadb-full-install-version-6.0.1.RELEASE.sql
+    mode: '0644'
+
+- name: Injection de la base de donnee
+  shell: |
+    mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS squashtm CHARACTER SET utf8mb4 COLLATE utf8mb4_bin"
+    mysql -uroot -proot -e "CREATE USER 'squash-tm'@'%' IDENTIFIED BY 'password'"
+    mysql -uroot -proot -e "GRANT ALL ON squashtm.* TO 'squash-tm'@'%'"
+    mysql -uroot -proot -e "FLUSH PRIVILEGES"
+    mysql -uroot -proot squashtm < /tmp/mariadb-full-install-version-6.0.1.RELEASE.sql
+  args:
+    executable: /bin/bash
+
+- name: Restart mariadb
+  service:
+    name: mariadb
+    state: restarted

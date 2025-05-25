@@ -1,0 +1,12 @@
+---
+- name: Exécuter le rôle destroy
+  hosts:
+    - Dns
+    - Web
+    - Sauvegarde
+    - Bdd
+    - Supervision
+  become: false
+  gather_facts: no
+  roles:
+    - destroy_all

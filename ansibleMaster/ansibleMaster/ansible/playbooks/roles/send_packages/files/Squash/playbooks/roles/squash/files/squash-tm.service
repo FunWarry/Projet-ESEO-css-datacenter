@@ -1,0 +1,21 @@
+[Unit]
+Description=Squash-tm daemon
+After=systemd-user-sessions.service time-sync.target
+
+[Service]
+WorkingDirectory=/opt/squash-tm/bin
+ExecStart=/opt/squash-tm/bin/startup.sh
+ExecStop=/bin/kill $MAINPID
+KillMode=process
+Type=simple
+User=squash-tm
+Group=squash-tm
+Restart=on-failure
+RestartSec=10
+StartLimitInterval=120
+StartLimitBurst=3
+StandardOutput=null
+StandardError=null
+
+[Install]
+WantedBy=multi-user.target

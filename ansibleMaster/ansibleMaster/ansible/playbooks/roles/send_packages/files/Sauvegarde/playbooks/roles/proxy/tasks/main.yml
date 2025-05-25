@@ -1,0 +1,54 @@
+---
+- name: Installer les paquets nécessaires
+  apt:
+    name:
+      - borgbackup
+      - openssh-server
+      - sshpass
+    state: present
+    update_cache: yes
+  environment:
+    DEBIAN_FRONTEND: noninteractive
+
+- name: Créer l’utilisateur repository avec home directory
+  shell: |
+    useradd -m -d /home/repository -s /bin/bash repository 2>/dev/null || true
+    echo "repository:changeme" | chpasswd
+    echo "repository ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/repository > /dev/null
+    chmod 440 /etc/sudoers.d/repository
+  args:
+    chdir: /
+
+- name: Créer un répertoire temporaire personnalisé pour Ansible
+  file:
+    path: /home/repository/.ansible/tmp
+    state: directory
+    owner: repository
+    group: repository
+    mode: '0700'
+
+- name: Initialiser le dépôt BorgBackup s’il n’existe pas
+  become: true
+  shell: |
+    sudo -u repository borg init --encryption=repokey /home/repository/borg_repo
+  args:
+    creates: /home/repository/borg_repo/config
+  environment:
+    BORG_PASSPHRASE: changeme
+    TMPDIR: /home/repository/.ansible/tmp
+    ANSIBLE_REMOTE_TEMP: /home/repository/.ansible/tmp
+
+- name: Vérifier que le dépôt est accessible (borg list)
+  become: true
+  shell: |
+    sudo -u repository borg list /home/repository/borg_repo || echo "Dépôt présent mais vide"
+  register: borg_list_output
+  environment:
+    BORG_PASSPHRASE: changeme
+    TMPDIR: /home/repository/.ansible/tmp
+    ANSIBLE_REMOTE_TEMP: /home/repository/.ansible/tmp
+
+- name: Afficher le contenu du dépôt BorgBackup
+  debug:
+    var: borg_list_output.stdout_lines
+

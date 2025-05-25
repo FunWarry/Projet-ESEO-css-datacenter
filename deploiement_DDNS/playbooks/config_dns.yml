@@ -1,6 +1,0 @@
----
-- name: Configuration DNS avec BIND9
-  hosts: dns
-  become: true
-  roles:
-    - config_dns

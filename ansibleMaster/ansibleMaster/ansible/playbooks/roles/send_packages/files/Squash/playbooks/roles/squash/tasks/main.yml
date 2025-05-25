@@ -1,0 +1,43 @@
+---
+- name: Installation Squash
+  copy:
+    src: squash-tm-6.0.1.RELEASE.tar.gz
+    dest: /tmp/squash-tm-6.0.1.RELEASE.tar.gz
+    mode: '0755'
+
+- name: Configuration de squash
+  shell: |
+    sudo tar -zxvf /tmp/squash-tm-6.0.1.RELEASE.tar.gz -C /opt/
+    sudo adduser --system --group --home /opt/squash-tm squash-tm
+    sudo chown -R squash-tm:squash-tm /opt/squash-tm
+    sudo chmod +x /opt/squash-tm/bin/startup.sh
+    sudo sed -i 's/DB_TYPE=h2/DB_TYPE="mariadb"/g' /opt/squash-tm/bin/startup.sh
+    sudo sed -i 's/DB_URL="jdbc:h2:..\/data\/squash-tm;NON_KEYWORDS=ROW,VALUE"/DB_URL="jdbc:mariadb:\/\/localhost:3306\/squashtm"/g' /opt/squash-tm/bin/startup.sh
+    sudo sed -i 's/DB_USERNAME=sa/DB_USERNAME="squash-tm"/g' /opt/squash-tm/bin/startup.sh
+    sudo sed -i 's/DB_PASSWORD=sa/DB_PASSWORD="password"/g' /opt/squash-tm/bin/startup.sh
+  args:
+    executable: /bin/bash
+
+- name: Creation du service dans opt
+  copy:
+    src: squash-tm.service
+    dest: /opt/squash-tm/squash-tm.service
+    mode: '0755'
+
+- name: Creation du service dans systemd
+  copy:
+    src: squash-tm.service
+    dest: /etc/systemd/system/squash-tm.service
+    mode: '0644'
+
+- name: Reload le deamon
+  shell: |
+    sudo systemctl daemon-reload
+  args:
+    executable: /bin/bash
+    
+- name: Restart squash
+  systemd:
+    name: squash-tm
+    state: restarted
+    enabled: yes
