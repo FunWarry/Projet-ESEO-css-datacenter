@@ -158,6 +158,34 @@ Au démarrage, la VM est configurée automatiquement avec :
   - `scripts/config_sys.sh` : configuration système en crééant l'utilisateurs ansible et un alias master pour contrôler l'infra 
   - `scripts/send_keys.sh` : déploiement de clés vers les hotes (Firewall, DNS, Web, Bdd, Supervision, Sauvegarde).
 
+### fichiers de déploiement des différents services
+
+- Le dossier `ansibleMaster/ansible/roles/` contient des rôles réutilisables pour organiser le code Ansible.
+
+- En particulier, le rôle `send_packages` utilise des fichiers situés sous :  
+  `ansibleMaster/ansible/rolesplaybooks/roles/send_packages/files/`  
+
+  Ce répertoire contient des sous-dossiers correspondant aux différents services :  
+```
+
+Bdd/
+Creer\_Vm/
+DHCP/
+Dns/
+Guacamole/
+Relais/
+Sauvegarde/
+Squash/
+Supervision/
+Web/
+
+````
+
+Ces fichiers sont copiés sur les machines cibles lors du déploiement via le playbook `send_packages.yml`.
+
+---
+
+
 ### Lancement du projet
 
 1. **Prérequis** :
