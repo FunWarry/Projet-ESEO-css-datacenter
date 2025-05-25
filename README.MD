@@ -167,7 +167,6 @@ Au démarrage, la VM est configurée automatiquement avec :
 
   Ce répertoire contient des sous-dossiers correspondant aux différents services :  
 ```
-
 Bdd/
 Creer\_Vm/
 DHCP/
@@ -178,7 +177,6 @@ Sauvegarde/
 Squash/
 Supervision/
 Web/
-
 ````
 
 Ces fichiers sont copiés sur les machines cibles lors du déploiement via le playbook `send_packages.yml`.
