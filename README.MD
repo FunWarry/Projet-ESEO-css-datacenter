@@ -181,9 +181,6 @@ Web/
 
 Ces fichiers sont copiés sur les machines cibles lors du déploiement via le playbook `send_packages.yml`.
 
----
-
-
 ### Lancement du projet
 
 1. **Prérequis** :
@@ -212,36 +209,16 @@ Se connecter avec l'utilisateur ansible qui a pour mot de passe N3twork! et exé
 master
 ```
 
+
+
+
+
+
+
+
+
+
 # Ancienne version
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ### 1. Déploiement d'un Cluster Galera avec HAProxy via Vagrant  
 
 Permet de déployer **automatiquement un cluster Galera** pour le gestionnaire de base de données **MariaDB**, accompagné d'un **load balancer HAProxy**. L'installation et la configuration sont réalisées à l’aide de **Vagrant** et de plusieurs scripts bash.  
