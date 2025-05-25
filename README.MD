@@ -158,7 +158,7 @@ Au démarrage, la VM est configurée automatiquement avec :
   - `scripts/config_sys.sh` : configuration système en crééant l'utilisateurs ansible et un alias master pour contrôler l'infra 
   - `scripts/send_keys.sh` : déploiement de clés vers les hotes (Firewall, DNS, Web, Bdd, Supervision, Sauvegarde).
 
-## 🚀 Lancement du projet
+### Lancement du projet
 
 1. **Prérequis** :
    - [Vagrant](https://www.vagrantup.com/downloads)
@@ -168,23 +168,23 @@ Au démarrage, la VM est configurée automatiquement avec :
 
    Depuis le dossier `ansibleMaster` :
 
-   ```bash
-   vagrant up
+```bash
+vagrant up
 ````
 
 Cela télécharge l’image, crée la VM, configure le réseau et exécute les scripts.
 
 3. **Connexion à la VM** :
 
-   ```bash
-   vagrant ssh ansibleMaster
-   ```
+```bash
+vagrant ssh ansibleMaster
+```
 4. **Contrôle des serveurs physique** :
 Se connecter avec l'utilisateur ansible qui a pour mot de passe N3twork! et exécuter
 
-   ```bash
-   master
-   ```
+```bash
+master
+```
 
 # Ancienne version
 
