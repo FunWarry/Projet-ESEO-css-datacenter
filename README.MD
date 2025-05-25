@@ -123,7 +123,98 @@ Se trouve dans le dossier "scripte réseau" pour le rendu Incrément 1.
 
 ---
 
-## III. Guide d'installation des VMs
+## III. Guide d'installation des VMs : Ansible Master - Projet ESEO
+Ce dossier met en place une machine virtuelle nommée `ansibleMaster` à l'aide de **Vagrant** et **VirtualBox**, destinée à l'automatisation du déploiement de services via **Ansible**.
+
+### Structure du Dossier
+
+```
+ansibleMaster/
+├── ansible/         # Contient les playbooks, inventaires et rôles Ansible
+├── logs/            # Dossier pour stocker les journaux d’exécution
+├── scripts/         # Scripts shell utilisés pour la configuration système
+├── Vagrantfile      # Fichier de configuration Vagrant
+
+````
+
+### Description du `Vagrantfile`
+
+- **Box utilisée** : `chavinje/fr-book-64`
+- **Nom de la VM** : `ansibleMaster`
+- **Adresse IP publique** : `192.168.238.13`
+- **Ressources** :
+  - CPU : 2 cœurs
+  - RAM : 2048 Mo
+
+### Provisioning
+
+Au démarrage, la VM est configurée automatiquement avec :
+
+- Activation de l’authentification SSH par mot de passe
+- Configuration réseau statique (`192.168.238.13/29`)
+- Redéfinition de la passerelle par défaut (`192.168.238.9`)
+- Configuration du DNS (`192.168.4.2`)
+- Exécution de deux scripts :
+  - `scripts/config_sys.sh` : configuration système en crééant l'utilisateurs ansible et un alias master pour contrôler l'infra 
+  - `scripts/send_keys.sh` : déploiement de clés vers les hotes (Firewall, DNS, Web, Bdd, Supervision, Sauvegarde).
+
+## 🚀 Lancement du projet
+
+1. **Prérequis** :
+   - [Vagrant](https://www.vagrantup.com/downloads)
+   - [VirtualBox](https://www.virtualbox.org/wiki/Downloads)
+
+2. **Démarrage** :
+
+   Depuis le dossier `ansibleMaster` :
+
+   ```bash
+   vagrant up
+````
+
+Cela télécharge l’image, crée la VM, configure le réseau et exécute les scripts.
+
+3. **Connexion à la VM** :
+
+   ```bash
+   vagrant ssh ansibleMaster
+   ```
+4. **Contrôle des serveurs physique** :
+Se connecter avec l'utilisateur ansible qui a pour mot de passe N3twork! et exécuter
+
+   ```bash
+   master
+   ```
+
+# Ancienne version
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### 1. Déploiement d'un Cluster Galera avec HAProxy via Vagrant  
 
