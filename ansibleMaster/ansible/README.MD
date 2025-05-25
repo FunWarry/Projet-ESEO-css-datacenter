@@ -2,12 +2,11 @@
 
 Ce dossier contient tous les fichiers Ansible nécessaires au déploiement et à la gestion des services dans le cadre du projet ESEO.
 
----
+
 
 ## Structure du dossier `ansible`
 
 ```
-
 ansible/
 ├── playbooks/          # Playbooks Ansible pour le déploiement des services
 │   ├── Bdd.yml
@@ -23,10 +22,9 @@ ansible/
 │   └── Web.yml
 ├── variables/
 │   └── inventory.ini    # Inventaire des hôtes pour cibler les machines
-
 ```
 
----
+
 
 ## Description des composants
 
@@ -57,7 +55,6 @@ ansible/
 
   Ce répertoire contient des sous-dossiers correspondant aux différents services :  
 ```
-
 Bdd/
 Creer\_Vm/
 DHCP/
@@ -67,12 +64,11 @@ Sauvegarde/
 Squash/
 Supervision/
 Web/
-
-````
+```
 
 Ces fichiers sont copiés sur les machines cibles lors du déploiement via le playbook `send_packages.yml`.
 
----
+
 
 ## Remarques importantes
 
@@ -80,7 +76,7 @@ Ces fichiers sont copiés sur les machines cibles lors du déploiement via le pl
 
 - Assurez-vous que l’utilisateur `etudis` dispose des droits nécessaires pour exécuter les commandes Ansible et accéder aux fichiers.
 
----
+
 
 ## Exemple d'utilisation
 
