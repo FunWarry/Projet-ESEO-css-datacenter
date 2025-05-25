@@ -1,0 +1,152 @@
+---
+- name: Nettoyage du cache APT
+  shell: apt clean
+  args:
+    executable: /bin/bash
+
+- name: Mise a jour et installation des dependances
+  apt:
+    update_cache: yes
+    name:
+      - build-essential
+      - libcairo2-dev
+      - libjpeg62-turbo-dev
+      - libpng-dev
+      - libtool-bin
+      - uuid-dev
+      - libossp-uuid-dev
+      - libavcodec-dev
+      - libavformat-dev
+      - libavutil-dev
+      - libswscale-dev
+      - freerdp2-dev
+      - libpango1.0-dev
+      - libssh2-1-dev
+      - libtelnet-dev
+      - libvncserver-dev
+      - libwebsockets-dev
+      - libpulse-dev
+      - libssl-dev
+      - libvorbis-dev
+      - libwebp-dev
+      - wget
+      - mariadb-server
+    state: present
+
+- name: Telecharger, extraire et compiler Guacamole Server en shell
+  shell: |
+    cd /tmp
+    wget -q https://downloads.apache.org/guacamole/1.5.5/source/guacamole-server-1.5.5.tar.gz
+    tar -xzf guacamole-server-1.5.5.tar.gz
+    cd guacamole-server-1.5.5
+    ./configure --with-systemd-dir=/etc/systemd/system/ --disable-guacenc
+    make
+    make install
+    ldconfig
+  args:
+    executable: /bin/bash
+
+- name: Activer et demarrer guacd
+  systemd:
+    name: guacd
+    enabled: yes
+    state: started
+
+- name: Creer les repertoires de configuration de Guacamole
+  file:
+    path: "/etc/guacamole/{{ item }}"
+    state: directory
+    recurse: yes
+  loop:
+    - extensions
+    - lib
+
+- name: Ajouter la source Debian Bullseye
+  shell: |
+    echo "deb http://deb.debian.org/debian/ bullseye main" > /etc/apt/sources.list.d/bullseye.list
+    sudo apt update
+  args:
+    executable: /bin/bash
+
+- name: Installer Tomcat9
+  apt:
+    name:
+      - tomcat9
+      - tomcat9-admin
+      - tomcat9-common
+      - tomcat9-user
+    state: present
+
+- name: Telecharger le client web Guacamole
+  shell: |
+    wget -q https://downloads.apache.org/guacamole/1.5.5/binary/guacamole-1.5.5.war -O /var/lib/tomcat9/webapps/guacamole.war
+    chmod 644 /var/lib/tomcat9/webapps/guacamole.war
+    sudo chown tomcat:tomcat /var/lib/tomcat9/webapps/guacamole.war
+
+  args:
+    executable: /bin/bash
+
+- name: Redemarrer les services Tomcat et guacd
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - tomcat9
+    - guacd
+
+- name: Creer la base de donnees Guacamole et l'utilisateur MariaDB
+  shell: |
+    mysql -u root  -e "
+    CREATE DATABASE guacadb;
+    CREATE USER 'guaca_nachos'@'localhost' IDENTIFIED BY 'P@ssword!';
+    GRANT SELECT,INSERT,UPDATE,DELETE ON guacadb.* TO 'guaca_nachos'@'localhost';
+    FLUSH PRIVILEGES;"
+  args:
+    executable: /bin/bash
+
+- name: Telecharger et installer l'extension JDBC et le connecteur MySQL
+  shell: |
+    cd /tmp
+    wget -q https://downloads.apache.org/guacamole/1.5.5/binary/guacamole-auth-jdbc-1.5.5.tar.gz
+    tar -xzf guacamole-auth-jdbc-1.5.5.tar.gz
+    sudo cp /tmp/guacamole-auth-jdbc-1.5.5/mysql/guacamole-auth-jdbc-mysql-1.5.5.jar /etc/guacamole/extensions/
+
+    wget -q https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-9.1.0.tar.gz
+    tar -xzf mysql-connector-j-9.1.0.tar.gz
+    sudo cp /tmp/mysql-connector-j-9.1.0/mysql-connector-j-9.1.0.jar /etc/guacamole/lib/
+  args:
+    executable: /bin/bash
+
+- name: Importer la structure SQL JDBC dans MariaDB
+  shell: cat /tmp/guacamole-auth-jdbc-1.5.5/mysql/schema/*.sql | mysql -u root guacadb
+  args:
+    executable: /bin/bash
+
+
+- name: Deployer le fichier guacamole.properties
+  copy:
+    src: guacamole.properties
+    dest: /etc/guacamole/guacamole.properties
+
+- name: Deployer le fichier guacd.conf
+  copy:
+    src: guacd.conf
+    dest: /etc/guacamole/guacd.conf
+
+- name: Redemarrer tous les services
+  systemd:
+    name: "{{ item }}"
+    state: restarted
+  loop:
+    - tomcat9
+    - guacd
+    - mariadb
+
+- name: Ajouter des groupes de connexions initiaux dans MariaDB
+  shell: |
+    mysql -u root guacadb -e "
+    INSERT INTO guacamole_connection_group (connection_group_name, type, parent_id, enable_session_affinity, max_connections, max_connections_per_user)
+    VALUES
+    ('Admin', 'ORGANIZATIONAL', NULL, 0, 0, 0),
+    ('Etudiants', 'ORGANIZATIONAL', NULL, 0, 0, 0);"
+

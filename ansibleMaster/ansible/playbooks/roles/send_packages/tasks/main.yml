@@ -103,7 +103,7 @@
   when: inventory_hostname not in groups['Firewall']
   shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Relais/relais/files/
 
-- name: Copier les configurations du relais si pas dans Firewall
+- name: Copier les configurations de Squash si pas dans Firewall
   when: "'Web' in group_names"
   copy:
     src: Squash
@@ -112,6 +112,19 @@
     group: etudis
     mode: '0755'
     
-- name: Copier la cle publique vers Bdd
+- name: Copier la cle publique vers Web
   when: "'Web' in group_names"
   shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Squash/squash/files/
+  
+- name: Copier les configurations de Guacamole vers le PC physique
+  when: "'Web' in group_names"
+  copy:
+    src: Guacamole
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers Web
+  when: "'Web' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Guacamole/guacamole/files/

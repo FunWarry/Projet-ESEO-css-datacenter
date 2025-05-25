@@ -1,0 +1,7 @@
+- name: Installation de Guacamole
+  hosts: guacamole
+  become: true
+  vars:
+  roles:
+    - guacamole
+
