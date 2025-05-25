@@ -1,13 +1,13 @@
 ---
 - name: Installation Squash
   copy:
-    src: squash-tm-6.0.1.RELEASE.tar.gz
-    dest: /tmp/squash-tm-6.0.1.RELEASE.tar.gz
+    src: squash-tm-9.0.2.RELEASE.tar.gz
+    dest: /tmp/squash-tm-9.0.2.RELEASE.tar.gz
     mode: '0755'
 
 - name: Configuration de squash
   shell: |
-    sudo tar -zxvf /tmp/squash-tm-6.0.1.RELEASE.tar.gz -C /opt/
+    sudo tar -zxvf /tmp/squash-tm-9.0.2.RELEASE.tar.gz -C /opt/
     sudo adduser --system --group --home /opt/squash-tm squash-tm
     sudo chown -R squash-tm:squash-tm /opt/squash-tm
     sudo chmod +x /opt/squash-tm/bin/startup.sh
