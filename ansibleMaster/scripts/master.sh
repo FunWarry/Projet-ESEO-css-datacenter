@@ -15,8 +15,9 @@ while true; do
     echo "7) Squash"
     echo "8) Supervision"
     echo "9) Sauvegarde"
-    echo "10) Je détruis tout :)"
-    echo "11) Quitter"
+    echo "10) Guacamole"
+    echo "11) Je détruis tout :)"
+    echo "12) Quitter"
     echo "-----------------------------------------------"
     read -p "Choisis un ou plusieurs services (ex: 1 4 6): " choix
 
@@ -25,6 +26,7 @@ while true; do
             0)
                 echo "Envoi des packages : Teaching Cloud ..."
                 sleep 1
+                sudo bash /vagrant/scripts/bridge.sh
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/send_packages.yml
                 ;;
             1)
@@ -75,11 +77,16 @@ while true; do
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Sauvegarde.yml
                 ;;
             10)
+                echo "Déploiement de Guacamole..."
+                sleep 1
+                sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Guacamole.yml
+                ;;
+            11)
                 echo "Destruction massive ..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/destroy_all.yml
                 ;;
-            11)
+            12)
                 echo "Quitter... À bientôt !"
                 exit 0
                 ;;
