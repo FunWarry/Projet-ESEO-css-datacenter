@@ -38,6 +38,38 @@
 
         .section-header h2 {
             margin-bottom: 0;
+            margin-right: auto;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+        
+        .button:hover {
+            background-color: #45a049;
+        }
+        
+        .button:active {
+            background-color: #3e8e41;
+        }
+        
+        .button-icon {
+            font-size: 1rem;
         }
 
         .copy-button {
@@ -121,7 +153,14 @@
     <section>
         <div class="section-header">
             <h2>Clés SSH des Étudiants</h2>
-            <button id="refresh-keys" class="button">Rafraîchir</button>
+            <div class="button-group">
+                <button id="export-keys" class="button" title="Exporter en CSV">
+                    <span class="button-icon">📥</span> Exporter
+                </button>
+                <button id="refresh-keys" class="button" title="Rafraîchir la liste">
+                    <span class="button-icon">🔄</span> Rafraîchir
+                </button>
+            </div>
         </div>
 
         <div id="loading-message" class="status-message">Chargement des clés SSH en cours...</div>
