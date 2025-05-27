@@ -119,6 +119,56 @@ button.warning:hover {
     background-color: #c0392b;
 }
 
+/* Message styles */
+.message {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 24px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    opacity: 0.95;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    max-width: 80%;
+    text-align: center;
+}
+
+.message.fade-out {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+}
+
+.message.error-message {
+    background-color: #e74c3c; /* Rouge pour les erreurs */
+}
+
+.message.success-message {
+    background-color: #2ecc71; /* Vert pour les succès */
+}
+
+.message.warning-message {
+    background-color: #f39c12; /* Orange pour les avertissements */
+    color: #fff;
+}
+
+.message.info-message {
+    background-color: #3498db; /* Bleu pour les infos */
+}
+
+/* Ancien style de message d'erreur (pour compatibilité) */
+.error-message {
+    background-color: #e74c3c;
+    color: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    text-align: center;
+}
+
 /* Status message */
 .status-message {
     margin-top: 10px;

@@ -612,7 +612,50 @@ async function loadVMs() {
     }
 }
 
-// Deploy a VM
+// Track deployment status for multiple VMs
+const deploymentStatus = {
+    total: 0,
+    completed: 0,
+    failed: 0,
+    inProgress: 0,
+    vms: {}
+};
+
+// Update the deployment status display
+function updateDeploymentStatus() {
+    if (deploymentStatus.total === 0) return;
+    
+    const completed = deploymentStatus.completed + deploymentStatus.failed;
+    const progress = Math.round((completed / deploymentStatus.total) * 100);
+    
+    updateStatusDisplay({
+        status: 'Deploying',
+        progress: progress,
+        message: `Deploying VMs: ${completed} of ${deploymentStatus.total} (${deploymentStatus.failed} failed)`
+    });
+    
+    // If all VMs are done, stop polling after a delay
+    if (completed === deploymentStatus.total) {
+        setTimeout(() => {
+            if (deploymentStatus.failed > 0) {
+                updateStatusDisplay({
+                    status: 'Completed with errors',
+                    progress: 100,
+                    message: `Deployment completed with ${deploymentStatus.failed} failure(s)`
+                });
+            } else {
+                updateStatusDisplay({
+                    status: 'Completed',
+                    progress: 100,
+                    message: 'All VMs deployed successfully!'
+                });
+            }
+            setTimeout(hideStatusOverlay, 3000);
+        }, 1000);
+    }
+}
+
+// Deploy multiple VMs in parallel
 async function deployVM(event) {
     event.preventDefault();
 
@@ -625,7 +668,7 @@ async function deployVM(event) {
 
     // Get form values
     const vagrantFile = vagrantFileSelect.value;
-    const vmCount = document.getElementById('vm-count').value;
+    const vmCount = parseInt(document.getElementById('vm-count').value, 10);
     const vmRam = document.getElementById('vm-ram').value;
     const vmCores = document.getElementById('vm-cores').value;
 
@@ -635,8 +678,20 @@ async function deployVM(event) {
         return;
     }
 
+    if (vmCount < 1) {
+        alert('Number of VMs must be at least 1');
+        return;
+    }
+
+    // Initialize deployment status
+    deploymentStatus.total = vmCount;
+    deploymentStatus.completed = 0;
+    deploymentStatus.failed = 0;
+    deploymentStatus.inProgress = 0;
+    deploymentStatus.vms = {};
+
     // Show status overlay with initial message
-    showStatusOverlay('Preparing Deployment', 'Checking system status...');
+    showStatusOverlay('Preparing Deployment', `Preparing to deploy ${vmCount} VMs...`);
 
     try {
         // Check system status again to ensure hosts are still accessible
@@ -648,74 +703,134 @@ async function deployVM(event) {
             throw new Error('Target hosts are not accessible. Cannot deploy VMs.');
         }
 
-        // Update status message
-        updateStatusDisplay({
-            status: 'Preparing',
-            progress: 10,
-            message: 'Sending deployment request...'
-        });
+        // Create an array of deployment promises
+        const deploymentPromises = [];
+        
+        for (let i = 0; i < vmCount; i++) {
+            const vmNumber = i + 1;
+            deploymentStatus.vms[`vm${vmNumber}`] = 'pending';
+            
+            const deploymentPromise = (async () => {
+                try {
+                    deploymentStatus.inProgress++;
+                    deploymentStatus.vms[`vm${vmNumber}`] = 'deploying';
+                    updateDeploymentStatus();
 
-        // Send request to deploy VM
-        const response = await fetch('/api/vms', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                vagrantFile,
-                vmCount,
-                vmRam,
-                vmCores
-            })
-        });
+                    // Send request to deploy VM
+                    const response = await fetch('/api/vms', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            vagrantFile,
+                            vmCount: 1,  // Deploy one VM at a time
+                            vmRam,
+                            vmCores
+                        })
+                    });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to deploy VM');
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || 'Failed to deploy VM');
+                    }
+
+                    const deployedVMs = await response.json();
+                    deploymentStatus.completed++;
+                    deploymentStatus.vms[`vm${vmNumber}`] = 'completed';
+                    
+                    // Start polling for status updates
+                    if (deployedVMs && deployedVMs.length > 0) {
+                        startStatusPolling(deployedVMs[0].id);
+                    }
+                    
+                    return deployedVMs[0];
+                } catch (error) {
+                    console.error(`Error deploying VM ${vmNumber}:`, error);
+                    deploymentStatus.failed++;
+                    deploymentStatus.vms[`vm${vmNumber}`] = 'failed';
+                    throw error; // Re-throw to be caught by Promise.allSettled
+                } finally {
+                    deploymentStatus.inProgress--;
+                    updateDeploymentStatus();
+                }
+            })();
+            
+            deploymentPromises.push(deploymentPromise);
+            
+            // Add a small delay between deployments to avoid overwhelming the system
+            await new Promise(resolve => setTimeout(resolve, 500));
         }
 
-        // Get the deployed VMs
-        const deployedVMs = await response.json();
-
-        // Start polling for status updates for the first VM
-        if (deployedVMs && deployedVMs.length > 0) {
-            startStatusPolling(deployedVMs[0].id);
-        } else {
-            // If no VMs were deployed, hide the status overlay
-            hideStatusOverlay();
-        }
-
-        // Reload VMs
+        // Wait for all deployments to complete or fail
+        const results = await Promise.allSettled(deploymentPromises);
+        
+        // Reload VMs to show the new ones
         await loadVMs();
+        
     } catch (error) {
-        console.error('Error deploying VM:', error);
-
+        console.error('Error in deployment process:', error);
+        
         // Update status to show error
         updateStatusDisplay({
-            status: 'Failed',
+            status: 'Error',
             progress: 0,
-            message: 'Failed to deploy VM: ' + error.message
+            message: 'Error during deployment: ' + error.message
         });
-
+        
         // Hide status overlay after a delay
         setTimeout(hideStatusOverlay, 5000);
     }
 }
 
-// Show error message
-function showError(message) {
-    console.error('Error:', message);
-    const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
-    errorDiv.textContent = message;
+// Show a message with a specific type (success, error, warning, info)
+function showMessage(message, type = 'info') {
+    // Log to console based on message type
+    switch (type) {
+        case 'error':
+            console.error('Error:', message);
+            break;
+        case 'warning':
+            console.warn('Warning:', message);
+            break;
+        case 'success':
+            console.log('Success:', message);
+            break;
+        default:
+            console.log('Info:', message);
+    }
+    
+    // Create message element
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${type}-message`;
+    messageDiv.textContent = message;
     
     // Add to the top of the body
-    document.body.prepend(errorDiv);
+    document.body.prepend(messageDiv);
     
     // Remove after 5 seconds
     setTimeout(() => {
-        errorDiv.remove();
+        messageDiv.classList.add('fade-out');
+        // Remove from DOM after animation completes
+        setTimeout(() => {
+            messageDiv.remove();
+        }, 300);
     }, 5000);
+}
+
+// Helper functions for common message types
+function showError(message) {
+    showMessage(message, 'error');
+}
+
+function showSuccess(message) {
+    showMessage(message, 'success');
+}
+
+function showWarning(message) {
+    showMessage(message, 'warning');
+}
+
+function showInfo(message) {
+    showMessage(message, 'info');
 }
 
 // Destroy a VM
