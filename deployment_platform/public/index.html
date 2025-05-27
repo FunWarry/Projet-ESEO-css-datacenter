@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VM Deployment</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+    <header>
+        <h1>VM Deployment System</h1>
+        <nav>
+            <ul>
+                <li><a href="./index.html" class="active">Deploy VMs</a></li>
+                <li><a href="./status.html">System Status</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="system-status-banner">
+            <div id="status-indicator" class="status-indicator"></div>
+            <p id="status-message">Checking system status...</p>
+        </section>
+
+        <section id="deployment-form">
+            <h2>Deploy New VMs</h2>
+            <form id="vm-form">
+                <div class="form-group">
+                    <label for="vagrant-file">VM Type:</label>
+                    <select id="vagrant-file" name="vagrant-file" required>
+                        <option value="" disabled selected>Select VM Type</option>
+                        <!-- Options will be populated by JavaScript -->
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="vm-count">Number of VMs:</label>
+                    <input type="number" id="vm-count" name="vm-count" min="1" max="35" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vm-ram">RAM (MB):</label>
+                    <input type="number" id="vm-ram" name="vm-ram" min="512" max="4096" step="512" value="1024" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="vm-cores">CPU Cores:</label>
+                    <input type="number" id="vm-cores" name="vm-cores" min="1" max="4" value="1" step="1" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" id="deploy-button">Deploy VMs</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="deployed-vms">
+            <div class="section-header">
+                <h2>Deployed VMs</h2>
+                <button id="export-ssh-keys" class="export-button">Exporter les clés SSH étudiants</button>
+            </div>
+            <div id="vm-list">
+                <!-- VMs will be populated by JavaScript -->
+                <p id="no-vms-message">No VMs deployed yet.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 VM Deployment System</p>
+    </footer>
+
+    <div id="status-overlay" class="hidden" style="display: none;">
+        <div class="status-container">
+            <h3 id="status-title">Operation in Progress</h3>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="status-message-detail">Initializing...</p>
+            <p id="status-percentage">0%</p>
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>

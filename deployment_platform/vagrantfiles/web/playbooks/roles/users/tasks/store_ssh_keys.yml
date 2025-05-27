@@ -1,0 +1,58 @@
+---
+# Register SSH keys
+- name: Get admin private key
+  command: cat /home/admin/.ssh/id_rsa
+  register: admin_privkey
+  changed_when: false
+  no_log: true
+
+- name: Get etudiant private key
+  command: cat /home/etudiant/.ssh/id_rsa
+  register: etudiant_privkey
+  changed_when: false
+  no_log: true
+
+# Ajouter un saut de ligne à la clé privée admin
+- name: Add newline to admin private key
+  set_fact:
+    admin_privkey_formatted: "{{ admin_privkey.stdout }}\n"
+
+# Store private keys in database
+- name: Store admin private key in database
+  uri:
+    url: "http://192.168.232.8:3000/api/ssh-keys"
+    method: POST
+    body_format: json
+    body:
+      vmId: "{{ inventory_hostname }}"
+      username: "admin"
+      privateKey: "{{ admin_privkey_formatted }}"
+    status_code: 201
+  delegate_to: localhost
+  become: false
+  register: ssh_key_result
+  retries: 3
+  delay: 5
+  until: ssh_key_result is succeeded
+
+# Ajouter un saut de ligne à la clé privée etudiant
+- name: Add newline to etudiant private key
+  set_fact:
+    etudiant_privkey_formatted: "{{ etudiant_privkey.stdout }}\n"
+
+- name: Store etudiant private key in database
+  uri:
+    url: "http://192.168.232.8:3000/api/ssh-keys"
+    method: POST
+    body_format: json
+    body:
+      vmId: "{{ inventory_hostname }}"
+      username: "etudiant"
+      privateKey: "{{ etudiant_privkey_formatted }}"
+    status_code: 201
+  delegate_to: localhost
+  become: false
+  register: ssh_key_result
+  retries: 3
+  delay: 5
+  until: ssh_key_result is succeeded

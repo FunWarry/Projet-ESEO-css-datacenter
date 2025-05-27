@@ -1,0 +1,9 @@
+- name: Installation Apache
+  hosts: web
+  become: true
+  vars:
+    madmin_version: "5.2.1"
+    www_dir: "/var/www/html"
+    site_conf: "/etc/apache2/sites-available/000-default.conf"
+  roles:
+    - web

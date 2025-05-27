@@ -1,0 +1,23 @@
+{
+  "name": "css-deployment",
+  "version": "1.0.0",
+  "description": "Application web pour le déploiement de machines virtuelles",
+  "main": "src/server/index.js",
+  "scripts": {
+    "start": "node src/server/index.js",
+    "dev": "nodemon src/server/index.js",
+    "test": "node src/utils/test.js"
+  },
+  "dependencies": {
+    "date-fns": "^4.1.0",
+    "mysql2": "3.14.1",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "private": true
+}
