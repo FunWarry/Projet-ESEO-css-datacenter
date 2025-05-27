@@ -31,19 +31,13 @@
     state: present
     update_cache: yes
 
-- name: Copie de la base de donnee de base
-  copy:
-    src: mariadb-full-install-version-9.0.2.RELEASE.sql
-    dest: /tmp/mariadb-full-install-version-9.0.2.RELEASE.sql
-    mode: '0644'
-
 - name: Injection de la base de donnee sur le serveur distant
   shell: |
     mysql -uroot -proot -e "CREATE DATABASE squashtm CHARACTER SET utf8mb4 COLLATE utf8mb4_bin"
     mysql -uroot -proot -e "CREATE USER 'squash-tm'@'%' IDENTIFIED BY 'password'"
     mysql -uroot -proot -e "GRANT ALL ON squashtm.* TO 'squash-tm'@'%'"
     mysql -uroot -proot -e "FLUSH PRIVILEGES"
-    mysql -uroot -proot squashtm < /tmp/mariadb-full-install-version-9.0.2.RELEASE.sql
+    mysql -uroot -proot squashtm < /opt/squash-tm/database-scripts/mariadb-full-install-version-9.0.2.RELEASE.sql
   args:
     executable: /bin/bash
 
