@@ -1,7 +1,0 @@
-- name: Installation Systeme
-  hosts: web
-  become: true
-  vars:
-  roles:
-    - sys
-

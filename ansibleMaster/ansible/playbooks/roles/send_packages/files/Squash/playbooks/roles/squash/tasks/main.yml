@@ -1,12 +1,7 @@
 ---
-- name: Installation Squash
-  copy:
-    src: squash-tm-9.0.2.RELEASE.tar.gz
-    dest: /tmp/squash-tm-9.0.2.RELEASE.tar.gz
-    mode: '0755'
-
 - name: Configuration de squash
   shell: |
+    sudo wget https://nexus.squashtest.org/nexus/repository/public-releases/tm/core/squash-tm-distribution/9.0.2.RELEASE/squash-tm-9.0.2.RELEASE.tar.gz -O /tmp/squash-tm-9.0.2.RELEASE.tar.gz
     sudo tar -zxvf /tmp/squash-tm-9.0.2.RELEASE.tar.gz -C /opt/
     sudo adduser --system --group --home /opt/squash-tm squash-tm
     sudo chown -R squash-tm:squash-tm /opt/squash-tm
