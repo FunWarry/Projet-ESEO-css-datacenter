@@ -37,51 +37,6 @@ const hostStatusContainer = document.getElementById('host-status-container');
 const lastChecked = document.getElementById('last-checked');
 const refreshStatusButton = document.getElementById('refresh-status');
 
-// Export student SSH keys
-function exportStudentSSHKeys() {
-    const button = document.getElementById('export-ssh-keys');
-    if (!button) return;
-
-    // Show loading state
-    const originalText = button.textContent;
-    button.textContent = 'Export en cours...';
-    button.disabled = true;
-
-    // Make API request to export SSH keys
-    fetch('/api/export/student-ssh-keys')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Erreur lors de l\'exportation des clés SSH');
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            // Create a download link
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'student_ssh_keys.csv';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-
-            // Show success message
-            showStatusOverlay('Succès', 'Les clés SSH des étudiants ont été exportées avec succès');
-            setTimeout(hideStatusOverlay, 3000);
-        })
-        .catch(error => {
-            console.error('Error exporting SSH keys:', error);
-            showStatusOverlay('Erreur', 'Erreur lors de l\'exportation des clés SSH: ' + error.message);
-            setTimeout(hideStatusOverlay, 5000);
-        })
-        .finally(() => {
-            // Restore button state
-            button.textContent = originalText;
-            button.disabled = false;
-        });
-}
-
 // Initialize the application
 window.addEventListener('load', () => {
     console.log('DOM and all resources loaded');
@@ -97,12 +52,6 @@ window.addEventListener('load', () => {
     if (statusOverlay) {
         statusOverlay.classList.add('hidden');
         statusOverlay.style.display = 'none';
-    }
-
-    // Add event listener for export button
-    const exportButton = document.getElementById('export-ssh-keys');
-    if (exportButton) {
-        exportButton.addEventListener('click', exportStudentSSHKeys);
     }
 
     // Check system status

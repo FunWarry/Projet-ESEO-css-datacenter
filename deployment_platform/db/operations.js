@@ -31,7 +31,7 @@ function numberToIp(num) {
 
 // Database operations
 const dbOperations = {
-    // Allocate an IP address for a VM
+    // Allocate an IP address for a VM by finding the first available IP in the range
     allocateIP: async function (vmType) {
         if (!dbConnection.isDatabaseConnected()) {
             const error = new Error('Database not connected');
@@ -48,26 +48,32 @@ const dbOperations = {
                 ipRange = IP_RANGES.WEB;
             }
 
-            // Get all VMs with IPs in the range
+
+            // Get all used IPs in the range
+            const [rows] = await dbConnection.pool.query(
+                'SELECT ip_address FROM vms WHERE ip_address IS NOT NULL AND ip_address BETWEEN ? AND ?',
+                [ipRange.start, ipRange.end]
+            );
+            const usedIPs = new Set(rows.map(row => row.ip_address));
+
+            // Convert range to numbers for comparison
             const startNum = ipToNumber(ipRange.start);
             const endNum = ipToNumber(ipRange.end);
 
-            // Get all existing IPs in the range
-            const [rows] = await dbConnection.pool.query('SELECT ip_address FROM vms WHERE ip_address IS NOT NULL');
-            const usedIPs = rows.map(row => row.ip_address);
-
             // Find the first available IP in the range
             for (let ipNum = startNum; ipNum <= endNum; ipNum++) {
-                const ip = numberToIp(ipNum);
-                if (!usedIPs.includes(ip)) {
-                    return ip;
+                const currentIP = numberToIp(ipNum);
+                if (!usedIPs.has(currentIP)) {
+                    console.log(`Allocated IP ${currentIP} for VM type ${vmType}`);
+                    return currentIP;
                 }
             }
 
-            // No available IPs
-            throw new Error(`No available IP addresses for ${vmType}`);
+
+            // No available IPs in the range
+            throw new Error(`Aucune adresse IP disponible dans la plage ${ipRange.start} - ${ipRange.end} pour le type de VM: ${vmType}`);
         } catch (error) {
-            console.error('Error allocating IP:', error);
+            console.error('Erreur lors de l\'allocation d\'une adresse IP:', error);
             throw error;
         }
     },

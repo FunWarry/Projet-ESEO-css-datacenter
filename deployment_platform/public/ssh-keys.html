@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clés SSH des Étudiants - VM Deployment</title>
+    <link rel="stylesheet" href="./styles.css">
+    <style>
+        .private-key {
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-width: 600px;
+            overflow-x: auto;
+            margin: 0;
+            padding: 0.5rem;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .section-header h2 {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>VM Deployment System</h1>
+        <nav>
+            <ul>
+                <li><a href="./index.html">Déployer des VMs</a></li>
+                <li><a href="./status.html">État du Système</a></li>
+                <li><a href="./ssh-keys.html" class="active">Clés SSH</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <div class="section-header">
+                <h2>Clés SSH des Étudiants</h2>
+                <button id="refresh-keys" class="button">Rafraîchir</button>
+            </div>
+
+            <div id="loading-message" class="status-message">Chargement des clés SSH en cours...</div>
+            
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            
+            <div id="ssh-keys-container" class="table-container" style="display: none;">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Adresse IP</th>
+                            <th>Nom d'utilisateur</th>
+                            <th>Clé privée</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ssh-keys-table-body">
+                        <!-- Les clés SSH seront insérées ici dynamiquement -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 VM Deployment System</p>
+    </footer>
+
+    <script>
+        // Fonction pour charger les clés SSH
+        async function loadSSHKeys() {
+            const loadingMessage = document.getElementById('loading-message');
+            const errorMessage = document.getElementById('error-message');
+            const container = document.getElementById('ssh-keys-container');
+            const tableBody = document.getElementById('ssh-keys-table-body');
+
+            // Afficher le message de chargement et masquer les erreurs
+            loadingMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+            container.style.display = 'none';
+
+            try {
+                // Appeler l'API pour récupérer les clés SSH
+                const response = await fetch('/api/ssh-keys/students');
+                
+                if (!response.ok) {
+                    throw new Error('Erreur lors du chargement des clés SSH');
+                }
+                
+                const sshKeys = await response.json();
+                
+                // Vider le tableau
+                tableBody.innerHTML = '';
+                
+                if (sshKeys.length === 0) {
+                    const row = document.createElement('tr');
+                    const cell = document.createElement('td');
+                    cell.colSpan = 3;
+                    cell.textContent = 'Aucune clé SSH disponible';
+                    cell.style.textAlign = 'center';
+                    row.appendChild(cell);
+                    tableBody.appendChild(row);
+                } else {
+                    // Ajouter chaque clé au tableau
+                    sshKeys.forEach(key => {
+                        const row = document.createElement('tr');
+                        
+                        // Cellule pour l'adresse IP
+                        const ipCell = document.createElement('td');
+                        ipCell.textContent = key.ip_address || 'N/A';
+                        
+                        // Cellule pour le nom d'utilisateur
+                        const userCell = document.createElement('td');
+                        userCell.textContent = key.username || 'N/A';
+                        
+                        // Cellule pour la clé privée
+                        const keyCell = document.createElement('td');
+                        const keyPre = document.createElement('pre');
+                        keyPre.className = 'private-key';
+                        keyPre.textContent = key.private_key || 'Aucune clé disponible';
+                        keyCell.appendChild(keyPre);
+                        
+                        // Ajouter les cellules à la ligne
+                        row.appendChild(ipCell);
+                        row.appendChild(userCell);
+                        row.appendChild(keyCell);
+                        
+                        // Ajouter la ligne au tableau
+                        tableBody.appendChild(row);
+                    });
+                }
+                
+                // Afficher le tableau
+                container.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Erreur lors du chargement des clés SSH:', error);
+                errorMessage.textContent = `Erreur: ${error.message}`;
+                errorMessage.style.display = 'block';
+                errorMessage.className = 'status-message error';
+            } finally {
+                // Cacher le message de chargement
+                loadingMessage.style.display = 'none';
+            }
+        }
+
+
+        // Charger les clés au chargement de la page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSSHKeys();
+            
+            // Ajouter un écouteur d'événement pour le bouton de rafraîchissement
+            const refreshButton = document.getElementById('refresh-keys');
+            if (refreshButton) {
+                refreshButton.addEventListener('click', loadSSHKeys);
+            }
+        });
+    </script>
+    <script src="./script.js"></script>
+</body>
+</html>

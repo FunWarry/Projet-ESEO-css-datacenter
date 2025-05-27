@@ -11,8 +11,9 @@
         <h1>VM Deployment System</h1>
         <nav>
             <ul>
-                <li><a href="./index.html" class="active">Deploy VMs</a></li>
-                <li><a href="./status.html">System Status</a></li>
+                <li><a href="./index.html" class="active">Déployer des VMs</a></li>
+                <li><a href="./status.html">État du Système</a></li>
+                <li><a href="./ssh-keys.html">Clés SSH</a></li>
             </ul>
         </nav>
     </header>
@@ -56,13 +57,10 @@
         </section>
 
         <section id="deployed-vms">
-            <div class="section-header">
-                <h2>Deployed VMs</h2>
-                <button id="export-ssh-keys" class="export-button">Exporter les clés SSH étudiants</button>
-            </div>
+            <h2>VMs Déployées</h2>
             <div id="vm-list">
                 <!-- VMs will be populated by JavaScript -->
-                <p id="no-vms-message">No VMs deployed yet.</p>
+                <p id="no-vms-message">Aucune VM déployée pour le moment.</p>
             </div>
         </section>
     </main>

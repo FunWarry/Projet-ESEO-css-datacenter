@@ -25,8 +25,12 @@ function handleRequest(req, res, pathname) {
 
     // Check for SSH keys endpoint with VM ID parameter
     if (pathname.startsWith('/api/ssh-keys/')) {
-        const vmId = pathname.split('/').pop();
-        handleSSHKeys(req, res, vmId);
+        const param = pathname.split('/').pop();
+        if (param === 'students') {
+            handleStudentSSHKeys(req, res);
+        } else {
+            handleSSHKeys(req, res, param);
+        }
         return;
     }
 
@@ -304,6 +308,24 @@ async function handleVMStatus(req, res, vmId) {
             console.error('Error getting VM status:', error);
             res.writeHead(500, {'Content-Type': 'application/json'});
             res.end(JSON.stringify({error: 'Failed to get VM status', details: error.message}));
+        }
+    } else {
+        res.writeHead(405, {'Content-Type': 'application/json'});
+        res.end(JSON.stringify({error: 'Method not allowed'}));
+    }
+}
+
+// Handle student SSH keys endpoint (JSON format)
+async function handleStudentSSHKeys(req, res) {
+    if (req.method === 'GET') {
+        try {
+            const sshKeys = await db.getAllStudentSSHKeys();
+            res.writeHead(200, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(sshKeys));
+        } catch (error) {
+            console.error('Error getting student SSH keys:', error);
+            res.writeHead(500, {'Content-Type': 'application/json'});
+            res.end(JSON.stringify({error: 'Failed to get student SSH keys'}));
         }
     } else {
         res.writeHead(405, {'Content-Type': 'application/json'});
