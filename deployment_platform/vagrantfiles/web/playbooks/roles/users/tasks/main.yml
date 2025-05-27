@@ -1,0 +1,121 @@
+---
+# Create admin user
+- name: Create admin user
+  user:
+    name: admin
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    create_home: yes
+    system: no
+    generate_ssh_key: yes
+    ssh_key_bits: 4096
+    ssh_key_file: .ssh/id_rsa
+  register: admin_user
+
+# Create etudiant user
+- name: Create etudiant user
+  user:
+    name: etudiant
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+    create_home: yes
+    system: no
+    generate_ssh_key: yes
+    ssh_key_bits: 4096
+    ssh_key_file: .ssh/id_rsa
+  register: etudiant_user
+
+
+# Ensure the .ssh directory exists for admin
+- name: Ensure .ssh directory exists for admin
+  file:
+    path: /home/admin/.ssh
+    state: directory
+    mode: '0700'
+    owner: admin
+    group: admin
+
+# Ensure the .ssh directory exists for etudiant
+- name: Ensure .ssh directory exists for etudiant
+  file:
+    path: /home/etudiant/.ssh
+    state: directory
+    mode: '0700'
+    owner: etudiant
+    group: etudiant
+
+# Include the store_ssh_keys task
+- name: Store SSH keys in database
+  include_tasks: store_ssh_keys.yml
+
+- name: Get admin public key content
+  command: cat /home/admin/.ssh/id_rsa.pub
+  register: admin_pubkey
+  changed_when: false
+
+# Set up authorized_keys for users
+- name: Set up authorized_keys for admin
+  authorized_key:
+    user: admin
+    state: present
+    key: "{{ admin_pubkey.stdout }}"
+    manage_dir: yes
+
+- name: Get etudiant public key content
+  command: cat /home/etudiant/.ssh/id_rsa.pub
+  register: etudiant_pubkey
+  changed_when: false
+
+- name: Set up authorized_keys for etudiant
+  authorized_key:
+    user: etudiant
+    state: present
+    key: "{{ etudiant_pubkey.stdout }}"  # Utiliser le résultat de la commande
+    manage_dir: yes
+
+# Configure SSH server
+- name: Configure SSH server
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    line: "{{ item.line }}"
+    regexp: "{{ item.regexp }}"
+    state: present
+    validate: 'sshd -t -f %s'
+  with_items:
+    - { line: 'PasswordAuthentication no', regexp: '^PasswordAuthentication' }
+    - { line: 'PubkeyAuthentication yes', regexp: '^PubkeyAuthentication' }
+    - { line: 'PermitRootLogin no', regexp: '^PermitRootLogin' }
+  notify: restart sshd
+
+- name: Ensure SSH service is enabled and running
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+    use: service
+
+# Ensure sudoers.d directory exists
+- name: Ensure sudoers.d directory exists
+  file:
+    path: /etc/sudoers.d
+    state: directory
+    mode: '0750'
+    owner: root
+    group: root
+
+# Create or update sudoers file for users
+- name: Create sudoers file for admin and etudiant
+  copy:
+    dest: /etc/sudoers.d/90-custom-users
+    content: |
+      # Allow admin user to run all commands without password
+      admin ALL=(ALL) NOPASSWD:ALL
+      
+      # Allow etudiant user to run all commands without password
+      etudiant ALL=(ALL) NOPASSWD:ALL
+    owner: root
+    group: root
+    mode: '0440'
+    validate: 'visudo -cf %s'
