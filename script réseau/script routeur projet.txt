@@ -36,6 +36,8 @@ permit tcp 192.168.239.248 0.0.0.15 any eq 80
 permit tcp any eq 443 192.168.239.248 0.0.0.15
 permit tcp host 192.168.232.7 eq 8080 192.168.239.248 0.0.0.15
 permit tcp any 192.168.239.248 0.0.0.15 eq 22
+permit tcp 192.168.239.248 0.0.0.15 eq 22 any
+permit tcp 192.168.239.248 0.0.0.15 any eq 22
 permit tcp any 192.168.239.248 0.0.0.15 eq 443
 permit tcp 192.168.239.248 0.0.0.15 any eq 443
 permit udp 192.168.239.248 0.0.0.15 any eq 443
@@ -66,6 +68,7 @@ permit tcp 192.168.239.248 0.0.0.15 eq 1514 host 192.168.238.4
 permit tcp 192.168.239.248 0.0.0.15 eq 1515 host 192.168.238.4
 
 permit icmp 192.168.239.248 0.0.0.15 192.168.239.248 0.0.0.15
+permit icmp 192.168.239.248 0.0.0.15 192.168.232.0 0.0.7.255
 permit icmp 192.168.238.0 0.0.0.15 192.168.239.248 0.0.0.15
 
 permit ip any host 192.168.239.250
@@ -90,6 +93,8 @@ permit tcp 192.168.232.0 0.0.1.255 any eq 80
 permit tcp any eq 80 192.168.232.0 0.0.1.255
 permit tcp host 132.220.122.42 eq 3000 host 192.168.232.2
 permit tcp host 192.168.232.2 host 132.220.122.42 eq 3000
+permit tcp host 132.220.122.42 eq 3000 host 192.168.232.8
+permit tcp host 192.168.232.8 host 132.220.122.42 eq 3000
 permit tcp any 192.168.232.0 0.0.1.255 eq 443
 permit tcp 192.168.232.0 0.0.1.255 any eq 443
 permit udp 192.168.232.0 0.0.1.255 any eq 443
@@ -98,7 +103,7 @@ permit tcp 192.168.232.0 0.0.1.255 any eq 22
 permit tcp 192.168.232.0 0.0.1.255 eq 22 any
 permit tcp 192.168.239.248 0.0.0.15 host 192.168.232.7 eq 8080
 permit tcp host 192.168.232.7 eq 8080 192.168.239.248 0.0.0.15
-deny tcp host 192.168.232.7 eq 8080 192.168.232.0 0.0.7.255
+deny tcp host 192.168.232.7 eq 8080 192.168.232.0 0.0.7.255 log
 permit tcp host 192.168.232.7 eq 8080 any
 permit tcp 192.168.232.0 0.0.1.255 192.168.234.0 0.0.1.255 eq 3306
 permit tcp 192.168.234.0 0.0.1.255 eq 3306 192.168.232.0 0.0.1.255
@@ -164,7 +169,9 @@ ip access-list extended vlan-40
 permit udp any 192.168.236.0 0.0.1.255 eq 123
 permit udp 192.168.236.0 0.0.1.255 any eq 123
 permit udp any host 192.168.238.10 eq 53
+permit udp host 192.168.238.10 any eq 53
 permit tcp any host 192.168.238.10 eq 53
+permit tcp host 192.168.238.10 any eq 53
 permit udp any any eq 67
 permit udp any any eq 68
 
@@ -208,7 +215,7 @@ permit udp any any eq 68
 permit tcp 192.168.239.248 0.0.0.15 192.168.238.0 0.0.0.15 eq 80
 permit tcp 192.168.238.0 0.0.0.15 any eq 80
 permit tcp 192.168.238.0 0.0.0.15 eq 80 192.168.239.248 0.0.0.15
-deny tcp 192.168.238.0 0.0.0.15 eq 80 192.168.232.0 0.0.7.255
+deny tcp 192.168.238.0 0.0.0.15 eq 80 192.168.232.0 0.0.7.255 log
 permit tcp 192.168.238.0 0.0.0.15 eq 80 any
 permit tcp host 132.220.122.42 eq 3000 host 192.168.238.2
 permit tcp host 192.168.238.2 host 132.220.122.42 eq 3000
@@ -216,8 +223,10 @@ permit tcp 192.168.239.248 0.0.0.15 192.168.238.0 0.0.0.15 eq 443
 permit tcp 192.168.238.0 0.0.0.15 any eq 443
 permit udp 192.168.238.0 0.0.0.15 any eq 443
 permit tcp 192.168.238.0 0.0.0.15 eq 443 192.168.239.248 0.0.0.15
-deny tcp 192.168.238.0 0.0.0.15 eq 443 192.168.232.0 0.0.7.255
+deny tcp 192.168.238.0 0.0.0.15 eq 443 192.168.232.0 0.0.7.255 log
 permit tcp 192.168.238.0 0.0.0.15 eq 443 any
+permit tcp 192.168.239.248 0.0.0.15 192.168.238.0 0.0.0.15 eq 443
+permit tcp any 192.168.238.0 0.0.0.15 eq 443
 permit tcp any 192.168.238.0 0.0.0.15 eq 22
 permit tcp 192.168.238.0 0.0.0.15 any eq 22
 permit tcp 192.168.238.0 0.0.0.15 eq 22 any
