@@ -88,10 +88,25 @@ const execPromise = (command, vmId = null) => {
             const lowerData = data.toLowerCase();
             const isWarning = lowerData.includes('warning');
             const isErrorMsg = isError || lowerData.includes('error');
+            const isFailure = lowerData.includes('failed');
+            const isFatal = lowerData.includes('fatal');
             
-            if (isErrorMsg || isWarning) {
-                const prefix = isErrorMsg ? 'ERROR: ' : 'WARNING: ';
-                console.log(`${vmPrefix}${prefix}${data.trim()}`);
+            if (isErrorMsg || isWarning || isFailure || isFatal) {
+                switch (true) {
+                    case isFatal:
+                        console.error(`${vmPrefix}FATAL: ${data.trim()}`);
+                        break;
+                    case isFailure:
+                        console.error(`${vmPrefix}FAILURE: ${data.trim()}`);
+                        break;
+                    case isWarning:
+                        console.warn(`${vmPrefix}WARNING: ${data.trim()}`);
+                        break;
+                    case isErrorMsg:
+                        console.error(`${vmPrefix}ERROR: ${data.trim()}`);
+                        break;
+                    default:
+                }
             }
 
             // Log to file if vmId is provided
@@ -439,7 +454,7 @@ const vagrant = {
         }, {
             id: 'mariadb',
             name: 'MariaDB Database',
-            path: './vagrantfiles/database',
+            path: './vagrantfiles/mariadb',
             host: '192.168.234.2',
             dbType: 'mariadb',
             useAnsible: true,
@@ -447,7 +462,7 @@ const vagrant = {
         }, {
             id: 'postgres',
             name: 'PostgreSQL Database',
-            path: './vagrantfiles/database',
+            path: './vagrantfiles/postgres',
             host: '192.168.234.2',
             dbType: 'postgres',
             useAnsible: true,
@@ -484,7 +499,7 @@ const vagrant = {
             // Créer tous les objets VM d'abord
             for (let i = 0; i < vmCount; i++) {
                 const vmId = uuidv4();
-                const vmName = `vm-${vagrantFile}-${timestamp}-${i + 1}`;
+                const vmName = `vm-${vagrantFile}-${timestamp}`;
                 const workDir = path.join(__dirname, '../../tmp', vmId);
 
                 // Créer l'objet VM
@@ -605,7 +620,7 @@ const vagrant = {
                 const ansibleDir = path.join(workDir, 'ansible');
                 const variablesDir = path.join(ansibleDir, 'variables');
                 const playbooksDir = path.join(ansibleDir, 'playbooks');
-                const etudiantDir = path.join(ansibleDir, 'etudiant.ansible');
+                const etudiantDir = path.join(ansibleDir, 'vagrant');
 
                 fs.mkdirSync(variablesDir, {recursive: true});
                 fs.mkdirSync(playbooksDir, {recursive: true});
@@ -616,7 +631,7 @@ const vagrant = {
                 // Copy Ansible playbooks
                 const sourcePlaybooksDir = path.join(vagrantFileConfig.path, 'playbooks');
                 const sourceVariablesDir = path.join(vagrantFileConfig.path, 'variables');
-                const sourceEtudiantDir = path.join(vagrantFileConfig.path, 'etudiant.ansible');
+                const sourceEtudiantDir = path.join(vagrantFileConfig.path, 'vagrant');
 
                 // Copy playbooks
                 fs.readdirSync(sourcePlaybooksDir).forEach(file => {
@@ -655,7 +670,7 @@ const vagrant = {
 
                 this.updateDeploymentStatus(vm.id, 'Preparing', 45, 'Copying Vagrant configuration');
 
-                // Copy etudiant.ansible directory
+                // Copy vagrant directory
                 this.copyFolderRecursiveSync(sourceEtudiantDir, ansibleDir);
 
                 this.updateDeploymentStatus(vm.id, 'Preparing', 55, 'Configuring Vagrantfile');
@@ -738,8 +753,8 @@ const vagrant = {
             let content = fs.readFileSync(nodeYamlPath, 'utf8');
             // Mettre à jour le chemin du répertoire de travail
             content = content.replace(
-                /chdir: \/home\/etudis\/Bureau\/etudiant\.ansible\//g,
-                `chdir: ${remoteDir}/etudiant.ansible/`
+                /chdir: \/home\/etudis\/Bureau\/vagrant\//g,
+                `chdir: ${remoteDir}/vagrant/`
             );
             content = content.replace(
                 'include_tasks: ../../roles/users/tasks/store_ssh_keys.yml',
@@ -882,7 +897,7 @@ const vagrant = {
 
                     // For Ansible-deployed VMs
                     const ansibleDir = path.join(workDir, 'ansible');
-                    const etudiantDir = path.join(ansibleDir, 'etudiant.ansible');
+                    const etudiantDir = path.join(ansibleDir, 'vagrant');
                     console.log(`[destroyVM] Ansible dir: ${ansibleDir}`);
                     console.log(`[destroyVM] Etudiant dir: ${etudiantDir}`);
 
@@ -992,7 +1007,7 @@ const vagrant = {
                             // Run vagrant destroy in case there are any remaining resources
                             this.updateDeploymentStatus(vmId, 'Destroying', 85, 'Running vagrant destroy');
                             try {
-                                const vagrantDestroyCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "cd ${remoteDir}/etudiant.ansible && vagrant destroy -f || true"`;
+                                const vagrantDestroyCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "cd ${remoteDir}/vagrant && vagrant destroy -f || true"`;
                                 console.log(`[destroyVM] Executing vagrant destroy: ${vagrantDestroyCmd}`);
                                 const destroyOutput = await execPromise(vagrantDestroyCmd, vmId);
                                 console.log(`[destroyVM] Vagrant destroy output: ${destroyOutput}`);
