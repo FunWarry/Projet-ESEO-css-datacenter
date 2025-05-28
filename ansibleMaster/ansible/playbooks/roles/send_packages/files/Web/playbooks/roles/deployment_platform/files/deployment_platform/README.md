@@ -11,29 +11,13 @@ Application web complète pour le déploiement et la gestion de machines virtuel
   - Piles LAMP complètes
   - Bases de données MariaDB
   - Bases de données PostgreSQL
-- Configuration personnalisable (RAM, CPU, stockage)
+- Configuration personnalisable (RAM, CPU)
 - Attribution automatique d'IP fixes par type de VM
 
 ### Gestion des VMs
 - Vue d'ensemble des VMs en cours d'exécution
-- Actions rapides (démarrer, arrêter, redémarrer)
 - Suppression sélective de plusieurs VMs
 - Affichage détaillé des spécifications techniques
-- Suivi en temps réel de l'état des VMs
-
-### Sécurité et Réseau
-- Gestion des clés SSH pour un accès sécurisé
-- Configuration réseau avancée
-- Isolation des environnements
-- Gestion des règles de pare-feu
-
-## 🚀 Prérequis
-
-- Node.js v16+
-- Vagrant 2.3+
-- VirtualBox 7.0+
-- Ansible 2.10+
-- MySQL/MariaDB (pour la base de données de gestion)
 
 ## 🖥 Installation sur Debian 12
 
@@ -44,13 +28,11 @@ sudo apt install -y curl wget gnupg2 software-properties-common apt-transport-ht
 ```
 
 ### 2. Installer Node.js 18.x
-```bash
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
-sudo apt install -y mariadb-server
-```
 
-### 9. Démarrer l'application
+Pour lancer le système, il vous faut installer Node.js 18.x 
+ainsi que npm.
+
+### 3. Démarrer l'application
 ```bash
 # Installer les dépendances Node.js
 npm install --production
@@ -59,34 +41,7 @@ npm install --production
 npm start
 ```
 
-### 10. Configurer le service systemd (optionnel)
-Créez un fichier de service pour démarrer automatiquement l'application au démarrage :
-
-```bash
-sudo tee /etc/systemd/system/vm-manager.service > /dev/null <<EOL
-[Unit]
-Description=VM Manager Application
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$(pwd)
-Environment="NODE_ENV=production"
-ExecStart=/usr/bin/npm start
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
-EOL
-
-# Recharger systemd et activer le service
-sudo systemctl daemon-reload
-sudo systemctl enable vm-manager
-sudo systemctl start vm-manager
-```
-
-5. **Accéder à l'interface**
+### 4.**Accéder à l'interface avec l'application en local**
    Ouvrez votre navigateur à l'adresse : [http://localhost:3000](http://localhost:3000)
 
 ## 🏗 Architecture Technique
