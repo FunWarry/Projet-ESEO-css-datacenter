@@ -1,0 +1,46 @@
+$script_ssh = <<-SCRIPT
+sed -i 's/ChallengeResponseAuthentication no/ChallengeResponseAuthentication yes/g' /etc/ssh/sshd_config    
+sleep 3
+service ssh restart
+echo "$(cat /vagrant/files/id_rsa.pub)" >> /home/vagrant/.ssh/authorized_keys
+SCRIPT
+
+$script_config = <<-SCRIPT
+sudo ip addr flush dev enp0s8
+sudo ip addr add 192.168.232.8/23 dev eth1
+sudo ip route del default
+sudo ip route add default via 192.168.232.1 dev eth1
+sudo echo "search .                     
+nameserver 192.168.238.10" > /etc/resolv.conf
+SCRIPT
+
+Vagrant.configure("2") do |config|
+
+	 # Number of nodes to provision
+	 numNodes = 1
+
+	 # IP Address Base for private network
+
+
+	 # Define Number of RAM for each node
+	 config.vm.provider "virtualbox" do |v|
+		  v.customize ["modifyvm", :id, "--memory", 2048]
+	 end
+
+	 # Download the initial box from this url
+
+	 # Provision Config for VM_deployer
+	 1.upto(numNodes) do |num|
+		  nodeName = "VM_deployer"
+		  config.vm.define nodeName do |node|
+				node.vm.host_name = nodeName
+				node.vm.box = "debian/bullseye64"
+				node.vm.network :public_network,bridge: "eno1", ip: "192.168.232.8"
+				node.vm.provider "virtualbox" do |v|
+					 v.name = "VM_deployer"
+				end
+	        node.vm.provision "shell", inline: $script_ssh
+    		node.vm.provision "shell", inline: $script_config
+		  end
+	 end
+end

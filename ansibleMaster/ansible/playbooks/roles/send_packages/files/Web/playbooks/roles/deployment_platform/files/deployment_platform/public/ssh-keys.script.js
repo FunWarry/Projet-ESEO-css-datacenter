@@ -63,7 +63,6 @@ async function loadSSHKeys() {
                     e.stopPropagation();
                     try {
                         await navigator.clipboard.writeText(key.private_key || '');
-                        const originalText = copyButton.innerHTML;
                         const originalBg = copyButton.style.backgroundColor;
                         copyButton.innerHTML = '✓';
                         copyButton.style.backgroundColor = '#4CAF50';

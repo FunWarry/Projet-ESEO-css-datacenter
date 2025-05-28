@@ -1,0 +1,41 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName {{ ansible_fqdn | default(ansible_host) }}
+    DocumentRoot /opt/deployment_platform/public
+
+    <Directory /opt/deployment_platform/public>
+        Options -Indexes +FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+
+    # Configuration du proxy pour l'API Node.js
+    <Location />
+        ProxyPass http://localhost:3000/
+        ProxyPassReverse http://localhost:3000/
+        ProxyPreserveHost On
+        
+        # Configuration pour le WebSocket
+        RewriteEngine On
+        RewriteCond %{HTTP:Upgrade} =websocket [NC]
+        RewriteRule /(.*) ws://localhost:3000/$1 [P,L]
+        RewriteCond %{HTTP:Upgrade} !=websocket [NC]
+        RewriteRule /(.*) http://localhost:3000/$1 [P,L]
+    </Location>
+
+    
+    # Désactiver le cache pour les API
+    <FilesMatch "\.(json|xml)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires 0
+    </FilesMatch>
+
+    # Augmenter la taille maximale du téléchargement
+    LimitRequestBody 1073741824
+
+    # Logs
+    ErrorLog ${APACHE_LOG_DIR}/deployment-platform-error.log
+    CustomLog ${APACHE_LOG_DIR}/deployment-platform-access.log combined
+</VirtualHost>
