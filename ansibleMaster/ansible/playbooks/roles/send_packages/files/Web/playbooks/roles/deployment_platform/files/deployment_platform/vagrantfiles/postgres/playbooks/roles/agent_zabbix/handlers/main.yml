@@ -1,0 +1,8 @@
+---
+- name: Redemarrer l agent Zabbix
+  service:
+    name: zabbix-agent
+    state: restarted
+    enabled: yes
+  become: yes
+

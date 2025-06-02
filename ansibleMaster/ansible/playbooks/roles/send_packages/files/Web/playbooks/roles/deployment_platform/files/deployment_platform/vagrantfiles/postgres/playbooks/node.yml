@@ -1,0 +1,122 @@
+---
+- name: Lancer la VM avec Vagrant
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Lancer la machine Vagrant
+      command: vagrant up
+      args:
+        chdir: /home/etudis/Bureau/vagrant/
+      register: vagrant_up
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: vagrant_up is succeeded
+
+    - name: Attendre que le port SSH (22) soit disponible sur la VM
+      wait_for:
+        host: "{{ groups['postgresql_servers'][0] }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      register: wait_ssh
+      retries: 10
+      delay: 15
+      until: wait_ssh is succeeded
+
+    # Attendre un peu plus pour que le système d'init se charge complètement
+    - name: Attendre que la VM soit complètement initialisée
+      pause:
+        seconds: 5
+      when: wait_ssh is succeeded
+
+- name: Configure PostgreSQL Server
+  hosts: postgresql_servers
+  become: true
+  gather_facts: true
+  
+  pre_tasks:
+    - name: Mettre à jour le cache apt
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      tags: [system, packages]
+      
+    - name: Installer les dépendances système
+      apt:
+        name: "{{ system_packages }}"
+        state: present
+        update_cache: yes
+      tags: [system, packages]
+
+  roles:
+    - { role: sys, tags: ['system', 'packages'] }
+    - { role: firewall, tags: ['firewall', 'security'] }
+    - { role: postgresql, tags: ['database', 'postgresql'] }
+    - { role: agent_zabbix, tags: ['monitoring', 'zabbix'] }
+
+  post_tasks:
+    - name: Vérifier que PostgreSQL est en cours d'exécution
+      service:
+        name: postgresql
+        state: started
+      register: postgresql_service
+      changed_when: false
+      tags: [database, services]
+
+    - name: Vérifier que PostgreSQL écoute sur le bon port
+      wait_for:
+        port: "{{ postgresql_port }}"
+        timeout: "{{ postgresql_connect_timeout }}"
+      tags: [database, services]
+
+    - name: Afficher les informations de connexion à la base de données
+      debug:
+        msg: |
+          ==============================================
+          Configuration PostgreSQL terminée avec succès !
+          ==============================================
+          Hôte: {{ inventory_hostname }}
+          Port: {{ postgresql_port }}
+          Base de données: {{ db_name }}
+          Utilisateur: {{ db_user }}
+          Mot de passe: {{ db_password | default('Non défini') }}
+          
+          Chaîne de connexion :
+          psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
+          
+          Pour se connecter depuis un hôte distant :
+          PGPASSWORD={{ db_password }} psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
+      tags: [database, info]
+
+    - name: Vérifier l'état des services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - postgresql
+        - zabbix-agent
+      register: service_status
+      changed_when: false
+      tags: [system, services]
+
+    - name: Afficher les règles de pare-feu
+      command: ufw status verbose
+      register: ufw_status
+      changed_when: false
+      failed_when: false
+      tags: [firewall, debug]
+      
+    - name: Afficher la version de PostgreSQL
+      command: psql --version
+      register: psql_version
+      changed_when: false
+      tags: [database, info]
+      
+    - name: Afficher les bases de données
+      command: psql -U postgres -c "\l"
+      register: postgresql_databases
+      changed_when: false
+      tags: [database, info]
