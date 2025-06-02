@@ -105,7 +105,7 @@
     owner: root
     group: root
 
-# Create or update sudoers file for users
+# Create or update the sudoers file for users
 - name: Create sudoers file for admin and etudiant
   copy:
     dest: /etc/sudoers.d/90-custom-users

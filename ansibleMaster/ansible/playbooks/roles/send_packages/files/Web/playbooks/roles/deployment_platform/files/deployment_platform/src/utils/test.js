@@ -259,15 +259,8 @@ async function main() {
 
 // Run the main function if this file is executed directly
 if (require.main === module) {
-    main();
+    main().then();
 }
 
 // Export functions for use in other modules
-module.exports = {
-    testSystemStatus,
-    testGetVagrantFiles,
-    testDeployVMs,
-    testGetVMs,
-    testDestroyVM,
-    runTests
-};
+module.exports = {};

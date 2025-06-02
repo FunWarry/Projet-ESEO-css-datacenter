@@ -88,11 +88,6 @@ const dbOperations = {
         }
     },
 
-    // Check if database is connected
-    isConnected: function () {
-        return dbConnection.isDatabaseConnected();
-    },
-
     // Get system status
     getSystemStatus: function () {
         return dbConnection.systemStatus;
@@ -212,7 +207,7 @@ const dbOperations = {
         }
     },
 
-    // Try to reconnect to database
+    // Try to reconnect to the database
     reconnect: async function () {
         console.log('Attempting to reconnect to database...');
         try {
@@ -224,7 +219,7 @@ const dbOperations = {
         }
     },
 
-    // Add SSH key for a VM user
+    // Add an SSH key for a VM user
     addSSHKey: async function(vmIdentifier, username, publicKey) {
         if (!dbConnection.isDatabaseConnected()) {
             const error = new Error('Database not connected');

@@ -207,7 +207,7 @@ function exportToCSV() {
 
 // Charger les clés au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-    loadSSHKeys();
+    loadSSHKeys().then();
 
     // Ajouter les écouteurs d'événements
     const refreshButton = document.getElementById('refresh-keys');

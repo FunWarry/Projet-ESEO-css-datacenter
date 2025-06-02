@@ -19,7 +19,7 @@ function handleRequest(req, res, pathname) {
     // Check for VM status endpoint with ID parameter
     if (pathname.startsWith('/api/vm/status/')) {
         const vmId = pathname.split('/').pop();
-        handleVMStatus(req, res, vmId);
+        handleVMStatus(req, res, vmId).then();
         return;
     }
 
@@ -27,9 +27,9 @@ function handleRequest(req, res, pathname) {
     if (pathname.startsWith('/api/ssh-keys/')) {
         const param = pathname.split('/').pop();
         if (param === 'students') {
-            handleStudentSSHKeys(req, res);
+            handleStudentSSHKeys(req, res).then();
         } else {
-            handleSSHKeys(req, res, param);
+            handleSSHKeys(req, res, param).then();
         }
         return;
     }
@@ -37,7 +37,7 @@ function handleRequest(req, res, pathname) {
     // Handle API endpoints
     switch (pathname) {
         case '/api/system-status':
-            handleSystemStatus(req, res);
+            handleSystemStatus(req, res).then();
             break;
         case '/api/vagrantfiles':
             handleVagrantFiles(req, res);
@@ -49,10 +49,10 @@ function handleRequest(req, res, pathname) {
             handleVMDestroy(req, res);
             break;
         case '/api/ssh-keys':
-            handleSSHKeys(req, res);
+            handleSSHKeys(req, res).then();
             break;
         case '/api/export/student-ssh-keys':
-            handleExportStudentSSHKeys(req, res);
+            handleExportStudentSSHKeys(req, res).then();
             break;
         default:
             res.writeHead(404, {'Content-Type': 'application/json'});
@@ -123,7 +123,7 @@ function handleVMs(req, res) {
                         res.writeHead(200, {'Content-Type': 'application/json'});
                         res.end(JSON.stringify(deployedVMs));
                     }
-                });
+                }).then();
             } catch (error) {
                 console.error('Error parsing request body:', error);
                 res.writeHead(400, {'Content-Type': 'application/json'});
@@ -169,7 +169,7 @@ function handleVMDestroy(req, res) {
                 
                 console.log('Destroying VM with ID:', vmId);
 
-                vagrant.destroyVM(vmId, (error, result) => {
+                await vagrant.destroyVM(vmId, (error, result) => {
                     if (error) {
                         console.error('Error destroying VM:', error);
                         res.writeHead(500, {'Content-Type': 'application/json'});
@@ -275,7 +275,7 @@ async function handleVMStatus(req, res, vmId) {
             // Get VM status from database
             let dbStatus = 'Unknown';
             try {
-                // Check if database connection is available
+                // Check if the database connection is available
                 if (!db.pool) {
                     console.warn('Database connection not available');
                 } else {

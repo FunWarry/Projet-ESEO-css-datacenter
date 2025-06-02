@@ -14,7 +14,7 @@ let systemStatus = {
     error: null
 };
 
-// Create a connection pool without database for initial connection
+// Create a connection pool without a database for initial connection
 const rootPool = mysql.createPool({
     host: '192.168.234.10',
     user: 'admin',
@@ -26,7 +26,7 @@ const rootPool = mysql.createPool({
     acquireTimeout: 10000
 });
 
-// Create a connection pool with database for normal operations
+// Create a connection pool with a database for normal operations
 const pool = mysql.createPool({
     host: '192.168.234.10',
     user: 'admin',
@@ -43,7 +43,7 @@ const pool = mysql.createPool({
 async function checkHostConnectivity(host, port = 22) {
     return new Promise((resolve) => {
         const socket = new net.Socket();
-        const timeout = 5000; // 5 seconds timeout
+        const timeout = 5000; // 5-second timeout
 
         // Set timeout
         socket.setTimeout(timeout);
@@ -84,7 +84,7 @@ async function testDatabaseConnection() {
     }
 }
 
-// Create database if it doesn't exist
+// Create a database if it doesn't exist
 async function createDatabaseIfNotExists() {
     try {
         await rootPool.query('CREATE DATABASE IF NOT EXISTS vm_deployment');
@@ -105,7 +105,7 @@ async function initDatabase() {
             throw new Error('Failed to connect to database server');
         }
 
-        // Create database if it doesn't exist
+        // Create a database if it doesn't exist
         const dbCreated = await createDatabaseIfNotExists();
         if (!dbCreated) {
             throw new Error('Failed to create database');
@@ -119,7 +119,7 @@ async function initDatabase() {
         // Check if vms table exists
         const [tables] = await pool.query("SHOW TABLES LIKE 'vms'");
         
-        // Create VMs table if it doesn't exist
+        // Create a VMs table if it doesn't exist
         if (tables.length === 0) {
             await pool.query(`
                 CREATE TABLE vms (
@@ -142,7 +142,7 @@ async function initDatabase() {
         // Check if ssh_keys table exists
         const [sshKeyTables] = await pool.query("SHOW TABLES LIKE 'ssh_keys'");
         
-        // Create SSH keys table if it doesn't exist
+        // Create an SSH keys table if it doesn't exist
         if (sshKeyTables.length === 0) {
             await pool.query(`
                 CREATE TABLE ssh_keys (

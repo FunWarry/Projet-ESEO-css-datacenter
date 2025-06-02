@@ -13,14 +13,14 @@
             text-overflow: ellipsis;
             max-width: 100%;
             margin: 0;
-            padding: 0.5rem;
             background-color: #f8f9fa;
             border: 1px solid #ddd;
             border-radius: 4px;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
-            padding-right: 30px; /* Espace pour le bouton de copie */
+            /* Espace pour le bouton de copie */
+            padding: 0.5rem 30px 0.5rem 0.5rem;
         }
 
         .private-key.expanded {
@@ -40,12 +40,12 @@
             margin-bottom: 0;
             margin-right: auto;
         }
-        
+
         .button-group {
             display: flex;
             gap: 0.5rem;
         }
-        
+
         .button {
             display: inline-flex;
             align-items: center;
@@ -59,15 +59,15 @@
             font-size: 0.9rem;
             transition: background-color 0.2s;
         }
-        
+
         .button:hover {
             background-color: #45a049;
         }
-        
+
         .button:active {
             background-color: #3e8e41;
         }
-        
+
         .button-icon {
             font-size: 1rem;
         }
@@ -86,9 +86,8 @@
             font-size: 0.8rem;
             cursor: pointer;
             border-radius: 4px;
-            transition: background-color 0.3s;
             opacity: 0;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, background-color 0.2s;
         }
 
         .private-key:hover .copy-button {

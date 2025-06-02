@@ -41,7 +41,7 @@ npm install --production
 npm start
 ```
 
-### 4.**Accéder à l'interface avec l'application en local**
+### 4. **Accéder à l'interface avec l'application en local**
    Ouvrez votre navigateur à l'adresse : [http://localhost:3000](http://localhost:3000)
 
 ## 🏗 Architecture Technique
@@ -54,10 +54,10 @@ npm start
 - **Provisioning** : Ansible pour la configuration automatique
 
 ### Schéma d'Adressage Réseau
-| Type de VM | Plage d'IP | Usage |
-|------------|------------|-------|
-| Web/Java | 192.168.232.10 - 192.168.233.254 | Serveurs d'applications |
-| Base de données | 192.168.234.10 - 192.168.234.254 | Bases de données |
+| Type de VM      | Plage d'IP                       | Usage                   |
+|-----------------|----------------------------------|-------------------------|
+| Web/Java        | 192.168.232.10 - 192.168.233.254 | Serveurs d'applications |
+| Base de données | 192.168.234.10 - 192.168.234.254 | Bases de données        |
 
 ## 📁 Structure du Projet
 

@@ -1,7 +1,7 @@
 // Vagrant operations module
 const fs = require('fs');
 const path = require('path');
-const {exec, spawn} = require('child_process');
+const {exec} = require('child_process');
 const {v4: uuidv4} = require('uuid');
 const {format} = require('date-fns');
 const db = require('../../db');
@@ -746,7 +746,7 @@ const vagrant = {
                 logError(vm.id, error);
                 console.error(`Error setting up Ansible deployment for VM ${vm.name}:`, error);
                 this.updateDeploymentStatus(vm.id, 'Failed', 0, `Error: ${error.message}`);
-                db.updateVMStatus(vm.id, 'Failed');
+                await db.updateVMStatus(vm.id, 'Failed');
                 reject(error);
             }
         });

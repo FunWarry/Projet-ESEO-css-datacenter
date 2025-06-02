@@ -35,7 +35,6 @@ const databaseMessage = document.getElementById('database-message');
 const databaseError = document.getElementById('database-error');
 const hostStatusContainer = document.getElementById('host-status-container');
 const lastChecked = document.getElementById('last-checked');
-const refreshStatusButton = document.getElementById('refresh-status');
 
 // Initialize the application
 window.addEventListener('load', () => {
@@ -55,16 +54,16 @@ window.addEventListener('load', () => {
     }
 
     // Check system status
-    checkSystemStatus();
+    checkSystemStatus().then();
 
     // If we're on the main page
     if (!isStatusPage) {
         console.log('Loading main page components');
         // Load Vagrantfiles
-        loadVagrantFiles();
+        loadVagrantFiles().then();
 
         // Load VMs
-        loadVMs();
+        loadVMs().then();
 
         // Add event listener for form submission
         if (vmForm) {
@@ -75,7 +74,7 @@ window.addEventListener('load', () => {
         // On status page, load VMs
         setTimeout(() => {
             console.log('Loading VMs for status page');
-            loadVMs();
+            loadVMs().then();
         }, 100);
 
         // Add event listener for refresh button
@@ -83,8 +82,8 @@ window.addEventListener('load', () => {
         if (refreshStatusButton) {
             refreshStatusButton.addEventListener('click', () => {
                 console.log('Refresh button clicked');
-                checkSystemStatus();
-                loadVMs();
+                checkSystemStatus().then();
+                loadVMs().then();
             });
         }
 
@@ -300,11 +299,11 @@ function startStatusPolling(vmId) {
     }
 
     // Immediately fetch status
-    fetchVMStatus(vmId);
+    fetchVMStatus(vmId).then();
 
     // Set up polling interval (every 500ms for smoother progress updates)
     statusPollingInterval = setInterval(() => {
-        fetchVMStatus(vmId);
+        fetchVMStatus(vmId).then();
     }, 500);
 }
 
@@ -823,14 +822,6 @@ function showError(message) {
 
 function showSuccess(message) {
     showMessage(message, 'success');
-}
-
-function showWarning(message) {
-    showMessage(message, 'warning');
-}
-
-function showInfo(message) {
-    showMessage(message, 'info');
 }
 
 // Destroy a VM
