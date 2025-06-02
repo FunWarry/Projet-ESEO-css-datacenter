@@ -1,0 +1,27 @@
+---
+- name: Create webapps directory if it doesn't exist
+  file:
+    path: /var/lib/tomcat9/webapps/{{ app_name }}
+    state: directory
+    owner: tomcat
+    group: tomcat
+    mode: '0755'
+
+- name: Deploy WAR file
+  copy:
+    src: "{{ war_file }}"
+    dest: /var/lib/tomcat9/webapps/{{ app_name }}.war
+    owner: tomcat
+    group: tomcat
+    mode: '0644'
+  notify:
+    - restart tomcat
+
+- name: Ensure correct permissions on deployed app
+  file:
+    path: /var/lib/tomcat9/webapps/{{ app_name }}
+    state: directory
+    recurse: yes
+    owner: tomcat
+    group: tomcat
+    mode: '0755'

@@ -1,0 +1,58 @@
+---
+- name: Installer UFW si nécessaire
+  apt:
+    name: ufw
+    state: present
+  tags: [firewall, packages]
+
+- name: Réinitialiser les règles UFW (mode non-interactif)
+  command: ufw --force reset
+  when: reset_ufw_rules is defined and reset_ufw_rules
+  register: ufw_reset
+  changed_when: false
+  tags: [firewall, config]
+
+- name: Définir la politique par défaut (refuser tout le trafic entrant, autoriser le trafic sortant)
+  ufw:
+    policy: '{{ item.policy }}'
+    direction: '{{ item.direction }}'
+  with_items:
+    - { policy: 'deny', direction: 'incoming' }
+    - { policy: 'allow', direction: 'outgoing' }
+  tags: [firewall, config]
+
+- name: Autoriser le trafic SSH
+  ufw:
+    rule: allow
+    port: '{{ ssh_port | default(22) }}'
+    proto: tcp
+  tags: [firewall, ssh]
+
+- name: Autoriser le trafic MariaDB
+  ufw:
+    rule: allow
+    port: '{{ mariadb_port | default(3306) }}'
+    proto: tcp
+  tags: [firewall, mariadb]
+
+- name: Autoriser le trafic Zabbix Agent
+  ufw:
+    rule: allow
+    port: '{{ zabbix_agent_port | default(10050) }}'
+    proto: tcp
+  when: zabbix_agent_port is defined
+  tags: [firewall, zabbix]
+
+- name: Activer UFW
+  ufw:
+    state: enabled
+  register: ufw_enable
+  changed_when: false
+  tags: [firewall, service]
+
+- name: Vérifier l'état d'UFW
+  command: ufw status verbose
+  register: ufw_status
+  changed_when: false
+  failed_when: false
+  tags: [firewall, debug]

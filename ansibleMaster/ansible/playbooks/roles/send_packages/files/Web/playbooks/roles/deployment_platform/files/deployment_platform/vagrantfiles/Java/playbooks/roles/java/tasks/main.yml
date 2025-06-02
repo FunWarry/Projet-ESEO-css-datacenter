@@ -1,0 +1,24 @@
+---
+- name: Update apt cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: Install OpenJDK 11
+  apt:
+    name: openjdk-11-jdk
+    state: present
+
+- name: Set JAVA_HOME environment variable
+  lineinfile:
+    path: /etc/environment
+    line: 'JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"'
+    state: present
+    create: yes
+    mode: '0644'
+
+- name: Reload environment variables
+  shell: . /etc/environment
+  args:
+    executable: /bin/bash
+  when: ansible_check_mode == false

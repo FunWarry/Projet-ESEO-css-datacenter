@@ -1,0 +1,43 @@
+---
+- name: Install Tomcat
+  apt:
+    name: tomcat9
+    state: present
+
+- name: Ensure Tomcat service is enabled and started
+  service:
+    name: tomcat9
+    state: started
+    enabled: yes
+
+- name: Configure Tomcat users
+  copy:
+    dest: /etc/tomcat9/tomcat-users.xml
+    content: |
+      <?xml version='1.0' encoding='utf-8'?>
+      <tomcat-users>
+        <role rolename="manager-gui"/>
+        <role rolename="admin-gui"/>
+        <user username="admin" password="admin" roles="manager-gui,admin-gui"/>
+      </tomcat-users>
+    owner: root
+    group: tomcat
+    mode: '0640'
+  notify:
+    - restart tomcat
+
+- name: Allow external access to manager
+  lineinfile:
+    path: /etc/tomcat9/Catalina/localhost/manager.xml
+    line: '<Context privileged="true" antiResourceLocking="false" docBase="{catalina.home}/webapps/manager"><Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="^.*$" /></Context>'
+    create: yes
+  notify:
+    - restart tomcat
+
+- name: Configure Tomcat to listen on all interfaces
+  replace:
+    path: /etc/tomcat9/server.xml
+    regexp: '(<Connector port="8080" protocol="HTTP/1.1".*)'
+    replace: '\1 address="0.0.0.0"'
+  notify:
+    - restart tomcat

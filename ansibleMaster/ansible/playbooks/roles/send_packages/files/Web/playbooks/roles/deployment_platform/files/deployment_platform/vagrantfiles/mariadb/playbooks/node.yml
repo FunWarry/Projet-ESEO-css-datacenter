@@ -1,0 +1,76 @@
+---
+- name: Lancer la VM avec Vagrant
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Lancer la machine Vagrant
+      command: vagrant up
+      args:
+        chdir: /home/etudis/Bureau/vagrant/
+      register: vagrant_up
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: vagrant_up is succeeded
+
+    - name: Attendre que le port SSH (22) soit disponible sur la VM
+      wait_for:
+        host: "{{ groups['mariadb_servers'][0] }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      register: wait_ssh
+      retries: 10
+      delay: 15
+      until: wait_ssh is succeeded
+
+    # Attendre un peu plus pour que le système d'init se charge complètement
+    - name: Attendre que la VM soit complètement initialisée
+      pause:
+        seconds: 5
+      when: wait_ssh is succeeded
+
+- name: Configure MariaDB Server
+  hosts: mariadb_servers
+  become: true
+  pre_tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      tags: [system, packages]
+
+  roles:
+    - { role: sys, tags: ['system', 'packages'] }
+    - { role: firewall, tags: ['firewall', 'security'] }
+    - { role: mariadb, tags: ['database', 'mariadb'] }
+    - { role: agent_zabbix, tags: ['monitoring', 'zabbix'] }
+
+  post_tasks:
+    - name: Show database connection information
+      debug:
+        msg: |
+          MariaDB has been configured successfully!
+          Database: {{ db_name }}
+          User: {{ db_user }}
+          Port: {{ mariadb_port }}
+          Connection string: mysql -h {{ inventory_hostname }} -P {{ mariadb_port }} -u {{ db_user }} -p{{ db_password }} {{ db_name }}
+      tags: [database, info]
+
+    - name: Vérifier l'état des services
+      debug:
+        msg: "Service {{ item }} est actif"
+      with_items:
+        - mariadb
+        - zabbix-agent
+      register: service_status
+      changed_when: false
+      tags: [system, services]
+
+    - name: Afficher les règles de pare-feu
+      command: ufw status verbose
+      register: ufw_status
+      changed_when: false
+      failed_when: false
+      tags: [firewall, debug]

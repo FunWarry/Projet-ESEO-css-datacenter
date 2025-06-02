@@ -1,0 +1,52 @@
+---
+- name: Install MariaDB server
+  apt:
+    name: mariadb-server
+    state: present
+    update_cache: yes
+
+- name: Ensure MariaDB is running and enabled
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+
+- name: Set root password
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ db_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+    priv: '*.*:ALL,GRANT'
+    state: present
+  no_log: true
+
+- name: Create application database
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+
+- name: Create application database user
+  mysql_user:
+    name: "{{ db_user }}"
+    host: '%'
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+  no_log: true
+
+- name: Configure MariaDB to listen on all interfaces
+  template:
+    src: 50-server.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mariadb
+
+# Les règles UFW sont gérées par le rôle firewall

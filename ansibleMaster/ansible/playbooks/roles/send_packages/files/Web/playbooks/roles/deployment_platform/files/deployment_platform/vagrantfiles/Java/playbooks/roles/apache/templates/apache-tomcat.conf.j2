@@ -1,0 +1,59 @@
+# Configuration for Apache as reverse proxy for Tomcat
+
+# Proxy configuration
+<IfModule mod_proxy.c>
+    # Enable the proxy module
+    LoadModule proxy_module /usr/lib/apache2/modules/mod_proxy.so
+    LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+    LoadModule proxy_ajp_module /usr/lib/apache2/modules/mod_proxy_ajp.so
+
+    # Basic proxy configuration
+    ProxyRequests Off
+    ProxyPreserveHost On
+    ProxyVia On
+
+    # Don't proxy requests for static content
+    <Proxy *>
+        Require all granted
+    </Proxy>
+
+
+    # Proxy all requests to Tomcat
+    ProxyPass / http://localhost:8080/ retry=0
+    ProxyPassReverse / http://localhost:8080/
+
+    ProxyPassReverseCookiePath / /
+
+
+    # Handle WebSocket connections
+    RewriteEngine On
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /(.*) ws://localhost:8080/$1 [P,L]
+
+    # Timeout settings
+    <Proxy *>
+        # Timeout in seconds for reading the response from the proxied server
+        ProxyTimeout 300
+    </Proxy>
+</IfModule>
+
+# Virtual Host configuration
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/html
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    # Security headers
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Disable server signature
+    ServerSignature Off
+    ServerTokens Prod
+</VirtualHost>
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
