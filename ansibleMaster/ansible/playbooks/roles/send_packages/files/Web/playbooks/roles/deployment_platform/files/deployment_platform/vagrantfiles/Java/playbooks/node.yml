@@ -1,0 +1,133 @@
+---
+# Playbook principal pour le déploiement de la pile LAMJ complète
+# Utilisation : ansible-playbook -i variables/inventory.ini playbooks/node.yml
+
+- name: Lancer la VM avec Vagrant
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Lancer la machine Vagrant
+      command: vagrant up
+      args:
+        chdir: "/home/etudis/Bureau/vagrant/"  # Remonter au dossier contenant le Vagrantfile
+      register: vagrant_up
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: vagrant_up is succeeded
+
+    - name: Attendre que le port SSH (22) soit disponible sur la VM
+      wait_for:
+        host: "{{ groups['java_servers'][0] }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      register: wait_ssh
+      retries: 10
+      delay: 15
+      until: wait_ssh is succeeded
+
+    - name: Attendre que la VM soit complètement initialisée
+      pause:
+        seconds: 5
+      when: wait_ssh is succeeded
+
+- name: Configuration de base du système
+  hosts: java_servers
+  gather_facts: true
+  become: true
+  vars:
+    max_retries: 10
+    retry_delay: 30
+    connection_timeout: 300
+
+  # Configuration de la stratégie de reprise
+  max_fail_percentage: 0
+  force_handlers: true
+
+  pre_tasks:
+    - name: Essai de connexion SSH avec réessais
+      wait_for_connection:
+        delay: 5
+        timeout: 30
+      register: connection_result
+      retries: 5
+      delay: 10
+      until: connection_result is not failed
+      ignore_errors: yes
+
+    - name: Vérifier si la connexion a réussi
+      fail:
+        msg: |
+          Impossible de se connecter à la VM après plusieurs tentatives.
+          Vérifiez que :
+          - La VM est bien démarrée
+          - Le service SSH est actif (systemctl status sshd)
+          - Le pare-feu autorise les connexions sur le port 22 (sudo ufw status)
+          - L'IP est correcte : {{ inventory_hostname }}
+          - Le service réseau est actif (systemctl status systemd-networkd)
+      when: connection_result is defined and connection_result is failed
+
+  roles:
+    - { role: users }
+
+- name: Installation et configuration de la pile LAMJ
+  hosts: java_servers
+  become: true
+  vars:
+    # Variables PostgreSQL
+    db_name: "myappdb"
+    db_user: "myappuser"
+    db_password: "{{ vault_db_password | default('change_this_password') }}"
+    
+    # Variables Tomcat
+    tomcat_port: 8080
+    tomcat_admin_user: "admin"
+    tomcat_admin_password: "{{ vault_tomcat_password | default('change_this_password') }}"
+    
+    # Variables Apache
+    apache_port: 80
+    
+    # Variables Zabbix
+    zabbix_server: "192.168.238.3"
+    
+  roles:
+    - role: java
+      tags: [java]
+    
+    - role: postgresql
+      tags: [database]
+    
+    - role: tomcat
+      tags: [app_server]
+    
+    - role: apache
+      tags: [web_server]
+    
+    - role: agent_zabbix
+      tags: [monitoring]
+
+- name: Vérification des services
+  hosts: java_servers
+  become: true
+  tasks:
+    - name: Vérifier l'état des services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - apache2
+        - tomcat9
+        - postgresql
+        - zabbix-agent
+      ignore_errors: yes
+      register: service_status
+    
+    - name: Afficher l'état des services
+      debug:
+        msg: "Service {{ item.item }} - État: {{ item.state }}"
+      loop: "{{ service_status.results }}"
+      loop_control:
+        label: "{{ item.item }}"

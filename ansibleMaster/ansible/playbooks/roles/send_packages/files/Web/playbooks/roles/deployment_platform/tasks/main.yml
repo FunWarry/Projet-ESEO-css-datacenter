@@ -2,31 +2,53 @@
 - name: Install required system packages
   apt:
     name:
-      - nodejs
-      - npm
+      - curl
       - apache2
-      - libapache2-mod-proxy-html
       - libxml2-dev
       - build-essential
     state: present
     update_cache: yes
 
-- name: Enable required Apache modules
-  command: a2enmod proxy proxy_http proxy_balancer lbmethod_byrequests
-  notify: restart apache
+- name: Add NodeSource repository for Node.js 18
+  shell: |
+    curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+  args:
+    creates: /etc/apt/sources.list.d/nodesource.list
 
-- name: Create deployment platform directory
-  file:
-    path: /opt/deployment_platform
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Install Node.js and npm
+  apt:
+    name:
+      - nodejs
+      - npm
+    state: present
+    update_cache: yes
+
+- name: Ensure correct Node.js version is installed
+  command: node --version
+  register: node_version
+  changed_when: false
+  failed_when: "'v18.' not in node_version.stdout"
+
+- name: Enable required Apache modules
+  command: a2enmod {{ item }}
+  with_items:
+    - proxy
+    - proxy_http
+    - proxy_balancer
+    - lbmethod_byrequests
+    - rewrite
+    - headers
+  notify: restart apache
+  ignore_errors: yes
 
 - name: Copy deployment platform files
   copy:
-    src: ../../files/
-    dest: /opt/deployment_platform/
+    src: deployment_platform
+    dest: /opt/deployment_platform
     owner: www-data
     group: www-data
     mode: '0644'
@@ -37,14 +59,6 @@
     path: /opt/deployment_platform
     state: present
 
-- name: Create .env file
-  template:
-    src: env.j2
-    dest: /opt/deployment_platform/.env
-    owner: www-data
-    group: www-data
-    mode: '0644'
-
 - name: Create systemd service file
   template:
     src: deployment-platform.service.j2
@@ -54,7 +68,7 @@
     mode: '0644'
   notify: reload systemd
 
-- name: Configure Apache
+- name: Configure Apache site
   template:
     src: apache-deployment-platform.conf.j2
     dest: /etc/apache2/sites-available/deployment-platform.conf
@@ -63,17 +77,21 @@
     mode: '0644'
   notify: restart apache
 
-- name: Enable Apache site
-  file:
-    src: /etc/apache2/sites-available/deployment-platform.conf
-    dest: /etc/apache2/sites-enabled/000-deployment-platform.conf
-    state: link
+- name: Disable default Apache site
+  command: a2dissite 000-default.conf
+  notify: restart apache
+  ignore_errors: yes
+
+- name: Set ServerName to hostname
+  lineinfile:
+    path: /etc/apache2/apache2.conf
+    line: "ServerName {{ ansible_fqdn | default(ansible_hostname) }}"
+    insertafter: '^# Global configuration'
+    state: present
   notify: restart apache
 
-- name: Disable default Apache site
-  file:
-    path: /etc/apache2/sites-enabled/000-default.conf
-    state: absent
+- name: Enable Apache site
+  command: a2ensite deployment-platform.conf
   notify: restart apache
 
 - name: Enable and start deployment platform service

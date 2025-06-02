@@ -653,20 +653,25 @@ const vagrant = {
 
                 this.updateDeploymentStatus(vm.id, 'Preparing', 25, 'Copying Ansible variables');
 
-                // Copy variables except inventory.ini which we'll create
+                // Copy all variables including inventory.ini
                 fs.readdirSync(sourceVariablesDir).forEach(file => {
-                    if (file !== 'inventory.ini') {
-                        const sourcePath = path.join(sourceVariablesDir, file);
-                        const destPath = path.join(variablesDir, file);
+                    const sourcePath = path.join(sourceVariablesDir, file);
+                    const destPath = path.join(variablesDir, file);
+                    
+                    if (file === 'inventory.ini') {
+                        // Read the existing inventory file
+                        let inventoryContent = fs.readFileSync(sourcePath, 'utf8');
+                        // Replace X.X.X.X with the VM's IP address
+                        inventoryContent = inventoryContent.replace(/X\.X\.X\.X/g, vm.ip_address);
+                        // Write the modified content
+                        fs.writeFileSync(destPath, inventoryContent);
+                    } else {
+                        // Copy other files as is
                         fs.copyFileSync(sourcePath, destPath);
                     }
                 });
-
-                this.updateDeploymentStatus(vm.id, 'Preparing', 35, 'Creating inventory file');
-
-                // Create inventory.ini with the VM's IP address
-                const inventoryContent = `[web]\n${vm.ip_address}\n\n[all:vars]\nansible_user=vagrant\nansible_ssh_private_key_file=/home/etudis/.ssh/id_rsa\nansible_ssh_common_args='-o StrictHostKeyChecking=no'\n\n[localhost]\n127.0.0.1\n\n[localhost:vars]\nansible_user=etudis\nansible_connection=local\n`;
-                fs.writeFileSync(path.join(variablesDir, 'inventory.ini'), inventoryContent);
+                
+                this.updateDeploymentStatus(vm.id, 'Preparing', 35, 'Updated inventory file with VM IP');
 
                 this.updateDeploymentStatus(vm.id, 'Preparing', 45, 'Copying Vagrant configuration');
 
@@ -755,10 +760,6 @@ const vagrant = {
             content = content.replace(
                 /chdir: \/home\/etudis\/Bureau\/vagrant\//g,
                 `chdir: ${remoteDir}/vagrant/`
-            );
-            content = content.replace(
-                'include_tasks: ../../roles/users/tasks/store_ssh_keys.yml',
-                `include_tasks: ${remoteDir}/playbooks/roles/users/tasks/store_ssh_keys.yml`
             );
 
             fs.writeFileSync(nodeYamlPath, content, 'utf8');
