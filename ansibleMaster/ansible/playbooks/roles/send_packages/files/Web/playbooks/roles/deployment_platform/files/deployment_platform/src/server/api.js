@@ -158,31 +158,79 @@ function handleVMDestroy(req, res) {
                     return res.end(JSON.stringify({error: 'Invalid JSON in request body'}));
                 }
                 
-                const vmId = data.id || data.vmId; // Support both formats for backward compatibility
-                console.log('Extracted VM ID:', vmId);
-                
-                if (!vmId) {
-                    console.error('No VM ID provided in request');
+                // Support both single VM ID and array of VM IDs
+                let vmIds = [];
+                if (Array.isArray(data.ids)) {
+                    // Multiple VMs to destroy (array of IDs)
+                    vmIds = data.ids;
+                    console.log(`Received request to destroy ${vmIds.length} VMs`);
+                } else if (data.id || data.vmId) {
+                    // Single VM (backward compatibility)
+                    vmIds = [data.id || data.vmId];
+                    console.log('Received single VM destroy request for ID:', vmIds[0]);
+                } else {
+                    console.error('No valid VM ID(s) provided in request');
                     res.writeHead(400, {'Content-Type': 'application/json'});
-                    return res.end(JSON.stringify({error: 'VM ID is required', receivedData: data}));
+                    return res.end(JSON.stringify({
+                        error: 'VM ID(s) are required',
+                        receivedData: data
+                    }));
                 }
                 
-                console.log('Destroying VM with ID:', vmId);
+                // Use destroyVMs for multiple VMs, destroyVM for a single VM for backward compatibility
+                const destroyFunction = vmIds.length > 1 ? 'destroyVMs' : 'destroyVM';
+                const destroyArgs = vmIds.length > 1 ? [vmIds] : [vmIds[0]];
+                
+                console.log(`Using ${destroyFunction} for ${vmIds.length} VM(s)`);
 
-                await vagrant.destroyVM(vmId, (error, result) => {
+                vagrant[destroyFunction](...destroyArgs, (error, result) => {
                     if (error) {
-                        console.error('Error destroying VM:', error);
-                        res.writeHead(500, {'Content-Type': 'application/json'});
-                        res.end(JSON.stringify({error: 'Failed to destroy VM'}));
+                        console.error(`Error in ${destroyFunction}:`, error);
+                        
+                        // If we have partial success (some VMs were destroyed)
+                        if (error.successfulDestructions && error.successfulDestructions.length > 0) {
+                            res.writeHead(207, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({
+                                success: false,
+                                message: `Partially completed: ${error.message}`,
+                                successfulDestructions: error.successfulDestructions,
+                                failedDestructions: error.errors || [],
+                                totalRequested: vmIds.length,
+                                successCount: error.successfulDestructions.length,
+                                errorCount: error.errors ? error.errors.length : 0
+                            }));
+                        } else {
+                            // Complete failure
+                            res.writeHead(500, {'Content-Type': 'application/json'});
+                            res.end(JSON.stringify({
+                                success: false,
+                                message: error.message || 'Failed to destroy VM(s)',
+                                totalRequested: vmIds.length,
+                                successCount: 0,
+                                errorCount: vmIds.length
+                            }));
+                        }
                     } else {
+                        // Success
                         res.writeHead(200, {'Content-Type': 'application/json'});
-                        res.end(JSON.stringify(result));
+                        res.end(JSON.stringify({
+                            success: true,
+                            message: `Successfully destroyed ${vmIds.length} VM(s)`,
+                            ...result,
+                            totalRequested: vmIds.length,
+                            successCount: vmIds.length,
+                            errorCount: 0
+                        }));
                     }
                 });
             } catch (error) {
-                console.error('Error parsing request body:', error);
-                res.writeHead(400, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify({error: 'Invalid request body'}));
+                console.error('Error processing destroy request:', error);
+                res.writeHead(500, {'Content-Type': 'application/json'});
+                res.end(JSON.stringify({
+                    success: false,
+                    message: 'Internal server error',
+                    error: error.message
+                }));
             }
         });
     } else {

@@ -654,7 +654,7 @@ function updateDeploymentStatus() {
     }
 }
 
-// Deploy multiple VMs in parallel
+// Deploy multiple VMs with a single request
 async function deployVM(event) {
     event.preventDefault();
 
@@ -702,79 +702,82 @@ async function deployVM(event) {
             throw new Error('Target hosts are not accessible. Cannot deploy VMs.');
         }
 
-        // Create an array of deployment promises
-        const deploymentPromises = [];
-        
+        // Update UI to show deployment in progress
         for (let i = 0; i < vmCount; i++) {
             const vmNumber = i + 1;
             deploymentStatus.vms[`vm${vmNumber}`] = 'pending';
-            
-            const deploymentPromise = (async () => {
-                try {
-                    deploymentStatus.inProgress++;
-                    deploymentStatus.vms[`vm${vmNumber}`] = 'deploying';
-                    updateDeploymentStatus();
+        }
+        deploymentStatus.inProgress = vmCount;
+        updateDeploymentStatus();
 
-                    // Send request to deploy VM
-                    const response = await fetch('/api/vms', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            vagrantFile,
-                            vmCount: 1,  // Deploy one VM at a time
-                            vmRam,
-                            vmCores
-                        })
-                    });
+        try {
+            // Send a single request to deploy all VMs
+            const response = await fetch('/api/vms', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    vagrantFile,
+                    vmCount: vmCount,  // Send the total number of VMs to deploy
+                    vmRam,
+                    vmCores
+                })
+            });
 
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'Failed to deploy VM');
-                    }
 
-                    const deployedVMs = await response.json();
-                    deploymentStatus.completed++;
-                    deploymentStatus.vms[`vm${vmNumber}`] = 'completed';
-                    
-                    // Start polling for status updates
-                    if (deployedVMs && deployedVMs.length > 0) {
-                        startStatusPolling(deployedVMs[0].id);
-                    }
-                    
-                    return deployedVMs[0];
-                } catch (error) {
-                    console.error(`Error deploying VM ${vmNumber}:`, error);
-                    deploymentStatus.failed++;
-                    deploymentStatus.vms[`vm${vmNumber}`] = 'failed';
-                    throw error; // Re-throw to be caught by Promise.allSettled
-                } finally {
-                    deploymentStatus.inProgress--;
-                    updateDeploymentStatus();
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to deploy VMs');
+            }
+
+
+            const deployedVMs = await response.json();
+
+            // Update deployment status
+            deploymentStatus.completed = deployedVMs.length;
+            deploymentStatus.inProgress = 0;
+
+            // Update individual VM statuses
+            deployedVMs.forEach((vm, index) => {
+                const vmNumber = index + 1;
+                deploymentStatus.vms[`vm${vmNumber}`] = 'completed';
+
+                // Start polling for status updates
+                if (vm && vm.id) {
+                    startStatusPolling(vm.id);
                 }
-            })();
-            
-            deploymentPromises.push(deploymentPromise);
-            
-            // Add a small delay between deployments to avoid overwhelming the system
-            await new Promise(resolve => setTimeout(resolve, 500));
+            });
+
+            // Reload VMs to show the new ones
+            await loadVMs();
+
+        } catch (error) {
+            console.error('Error during bulk deployment:', error);
+            deploymentStatus.failed = vmCount - (deploymentStatus.completed || 0);
+            deploymentStatus.inProgress = 0;
+
+            // Update UI to show failed status
+            for (let i = 0; i < vmCount; i++) {
+                const vmNumber = i + 1;
+                if (deploymentStatus.vms[`vm${vmNumber}`] !== 'completed') {
+                    deploymentStatus.vms[`vm${vmNumber}`] = 'failed';
+                }
+            }
+
+            throw error; // Re-throw to be caught by the outer catch
+        } finally {
+            updateDeploymentStatus();
         }
 
-        // Wait for all deployments to complete or fail
-        const results = await Promise.allSettled(deploymentPromises);
-        
-        // Reload VMs to show the new ones
-        await loadVMs();
-        
     } catch (error) {
         console.error('Error in deployment process:', error);
-        
+
         // Update status to show error
         updateStatusDisplay({
             status: 'Error',
             progress: 0,
             message: 'Error during deployment: ' + error.message
         });
-        
+
         // Hide status overlay after a delay
         setTimeout(hideStatusOverlay, 5000);
     }
@@ -1030,7 +1033,7 @@ function updateDestroyButtonState() {
     }
 }
 
-// Destroy selected VMs
+// Destroy selected VMs using batch API
 async function destroySelectedVMs() {
     const checkboxes = document.querySelectorAll('.vm-checkbox:checked');
     if (checkboxes.length === 0) return;
@@ -1048,43 +1051,105 @@ async function destroySelectedVMs() {
     });
 
     const vmIds = Array.from(checkboxes).map(checkbox => checkbox.dataset.vmId);
-    let successCount = 0;
-    let errorCount = 0;
+    
+    try {
+        // Update status to show we're starting the batch operation
+        updateStatusDisplay({
+            status: 'Destroying',
+            progress: 10,
+            message: `Sending batch destroy request for ${vmIds.length} VM(s)...`
+        });
 
-    // Process VMs in sequence to avoid overwhelming the server
-    for (let i = 0; i < vmIds.length; i++) {
-        const vmId = vmIds[i];
-        const vmName = document.querySelector(`tr[data-vm-id="${vmId}"] .vm-name`).textContent;
+        // Send batch destroy request
+        const response = await fetch('/api/vms/destroy', {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ids: vmIds })
+        });
 
-        try {
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Failed to destroy VMs');
+        }
+
+        // Handle partial success (207 status code)
+        if (response.status === 207) {
+            const { successCount = 0, errorCount = 0, successfulDestructions = [], failedDestructions = [] } = result;
+            
+            console.log(`Batch destroy partially completed: ${successCount} succeeded, ${errorCount} failed`);
+            
+            // Update UI for successful destructions
+            if (successfulDestructions.length > 0) {
+                successfulDestructions.forEach(({ vmId }) => {
+                    const row = document.querySelector(`tr[data-vm-id="${vmId}"]`);
+                    const detailsRow = document.getElementById(`vm-details-${vmId}`);
+                    const vmCard = document.getElementById(`vm-card-${vmId}`);
+                    
+                    if (row) row.remove();
+                    if (detailsRow) detailsRow.remove();
+                    if (vmCard) vmCard.remove();
+                });
+            }
+            
+            // Show appropriate message
             updateStatusDisplay({
-                status: 'Destroying',
-                progress: Math.round((i / vmIds.length) * 100),
-                message: `Destroying VM: ${vmName} (${i + 1}/${vmIds.length})`
+                status: errorCount > 0 ? 'Completed with errors' : 'Success',
+                progress: 100,
+                message: `Destroyed ${successCount} VM(s) successfully${errorCount > 0 ? `, failed to destroy ${errorCount} VM(s)` : ''}`
             });
 
-            // Call destroyVM for each VM with skipConfirmation=true to avoid multiple confirm dialogs
-            await destroyVM(vmId, false, true);
-            successCount++;
+            if (errorCount > 0) {
+                showError(`Failed to destroy ${errorCount} VM(s). Check the logs for details.`);
+            }
+        } else {
+            // Complete success
+            console.log(`Successfully destroyed ${vmIds.length} VMs`);
+            
+            // Remove all VMs from UI
+            vmIds.forEach(vmId => {
+                const row = document.querySelector(`tr[data-vm-id="${vmId}"]`);
+                const detailsRow = document.getElementById(`vm-details-${vmId}`);
+                const vmCard = document.getElementById(`vm-card-${vmId}`);
+                
+                if (row) row.remove();
+                if (detailsRow) detailsRow.remove();
+                if (vmCard) vmCard.remove();
+            });
 
-        } catch (error) {
-            console.error(`Error destroying VM ${vmId}:`, error);
-            errorCount++;
+            updateStatusDisplay({
+                status: 'Success',
+                progress: 100,
+                message: `Successfully destroyed ${vmIds.length} VM(s)`
+            });
         }
+    } catch (error) {
+        console.error('Error in batch destroy:', error);
+        updateStatusDisplay({
+            status: 'Failed',
+            progress: 0,
+            message: error.message || 'Failed to destroy VMs'
+        });
+        showError(error.message || 'Failed to destroy VMs. Please try again.');
+    } finally {
+        // Refresh the VM list after a short delay
+        setTimeout(async () => {
+            hideStatusOverlay();
+            await loadVMs();
+            
+            // Update UI elements that depend on VM count
+            const noVMsMessage = document.getElementById('no-vms-message');
+            const selectAllBtn = document.getElementById('select-all');
+            const deselectAllBtn = document.getElementById('deselect-all');
+            const remainingVMs = document.querySelectorAll('.vm-row, .vm-card').length;
+            
+            if (noVMsMessage) noVMsMessage.classList.toggle('visible', remainingVMs === 0);
+            if (selectAllBtn) selectAllBtn.disabled = remainingVMs === 0;
+            if (deselectAllBtn) deselectAllBtn.disabled = remainingVMs === 0;
+        }, 2000);
     }
-
-    // Update status with results
-    updateStatusDisplay({
-        status: errorCount === 0 ? 'Success' : 'Completed with errors',
-        progress: 100,
-        message: `Destroyed ${successCount} VM(s) successfully${errorCount > 0 ? `, failed to destroy ${errorCount} VM(s)` : ''}`
-    });
-
-    // Refresh the VM list after a short delay
-    setTimeout(async () => {
-        hideStatusOverlay();
-        await loadVMs();
-    }, 2000);
 }
 
 // Toggle select all VMs

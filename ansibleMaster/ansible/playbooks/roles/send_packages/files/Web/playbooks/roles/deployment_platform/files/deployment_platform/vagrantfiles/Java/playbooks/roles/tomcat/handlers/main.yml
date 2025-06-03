@@ -1,6 +1,6 @@
 ---
 - name: restart tomcat
   service:
-    name: tomcat9
+    name: "{{ tomcat_package }}"
     state: restarted
     enabled: yes

@@ -26,6 +26,7 @@
       - php-cgi
       - openssl
     state: present
+    update_cache: yes
 
 - name: Vérifier si l'hôte est etudiant1
   set_fact:

@@ -139,7 +139,7 @@ function exportToCSV() {
     const tableRows = document.querySelectorAll('#ssh-keys-table-body tr');
     
     // Vérifier s'il y a des données à exporter
-    if (tableRows.length === 0 || (tableRows.length === 1 && tableRows[0].querySelector('td').colSpan)) {
+    if (tableRows.length === 0) {
         alert('Aucune donnée à exporter');
         return;
     }

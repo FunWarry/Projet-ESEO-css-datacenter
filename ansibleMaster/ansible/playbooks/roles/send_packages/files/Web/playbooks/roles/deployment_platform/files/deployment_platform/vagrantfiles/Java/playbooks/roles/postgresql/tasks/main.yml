@@ -16,39 +16,51 @@
     state: started
     enabled: yes
 
-- name: Create PostgreSQL database
-  postgresql_db:
-    name: "{{ db_name }}"
-    encoding: 'UTF-8'
-    lc_ctype: 'en_US.UTF-8'
-    lc_collate: 'en_US.UTF-8'
+- name: Configure pg_hba.conf for password authentication
+  blockinfile:
+    path: /etc/postgresql/15/main/pg_hba.conf
+    block: |
+      # TYPE  DATABASE        USER            ADDRESS                 METHOD
+      local   all             all                                     md5
+      host    all             all             127.0.0.1/32            md5
+      host    all             all             ::1/128                 md5
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - POSTGRESQL AUTH CONFIG"
     state: present
-  become_user: postgres
-
-- name: Create PostgreSQL user with password
-  postgresql_user:
-    name: "{{ db_user }}"
-    password: "{{ db_password }}"
-    db: "{{ db_name }}"
-    priv: "ALL"
-    role_attr_flags: "CREATEDB,LOGIN"
-  become_user: postgres
-  no_log: true  # Ne pas afficher le mot de passe dans les logs
+  become: yes
+  notify: restart postgresql
 
 - name: Update PostgreSQL configuration to allow remote connections
   lineinfile:
-    path: /etc/postgresql/*/main/postgresql.conf
-    line: "{{ item }}"
-    regexp: "^#?listen_addresses"
-  with_items:
-    - "listen_addresses = '*'"
-  notify:
-    - restart postgresql
+    path: /etc/postgresql/15/main/postgresql.conf
+    line: "listen_addresses = '*'"
+    regexp: '^#?listen_addresses'
+  notify: restart postgresql
 
-- name: Update pg_hba.conf to allow connections
-  lineinfile:
-    path: /etc/postgresql/*/main/pg_hba.conf
-    line: "host    all             all             0.0.0.0/0               md5"
-    insertafter: '^# IPv4 local connections:'
-  notify:
-    - restart postgresql
+- name: Apply PostgreSQL configuration changes
+  meta: flush_handlers
+
+- name: Create PostgreSQL database
+  command: sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} ENCODING 'UTF8';"
+  register: db_creation
+  changed_when: db_creation.rc == 0
+  failed_when: db_creation.rc != 0 and "already exists" not in db_creation.stderr
+
+- name: Create PostgreSQL user
+  shell: |
+    sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_password }}';"
+  args:
+    executable: /bin/bash
+  register: user_creation
+  changed_when: user_creation.rc == 0
+  failed_when: user_creation.rc != 0 and "already exists" not in user_creation.stderr
+  when: db_user is defined and db_password is defined
+
+- name: Grant privileges to user on database
+  shell: |
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE {{ db_name }} TO {{ db_user }};"
+  args:
+    executable: /bin/bash
+  when: db_user is defined and db_name is defined
+  register: grant_privileges
+  changed_when: grant_privileges.rc == 0
+  failed_when: grant_privileges.rc != 0 and "does not exist" not in grant_privileges.stderr

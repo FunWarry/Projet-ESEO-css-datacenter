@@ -9,7 +9,7 @@
     - name: Lancer la machine Vagrant
       command: vagrant up
       args:
-        chdir: "/home/etudis/Bureau/vagrant/"  # Remonter au dossier contenant le Vagrantfile
+        chdir: /home/etudis/Bureau/vagrant/  # Remonter au dossier contenant le Vagrantfile
       register: vagrant_up
       changed_when: false
       retries: 3
@@ -41,8 +41,6 @@
     max_retries: 10
     retry_delay: 30
     connection_timeout: 300
-
-  # Configuration de la stratégie de reprise
   max_fail_percentage: 0
   force_handlers: true
 
@@ -70,28 +68,16 @@
       when: connection_result is defined and connection_result is failed
 
   roles:
-    - { role: users }
+    - role: sys
+      tags: [ system, packages ]
+
+    - role: users
+      tags: [users, system]
 
 - name: Installation et configuration de la pile LAMJ
   hosts: java_servers
   become: true
-  vars:
-    # Variables PostgreSQL
-    db_name: "myappdb"
-    db_user: "myappuser"
-    db_password: "{{ vault_db_password | default('change_this_password') }}"
-    
-    # Variables Tomcat
-    tomcat_port: 8080
-    tomcat_admin_user: "admin"
-    tomcat_admin_password: "{{ vault_tomcat_password | default('change_this_password') }}"
-    
-    # Variables Apache
-    apache_port: 80
-    
-    # Variables Zabbix
-    zabbix_server: "192.168.238.3"
-    
+  # Les variables sont définies dans le fichier inventory.ini
   roles:
     - role: java
       tags: [java]
@@ -119,7 +105,6 @@
         enabled: yes
       loop:
         - apache2
-        - tomcat9
         - postgresql
         - zabbix-agent
       ignore_errors: yes
