@@ -11,7 +11,8 @@ let activeOperationVmId = null;
 let statusPollingInterval = null;
 
 // DOM elements
-let statusIndicator, statusMessage, vmForm, vagrantFileSelect, vmList, noVmsMessage, statusOverlay, statusTitle, progressBar, statusMessageDetail, statusPercentage;
+let statusIndicator, statusMessage, vmForm, vagrantFileSelect, vmList, noVmsMessage, statusOverlay, statusTitle,
+    progressBar, statusMessageDetail, statusPercentage;
 
 // Initialize DOM elements
 function initializeDOMElements() {
@@ -39,7 +40,7 @@ const lastChecked = document.getElementById('last-checked');
 // Initialize the application
 window.addEventListener('load', () => {
     console.log('DOM and all resources loaded');
-    
+
     // Initialize DOM elements
     initializeDOMElements();
 
@@ -126,7 +127,7 @@ function showStatusOverlay(title, message) {
     if (!statusTitle || !statusMessageDetail || !statusPercentage || !progressBar || !statusOverlay) {
         initializeDOMElements();
     }
-    
+
     try {
         if (statusTitle) statusTitle.textContent = title;
         if (statusMessageDetail) statusMessageDetail.textContent = message;
@@ -151,7 +152,7 @@ function hideStatusOverlay() {
     if (!statusOverlay) {
         initializeDOMElements();
     }
-    
+
     try {
         if (statusOverlay) {
             statusOverlay.classList.add('hidden');
@@ -236,7 +237,7 @@ function updateStatusDisplay(status) {
     if (!statusPercentage || !progressBar || !statusMessageDetail || !statusTitle) {
         initializeDOMElements();
     }
-    
+
     try {
         // Update progress bar
         const progress = status.progress || 0;
@@ -623,16 +624,16 @@ const deploymentStatus = {
 // Update the deployment status display
 function updateDeploymentStatus() {
     if (deploymentStatus.total === 0) return;
-    
+
     const completed = deploymentStatus.completed + deploymentStatus.failed;
     const progress = Math.round((completed / deploymentStatus.total) * 100);
-    
+
     updateStatusDisplay({
         status: 'Deploying',
         progress: progress,
         message: `Deploying VMs: ${completed} of ${deploymentStatus.total} (${deploymentStatus.failed} failed)`
     });
-    
+
     // If all VMs are done, stop polling after a delay
     if (completed === deploymentStatus.total) {
         setTimeout(() => {
@@ -714,7 +715,7 @@ async function deployVM(event) {
             // Send a single request to deploy all VMs
             const response = await fetch('/api/vms', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     vagrantFile,
                     vmCount: vmCount,  // Send the total number of VMs to deploy
@@ -799,15 +800,15 @@ function showMessage(message, type = 'info') {
         default:
             console.log('Info:', message);
     }
-    
+
     // Create message element
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}-message`;
     messageDiv.textContent = message;
-    
+
     // Add to the top of the body
     document.body.prepend(messageDiv);
-    
+
     // Remove after 5 seconds
     setTimeout(() => {
         messageDiv.classList.add('fade-out');
@@ -836,8 +837,12 @@ async function destroyVM(vmId, showStatus = true, skipConfirmation = false) {
     }
 
     // Skip confirmation if called from destroySelectedVMs or if explicitly told to skip
-    if (!skipConfirmation && !confirm('Are you sure you want to destroy this VM? This action cannot be undone.')) {
-        return;
+    if (!skipConfirmation) {
+        showConfirmationDialog().then(async (confirmed) => {
+            if (!confirmed) {
+                console.log('User cancelled the destroy operation');
+            }
+        });
     }
 
     console.log('Destroying VM with ID:', vmId);
@@ -859,7 +864,7 @@ async function destroyVM(vmId, showStatus = true, skipConfirmation = false) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ id: vmId })
+            body: JSON.stringify({id: vmId})
         });
 
         if (!response.ok) {
@@ -868,18 +873,20 @@ async function destroyVM(vmId, showStatus = true, skipConfirmation = false) {
         }
 
         console.log('VM destroyed successfully, removing from UI');
-        
+
         // Remove the VM from the UI
         const row = document.querySelector(`tr[data-vm-id="${vmId}"]`);
         const detailsRow = document.getElementById(`vm-details-${vmId}`);
         const vmCard = document.getElementById(`vm-card-${vmId}`);
-        
+
         if (row) row.remove();
         if (detailsRow) detailsRow.remove();
         if (vmCard) vmCard.remove();
 
         // Show success message
-        const successMessage = 'VM destroyed successfully';
+        const successMessage = 'VM supprimée avec succès';
+        showSuccess(successMessage);
+
         if (showStatus) {
             updateStatusDisplay({
                 status: 'Success',
@@ -887,28 +894,26 @@ async function destroyVM(vmId, showStatus = true, skipConfirmation = false) {
                 message: successMessage
             });
             setTimeout(hideStatusOverlay, 2000);
-        } else {
-            showSuccess(successMessage);
         }
 
         // Check if any VMs are left
         const remainingVMs = document.querySelectorAll('.vm-row, .vm-card').length;
         console.log('Remaining VMs:', remainingVMs);
-        
+
         const noVMsMessage = document.getElementById('no-vms-message');
         if (noVMsMessage) {
             noVMsMessage.classList.toggle('visible', remainingVMs === 0);
         }
-        
+
         const selectAllBtn = document.getElementById('select-all');
         const deselectAllBtn = document.getElementById('deselect-all');
         if (selectAllBtn) selectAllBtn.disabled = remainingVMs === 0;
         if (deselectAllBtn) deselectAllBtn.disabled = remainingVMs === 0;
-        
+
     } catch (error) {
         console.error('Error destroying VM:', error);
         const errorMessage = `Failed to destroy VM: ${error.message || 'Unknown error'}`;
-        
+
         if (showStatus) {
             updateStatusDisplay({
                 status: 'Failed',
@@ -1033,14 +1038,47 @@ function updateDestroyButtonState() {
     }
 }
 
+async function showConfirmationDialog() {
+    // Use a custom confirmation dialog that matches our UI
+    return await new Promise((resolve) => {
+        const confirmDiv = document.createElement('div');
+        confirmDiv.className = 'custom-confirm';
+        confirmDiv.innerHTML = `
+            <div class="confirm-content">
+                <h3>Confirmer la suppression</h3>
+                <p>Êtes-vous sûr de vouloir supprimer cette VM ? Cette action est irréversible.</p>
+                <div class="confirm-buttons">
+                    <button id="confirm-yes" class="btn btn-danger">Oui, supprimer</button>
+                    <button id="confirm-no" class="btn btn-secondary">Annuler</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(confirmDiv);
+
+        // Handle button clicks
+        document.getElementById('confirm-yes').onclick = () => {
+            document.body.removeChild(confirmDiv);
+            resolve(true);
+        };
+
+        document.getElementById('confirm-no').onclick = () => {
+            document.body.removeChild(confirmDiv);
+            resolve(false);
+        };
+    });
+}
+
 // Destroy selected VMs using batch API
 async function destroySelectedVMs() {
     const checkboxes = document.querySelectorAll('.vm-checkbox:checked');
     if (checkboxes.length === 0) return;
 
-    if (!confirm(`Are you sure you want to destroy ${checkboxes.length} selected VM(s)? This action cannot be undone.`)) {
-        return;
-    }
+    showConfirmationDialog().then(async (confirmed) => {
+        if (!confirmed) {
+            console.log('User cancelled the destroy operation');
+        }
+    });
 
     // Show status overlay
     showStatusOverlay('Destroying VMs', `Destroying ${checkboxes.length} VM(s)...`);
@@ -1051,7 +1089,7 @@ async function destroySelectedVMs() {
     });
 
     const vmIds = Array.from(checkboxes).map(checkbox => checkbox.dataset.vmId);
-    
+
     try {
         // Update status to show we're starting the batch operation
         updateStatusDisplay({
@@ -1066,7 +1104,7 @@ async function destroySelectedVMs() {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ ids: vmIds })
+            body: JSON.stringify({ids: vmIds})
         });
 
         const result = await response.json();
@@ -1077,23 +1115,23 @@ async function destroySelectedVMs() {
 
         // Handle partial success (207 status code)
         if (response.status === 207) {
-            const { successCount = 0, errorCount = 0, successfulDestructions = [], failedDestructions = [] } = result;
-            
+            const {successCount = 0, errorCount = 0, successfulDestructions = [], failedDestructions = []} = result;
+
             console.log(`Batch destroy partially completed: ${successCount} succeeded, ${errorCount} failed`);
-            
+
             // Update UI for successful destructions
             if (successfulDestructions.length > 0) {
-                successfulDestructions.forEach(({ vmId }) => {
+                successfulDestructions.forEach(({vmId}) => {
                     const row = document.querySelector(`tr[data-vm-id="${vmId}"]`);
                     const detailsRow = document.getElementById(`vm-details-${vmId}`);
                     const vmCard = document.getElementById(`vm-card-${vmId}`);
-                    
+
                     if (row) row.remove();
                     if (detailsRow) detailsRow.remove();
                     if (vmCard) vmCard.remove();
                 });
             }
-            
+
             // Show appropriate message
             updateStatusDisplay({
                 status: errorCount > 0 ? 'Completed with errors' : 'Success',
@@ -1107,13 +1145,13 @@ async function destroySelectedVMs() {
         } else {
             // Complete success
             console.log(`Successfully destroyed ${vmIds.length} VMs`);
-            
+
             // Remove all VMs from UI
             vmIds.forEach(vmId => {
                 const row = document.querySelector(`tr[data-vm-id="${vmId}"]`);
                 const detailsRow = document.getElementById(`vm-details-${vmId}`);
                 const vmCard = document.getElementById(`vm-card-${vmId}`);
-                
+
                 if (row) row.remove();
                 if (detailsRow) detailsRow.remove();
                 if (vmCard) vmCard.remove();
@@ -1138,13 +1176,13 @@ async function destroySelectedVMs() {
         setTimeout(async () => {
             hideStatusOverlay();
             await loadVMs();
-            
+
             // Update UI elements that depend on VM count
             const noVMsMessage = document.getElementById('no-vms-message');
             const selectAllBtn = document.getElementById('select-all');
             const deselectAllBtn = document.getElementById('deselect-all');
             const remainingVMs = document.querySelectorAll('.vm-row, .vm-card').length;
-            
+
             if (noVMsMessage) noVMsMessage.classList.toggle('visible', remainingVMs === 0);
             if (selectAllBtn) selectAllBtn.disabled = remainingVMs === 0;
             if (deselectAllBtn) deselectAllBtn.disabled = remainingVMs === 0;

@@ -401,7 +401,6 @@ const vagrant = {
             // Check if we can connect using key authentication
             try {
                 await execPromise(`ssh -o BatchMode=yes -o StrictHostKeyChecking=no -o ConnectTimeout=5 etudis@${host} "echo SSH key authentication successful"`);
-                console.log(`SSH key authentication already set up for ${host}`);
                 return true;
             } catch (error) {
                 console.log(`SSH key authentication not set up for ${host}, setting it up...`);
@@ -472,6 +471,7 @@ const vagrant = {
 
     // Deploy a VM using Ansible
     // Déployer plusieurs VMs en parallèle
+    // Deploy VMs using Ansible with a queue system
     deployVM: async function (config, callback) {
         const {vmCount, vmRam, vmCores, vagrantFile} = config;
         const concurrency = 5; // Nombre de déploiements en parallèle
@@ -490,10 +490,100 @@ const vagrant = {
 
         console.log(`Starting deployment of ${vmCount} VMs with ${vmRam}MB RAM and ${vmCores} cores using ${vagrantFileConfig.name}`);
 
+        // Worker function to process a single VM
+        const processVM = async (vm) => {
+            try {
+                // Update status to deploying
+                vm.status = 'Deploying';
+                await db.updateVMStatus(vm.id, 'Deploying');
+
+                // Create working directory
+                fs.mkdirSync(vm.workDir, {recursive: true});
+
+                // Deploy using Ansible
+                await this.deployWithAnsible(vm, vagrantFileConfig, vm.workDir);
+
+                // Update status to deployed
+                vm.status = 'Deployed';
+                await db.updateVMStatus(vm.id, 'Running');
+
+                return {success: true, vm};
+            } catch (error) {
+                console.error(`Error deploying VM ${vm.id}:`, error);
+
+                // Update status to failed
+                vm.status = 'Failed';
+                await db.updateVMStatus(vm.id, 'Error');
+
+                return {
+                    success: false,
+                    vm,
+                    error: error.message || 'Deployment failed'
+                };
+            }
+        };
+
+        // Queue manager with workers
+        const processQueue = async (items, worker, concurrency) => {
+            const results = [];
+            const errors = [];
+            let activeWorkers = 0;
+            let index = 0;
+
+            return new Promise((resolve) => {
+                const startNext = () => {
+                    // If we've processed all items and no workers are active, we're done
+                    if (index >= items.length && activeWorkers === 0) {
+                        resolve({ results, errors });
+                        return;
+                    }
+
+                    // Start new workers while we can and have items left
+                    while (activeWorkers < concurrency && index < items.length) {
+                        const currentIndex = index++;
+                        const item = items[currentIndex];
+
+                        activeWorkers++;
+
+                        worker(item)
+                            .then(result => {
+                                if (!result.success) {
+                                    errors.push(result);
+                                }
+                                results.push(result);
+
+                                // Update progress
+                                const progress = Math.round(((results.length + errors.length) / items.length) * 100);
+                                console.log(`Progress: ${progress}% (${results.length + errors.length}/${items.length})`);
+
+                                // Free up worker and start next
+                                activeWorkers--;
+                                startNext();
+                            })
+                            .catch(error => {
+                                console.error('Error in worker:', error);
+                                errors.push({
+                                    vm: item,
+                                    error: error.message || 'Unknown error in worker'
+                                });
+
+                                // Update progress
+                                const progress = Math.round(((results.length + errors.length) / items.length) * 100);
+                                console.log(`Progress: ${progress}% (${results.length + errors.length}/${items.length})`);
+
+                                // Free up worker and start next
+                                activeWorkers--;
+                                startNext();
+                            });
+                    }
+                };
+                // Start processing
+                startNext();
+            });
+        };
+
         try {
             const deployedVMs = [];
-            const errors = [];
-            const pendingVMs = [];
             const timestamp = Date.now();
 
             // Créer tous les objets VM d'abord
@@ -518,86 +608,36 @@ const vagrant = {
                 // Ajouter à la base de données
                 await db.addVM(vm);
                 deployedVMs.push(vm);
-                pendingVMs.push(vm);
             }
 
-            // Traiter les déploiements par lots pour éviter de surcharger le système
-            const processBatch = async (batch) => {
-                const batchPromises = batch.map(async (vm) => {
-                    try {
-                        // Mettre à jour le statut en cours de déploiement
-                        vm.status = 'Deploying';
-                        await db.updateVMStatus(vm.id, 'Deploying');
+            // Process VMs using queue system
+            const { results, errors } = await processQueue(deployedVMs, processVM, concurrency);
 
-                        // Créer le répertoire de travail
-                        fs.mkdirSync(vm.workDir, {recursive: true});
+            // Calculate statistics
+            const successCount = results.filter(r => r.success).length;
+            const errorCount = errors.length;
 
-                        // Déployer en utilisant Ansible
-                        await this.deployWithAnsible(vm, vagrantFileConfig, vm.workDir);
+            console.log(`Deployment completed. Success: ${successCount}, Failures: ${errorCount}`);
 
-                        // Mettre à jour le statut à déployé
-                        vm.status = 'Deployed';
-                        await db.updateVMStatus(vm.id, 'Running');
-
-                        return {success: true, vm};
-                    } catch (error) {
-                        console.error(`Error deploying VM ${vm.id}:`, error);
-
-                        // Mettre à jour le statut en échec
-                        vm.status = 'Failed';
-                        await db.updateVMStatus(vm.id, 'Error');
-
-                        return {
-                            success: false,
-                            vm,
-                            error: error.message || 'Échec du déploiement'
-                        };
-                    } finally {
-                        // Nettoyer la VM de la liste des en attente
-                        const index = pendingVMs.findIndex(v => v.id === vm.id);
-                        if (index !== -1) {
-                            pendingVMs.splice(index, 1);
-                        }
-                    }
-                });
-
-                return Promise.all(batchPromises);
-            };
-
-            // Traiter les VMs par lots
-            for (let i = 0; i < deployedVMs.length; i += concurrency) {
-                const batch = deployedVMs.slice(i, i + concurrency);
-                const results = await processBatch(batch);
-
-                // Suivre les erreurs
-                const batchErrors = results.filter(r => !r.success);
-                errors.push(...batchErrors);
-
-                console.log(`Lot ${i / concurrency + 1} terminé. Réussis: ${results.length - batchErrors.length}, Échecs: ${batchErrors.length}`);
-            }
-
-            // S'il y a eu des erreurs, les retourner
             if (errors.length > 0) {
-                console.error(`Déploiement terminé avec ${errors.length} erreurs`);
                 return callback({
-                    message: `Déploiement terminé avec ${errors.length} erreurs`,
+                    message: `Deployment completed with ${errors.length} errors`,
                     errors: errors.map(e => ({
-                        vmId: e.vm.id,
-                        vmName: e.vm.name,
-                        error: e.error
+                        vmId: e.vm?.id || 'unknown',
+                        vmName: e.vm?.name || 'unknown',
+                        error: e.error || 'Unknown error'
                     })),
                     deployedVMs: deployedVMs.filter(vm => vm.status === 'Deployed')
                 });
             }
 
-            // Tous les déploiements ont réussi
-            console.log(`Déploiement réussi de ${deployedVMs.length} VMs`);
+            console.log(`Successfully deployed ${deployedVMs.length} VMs`);
             callback(null, deployedVMs);
         } catch (error) {
-            console.error('Erreur dans le processus de déploiement:', error);
+            console.error('Error in deployment process:', error);
             callback({
-                message: 'Erreur fatale dans le processus de déploiement',
-                error: error.message || 'Erreur inconnue',
+                message: 'Fatal error in deployment process',
+                error: error.message || 'Unknown error',
                 stack: error.stack
             });
         }
@@ -925,74 +965,57 @@ const vagrant = {
                 const error = new Error(`Invalid VM ID: ${vmId}`);
                 return cb(error);
             }
-
             // Find the VM in the database
             try {
                 const vms = await db.getVMs();
-
                 const vm = vms.find(vm => vm && vm.id === vmId);
 
                 if (!vm) {
                     const error = new Error(`VM with ID ${vmId} not found in database`);
                     return cb(error);
                 }
-
                 // Ensure vm has required properties
                 if (!vm.host || !vm.name) {
                     const error = new Error(`VM with ID ${vmId} is missing required properties (host or name)`);
                     return cb(error);
                 }
-
                 // Initialize deployment status for destruction
                 this.updateDeploymentStatus(vmId, 'Destroying', 10, 'Starting VM destruction process');
-
                 // Update VM status in database
                 try {
                     await db.updateVMStatus(vmId, 'Destroying');
                 } catch (dbError) {
                     throw new Error(`Failed to update VM status: ${dbError.message}`);
                 }
-
                 // Find the VM's directory
                 const workDir = path.join(__dirname, '../../tmp', vmId);
-
                 // Check if the directory exists
                 if (fs.existsSync(workDir)) {
                     this.updateDeploymentStatus(vmId, 'Destroying', 30, 'Found VM directory');
-
                     // For Ansible-deployed VMs
                     const ansibleDir = path.join(workDir, 'ansible');
                     const etudiantDir = path.join(ansibleDir, 'vagrant');
 
                     if (fs.existsSync(etudiantDir)) {
                         this.updateDeploymentStatus(vmId, 'Destroying', 40, 'Setting up SSH key authentication');
-
                         try {
                             // Ensure SSH key authentication is set up for the target host
                             const sshKeyAuthSetup = await this.ensureSSHKeyAuth(vm.host, vmId);
                             if (!sshKeyAuthSetup) {
                                 throw new Error(`Failed to set up SSH key authentication for ${vm.host}`);
                             }
-
                             this.updateDeploymentStatus(vmId, 'Destroying', 60, 'Connecting to target host');
-
                             // Instead of running locally, we'll run on the target machine using SSH
                             const remoteDir = `/home/etudis/ansible_${vm.id}`;
-
                             this.updateDeploymentStatus(vmId, 'Destroying', 70, 'Running vagrant destroy command');
-
                             // Get list of VMs in the project group
                             this.updateDeploymentStatus(vmId, 'Destroying', 70, 'Finding project VMs');
-
                             // Get list of all VMs in the project group
                             const listVMsCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "VBoxManage list vms -l | grep -A 1 '^Groups:.*/projet-CSS-S8-deployment/' | grep '^Name:' | cut -d':' -f2 | tr -d ' '"`;
-
                             const vmsListOutput = await execPromise(listVMsCmd, vmId);
                             const vmsList = vmsListOutput.trim().split('\n').filter(name => name.trim() !== '');
-
                             if (vmsList.length > 0) {
                                 this.updateDeploymentStatus(vmId, 'Destroying', 75, `Stopping ${vmsList.length} project VMs`);
-
                                 // Stop each VM in the project group
                                 for (const vmName of vmsList) {
                                     try {
@@ -1004,24 +1027,18 @@ const vagrant = {
                                         console.log(`[destroyVM] Could not stop VM ${vmName}, it might be already stopped:`, e.message);
                                     }
                                 }
-
                                 // Unregister and delete VMs
                                 this.updateDeploymentStatus(vmId, 'Destroying', 80, `Removing ${vmsList.length} project VMs`);
-
                                 for (const vmName of vmsList) {
-
                                     try {
                                         // Get VM info to find its files
                                         const vmInfoCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "VBoxManage showvminfo '${vmName}' --machinereadable | grep '^CfgFile=' | cut -d'=' -f2 | tr -d '\"'"`;
-
                                         const cfgFile = (await execPromise(vmInfoCmd, vmId)).trim();
                                         const vmDir = path.dirname(cfgFile);
-
                                         // Unregister VM
                                         const unregisterCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "VBoxManage unregistervm '${vmName}' --delete 2>/dev/null || true"`;
                                         const unregisterOutput = await execPromise(unregisterCmd, vmId);
                                         if (unregisterOutput) console.log(`[destroyVM] Unregister output: ${unregisterOutput}`);
-
                                         // Remove VM directory if it exists
                                         if (vmDir && vmDir !== '.') {
                                             const rmCmd = `ssh -o StrictHostKeyChecking=no etudis@${vm.host} "rm -rf '${vmDir}' 2>/dev/null || true"`;
@@ -1030,13 +1047,11 @@ const vagrant = {
                                         }
                                     } catch (e) {
                                         console.error(`[destroyVM] Error removing VM ${vmName}:`, e);
-                                        // Continue with next VM even if one fails
                                     }
                                 }
                             } else {
                                 this.updateDeploymentStatus(vmId, 'Destroying', 80, 'No project VMs found to remove');
                             }
-
                             // Run vagrant destroy in case there are any remaining resources
                             this.updateDeploymentStatus(vmId, 'Destroying', 85, 'Running vagrant destroy');
                             try {
@@ -1046,7 +1061,6 @@ const vagrant = {
                                 console.error('[destroyVM] Error during vagrant destroy:', e);
                                 // Continue with cleanup even if vagrant destroy fails
                             }
-
                             // Clean up remote directory
                             this.updateDeploymentStatus(vmId, 'Destroying', 90, 'Cleaning up remote files');
                             try {
@@ -1057,7 +1071,6 @@ const vagrant = {
                                 // Continue with local cleanup even if remote cleanup fails
                             }
                             this.updateDeploymentStatus(vmId, 'Destroying', 95, 'Final cleanup');
-
                             // Remove from database
                             try {
                                 await db.removeVM(vmId);
@@ -1065,7 +1078,6 @@ const vagrant = {
                                 console.error(`[destroyVM] Error removing VM ${vmId} from database:`, dbError);
                                 // Continue with local cleanup even if database removal fails
                             }
-
                             // Clean up the local directory
                             if (fs.existsSync(workDir)) {
                                 try {
@@ -1074,7 +1086,6 @@ const vagrant = {
                                     console.error(`[destroyVM] Error removing local directory ${workDir}:`, fsError);
                                 }
                             }
-
                             this.updateDeploymentStatus(vmId, 'Completed', 100, 'VM and all related resources have been cleaned up');
                             callback(null, {
                                 success: true,
@@ -1092,14 +1103,11 @@ const vagrant = {
                         }
                     } else {
                         this.updateDeploymentStatus(vmId, 'Destroying', 80, 'Ansible directory not found, removing from database');
-
                         try {
                             await db.removeVM(vmId);
-
                             if (fs.existsSync(workDir)) {
                                 fs.rmdirSync(workDir, {recursive: true});
                             }
-
                             this.updateDeploymentStatus(vmId, 'Completed', 100, 'VM removed from database');
                             callback(null, {success: true, message: `VM ${vm.name} removed from database`});
                         } catch (cleanupError) {
@@ -1112,7 +1120,6 @@ const vagrant = {
                 } else {
                     // If the directory doesn't exist, just remove from database
                     this.updateDeploymentStatus(vmId, 'Destroying', 80, 'VM directory not found, removing from database');
-
                     try {
                         await db.removeVM(vmId);
                         this.updateDeploymentStatus(vmId, 'Completed', 100, 'VM removed from database');
@@ -1128,7 +1135,6 @@ const vagrant = {
                 const errorMsg = `Error during VM destruction: ${error.message}`;
                 console.error(`[destroyVM] ${errorMsg}`, error);
                 this.updateDeploymentStatus(vmId, 'Failed', 0, `Error: ${error.message}`);
-
                 try {
                     if (vmId) {
                         await db.updateVMStatus(vmId, 'Failed to destroy');
@@ -1137,19 +1143,16 @@ const vagrant = {
                 } catch (dbError) {
                     console.error(`[destroyVM] Error updating VM ${vmId || 'unknown'} status after error:`, dbError);
                 }
-
                 // Ensure we don't call callback multiple times
                 if (typeof callback === 'function') {
                     callback(new Error(errorMsg));
                 }
             }
         } catch (error) {
-
             // Update deployment status if vmId is available
             if (vmId) {
                 this.updateDeploymentStatus(vmId, 'Failed', 0, `Error: ${error.message}`);
             }
-
             // Update VM status in database if vmId is available
             if (vmId) {
                 try {
@@ -1158,7 +1161,6 @@ const vagrant = {
                     console.error(`[destroyVM] Error updating VM ${vmId} status after error:`, dbError);
                 }
             }
-
             // Ensure we don't call callback multiple times and it's a function
             if (typeof callback === 'function') {
                 callback(error);

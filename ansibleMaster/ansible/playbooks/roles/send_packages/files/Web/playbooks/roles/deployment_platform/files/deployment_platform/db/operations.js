@@ -181,7 +181,6 @@ const dbOperations = {
 
         try {
             const [result] = await dbConnection.pool.query('DELETE FROM vms WHERE id = ?', [vmId]);
-            console.log(`VM removed from database: ${vmId}`);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Error removing VM:', error);
@@ -199,7 +198,6 @@ const dbOperations = {
 
         try {
             const [result] = await dbConnection.pool.query('UPDATE vms SET status = ? WHERE id = ?', [status, vmId]);
-            console.log(`VM status updated in database: ${vmId} - ${status}`);
             return result.affectedRows > 0;
         } catch (error) {
             console.error('Error updating VM status:', error);
