@@ -41,9 +41,9 @@ Vagrant.configure("2") do |config|
 		end
 
 		    node.vm.provision "shell", inline: $script_ssh
-        node.vm.provision "shell", path: "scripts/config_ssh.sh"
-        node.vm.provision "shell", path: "scripts/config_sys.sh"
-		    node.vm.provision "shell", inline: $script_route
+            node.vm.provision "shell", path: "scripts/config_ssh.sh"
+            node.vm.provision "shell", path: "scripts/config_sys.sh"
+            node.vm.provision "shell", inline: $script_route
 		end
 	end
 end

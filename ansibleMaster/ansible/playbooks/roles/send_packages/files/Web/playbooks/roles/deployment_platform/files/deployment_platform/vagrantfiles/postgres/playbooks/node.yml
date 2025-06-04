@@ -19,10 +19,10 @@
         port: 22
         state: started
         delay: 10
-        timeout: 5
+        timeout: 300
       register: wait_ssh
       retries: 10
-      delay: 5
+      delay: 15
       until: wait_ssh is succeeded
 
     - name: Attendre que la VM soit complètement initialisée
@@ -32,9 +32,16 @@
 
 - name: Configure PostgreSQL Server
   hosts: postgresql_servers
-  become: true
   gather_facts: true
-  
+  become: true
+
+  vars:
+    max_retries: 10
+    retry_delay: 30
+    connection_timeout: 300
+  max_fail_percentage: 0
+  force_handlers: true
+
   pre_tasks:
     - name: Essai de connexion SSH avec réessais
       wait_for_connection:
