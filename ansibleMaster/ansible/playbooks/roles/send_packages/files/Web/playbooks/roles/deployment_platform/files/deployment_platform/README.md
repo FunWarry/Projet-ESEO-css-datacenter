@@ -56,8 +56,8 @@ npm start
 ### Schéma d'Adressage Réseau
 | Type de VM      | Plage d'IP                       | Usage                   |
 |-----------------|----------------------------------|-------------------------|
-| Web/Java        | 192.168.232.10 - 192.168.233.254 | Serveurs d'applications |
-| Base de données | 192.168.234.10 - 192.168.234.254 | Bases de données        |
+| Web/Java        | 192.168.232.11 - 192.168.233.254 | Serveurs d'applications |
+| Base de données | 192.168.234.11 - 192.168.234.254 | Bases de données        |
 
 ## 📁 Structure du Projet
 

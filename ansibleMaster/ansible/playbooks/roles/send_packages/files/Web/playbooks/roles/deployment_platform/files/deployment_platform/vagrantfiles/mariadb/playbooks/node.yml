@@ -15,14 +15,14 @@
 
     - name: Attendre que le port SSH (22) soit disponible sur la VM
       wait_for:
-        host: "{{ groups['mysql_server'][0] }}"
+        host: "{{ groups['mariadb_servers'][0] }}"
         port: 22
         state: started
         delay: 10
-        timeout: 300
+        timeout: 5
       register: wait_ssh
       retries: 10
-      delay: 15
+      delay: 5
       until: wait_ssh is succeeded
 
     - name: Attendre que la VM soit complètement initialisée
@@ -30,8 +30,8 @@
         seconds: 5
       when: wait_ssh is succeeded
 
-- name: Configure PostgreSQL Server
-  hosts: mysql_server
+- name: Configure MariaDB Server
+  hosts: mariadb_servers
   become: true
   gather_facts: true
   
@@ -53,48 +53,37 @@
     - role: users
       tags: [ users, system ]
 
-    - role: firewall
-      tags: ['firewall', 'security']
+- name: Installation et configuration de mariaDB
+  hosts: mariadb_servers
+  become: true
 
-    - role: postgresql
-      tags: ['database', 'postgresql']
+  roles:
+    - role: firewall
+      tags: [firewall, security]
+
+    - role: mariadb
+      tags: [database, mariadb]
 
     - role: agent_zabbix
-      tags: ['monitoring', 'zabbix']
+      tags: [monitoring, zabbix]
 
-  post_tasks:
-    - name: Vérifier que PostgreSQL est en cours d'exécution
+- name: Vérification de l'installation et de la configuration de MariaDB
+  hosts: mariadb_servers
+  become: true
+
+  tasks:
+    - name: Vérifier que MariaDB est en cours d'exécution
       service:
-        name: postgresql
+        name: mariadb
         state: started
-      register: postgresql_service
       changed_when: false
       tags: [database, services]
 
-    - name: Vérifier que PostgreSQL écoute sur le bon port
+    - name: Vérifier que MariaDB écoute sur le bon port
       wait_for:
-        port: "{{ postgresql_port }}"
-        timeout: "{{ postgresql_connect_timeout }}"
+        port: "{{ mariadb_port }}"
+        timeout: "{{ mariadb_connect_timeout }}"
       tags: [database, services]
-
-    - name: Afficher les informations de connexion à la base de données
-      debug:
-        msg: |
-          ==============================================
-          Configuration PostgreSQL terminée avec succès !
-          ==============================================
-          Hôte: {{ inventory_hostname }}
-          Port: {{ postgresql_port }}
-          Base de données: {{ db_name }}
-          Utilisateur: {{ db_user }}
-          Mot de passe: {{ db_password | default('Non défini') }}
-          
-          Chaîne de connexion :
-          psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
-          
-          Pour se connecter depuis un hôte distant :
-          PGPASSWORD={{ db_password }} psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
-      tags: [database, info]
 
     - name: Vérifier l'état des services
       service:
@@ -102,27 +91,6 @@
         state: started
         enabled: yes
       loop:
-        - postgresql
+        - mariadb
         - zabbix-agent
-      register: service_status
-      changed_when: false
       tags: [system, services]
-
-    - name: Afficher les règles de pare-feu
-      command: ufw status verbose
-      register: ufw_status
-      changed_when: false
-      failed_when: false
-      tags: [firewall, debug]
-      
-    - name: Afficher la version de PostgreSQL
-      command: psql --version
-      register: psql_version
-      changed_when: false
-      tags: [database, info]
-      
-    - name: Afficher les bases de données
-      command: psql -U postgres -c "\l"
-      register: postgresql_databases
-      changed_when: false
-      tags: [database, info]

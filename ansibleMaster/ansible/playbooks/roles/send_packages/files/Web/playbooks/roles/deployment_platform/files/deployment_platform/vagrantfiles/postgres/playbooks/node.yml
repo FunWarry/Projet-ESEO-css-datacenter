@@ -19,10 +19,10 @@
         port: 22
         state: started
         delay: 10
-        timeout: 300
+        timeout: 5
       register: wait_ssh
       retries: 10
-      delay: 15
+      delay: 5
       until: wait_ssh is succeeded
 
     - name: Attendre que la VM soit complètement initialisée
@@ -53,21 +53,29 @@
     - role: users
       tags: [ users, system ]
 
+- name: Installation et configuration de postgreSQL
+  hosts: postgresql_servers
+  become: true
+
+  roles:
     - role: firewall
-      tags: ['firewall', 'security']
+      tags: [firewall, security]
 
     - role: postgresql
-      tags: ['database', 'postgresql']
+      tags: [database, postgresql]
 
     - role: agent_zabbix
-      tags: ['monitoring', 'zabbix']
+      tags: [monitoring, zabbix]
 
-  post_tasks:
+- name: Vérification de l'installation et de la configuration de PostgreSQL
+  hosts: postgresql_servers
+  become: true
+
+  tasks:
     - name: Vérifier que PostgreSQL est en cours d'exécution
       service:
         name: postgresql
         state: started
-      register: postgresql_service
       changed_when: false
       tags: [database, services]
 
@@ -77,25 +85,6 @@
         timeout: "{{ postgresql_connect_timeout }}"
       tags: [database, services]
 
-    - name: Afficher les informations de connexion à la base de données
-      debug:
-        msg: |
-          ==============================================
-          Configuration PostgreSQL terminée avec succès !
-          ==============================================
-          Hôte: {{ inventory_hostname }}
-          Port: {{ postgresql_port }}
-          Base de données: {{ db_name }}
-          Utilisateur: {{ db_user }}
-          Mot de passe: {{ db_password | default('Non défini') }}
-          
-          Chaîne de connexion :
-          psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
-          
-          Pour se connecter depuis un hôte distant :
-          PGPASSWORD={{ db_password }} psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
-      tags: [database, info]
-
     - name: Vérifier l'état des services
       service:
         name: "{{ item }}"
@@ -104,25 +93,4 @@
       loop:
         - postgresql
         - zabbix-agent
-      register: service_status
-      changed_when: false
       tags: [system, services]
-
-    - name: Afficher les règles de pare-feu
-      command: ufw status verbose
-      register: ufw_status
-      changed_when: false
-      failed_when: false
-      tags: [firewall, debug]
-      
-    - name: Afficher la version de PostgreSQL
-      command: psql --version
-      register: psql_version
-      changed_when: false
-      tags: [database, info]
-      
-    - name: Afficher les bases de données
-      command: psql -U postgres -c "\l"
-      register: postgresql_databases
-      changed_when: false
-      tags: [database, info]

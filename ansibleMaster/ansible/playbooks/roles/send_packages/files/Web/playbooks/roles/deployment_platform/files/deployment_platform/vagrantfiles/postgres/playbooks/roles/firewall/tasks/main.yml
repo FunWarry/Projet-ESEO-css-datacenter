@@ -30,12 +30,13 @@
     proto: tcp
   tags: [firewall, ssh]
 
-- name: Autoriser le trafic MariaDB
+- name: Autoriser le trafic PostgreSQL
+  when: postgresql_port is defined
   ufw:
     rule: allow
-    port: '{{ mariadb_port | default(3306) }}'
+    port: '{{ postgresql_port | default(5432) }}'
     proto: tcp
-  tags: [firewall, mariadb]
+  tags: [firewall, postgresql]
 
 - name: Autoriser le trafic Zabbix Agent
   ufw:
@@ -51,10 +52,3 @@
   register: ufw_enable
   changed_when: false
   tags: [firewall, service]
-
-- name: Vérifier l'état d'UFW
-  command: ufw status verbose
-  register: ufw_status
-  changed_when: false
-  failed_when: false
-  tags: [firewall, debug]

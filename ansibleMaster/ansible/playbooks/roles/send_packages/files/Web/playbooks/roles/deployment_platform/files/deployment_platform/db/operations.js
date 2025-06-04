@@ -5,12 +5,12 @@ const {v4: uuidv4} = require('uuid');
 // IP address ranges
 const IP_RANGES = {
     WEB: {
-        start: '192.168.232.10',
-        end: '192.168.233.254'
+        start: '192.168.232.20',
+        end: '192.168.233.250'
     },
     DB: {
-        start: '192.168.234.10',
-        end: '192.168.235.254'
+        start: '192.168.234.20',
+        end: '192.168.235.250'
     }
 };
 

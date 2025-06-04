@@ -51,10 +51,3 @@
   register: ufw_enable
   changed_when: false
   tags: [firewall, service]
-
-- name: Vérifier l'état d'UFW
-  command: ufw status verbose
-  register: ufw_status
-  changed_when: false
-  failed_when: false
-  tags: [firewall, debug]
