@@ -16,9 +16,9 @@ elif [[ "$ip" == "192.168.234.2" ]]; then
 elif [[ "$ip" == "192.168.236.2" ]]; then
   ip="192.168.236.11"
 elif [[ "$ip" == "192.168.238.2" ]]; then
-  ip="192.168.238.6"
+  ip="192.168.238.5"
 elif [[ "$ip" == "192.168.238.11" ]]; then
-  ip="192.168.238.14"
+  ip="192.168.238.12"
 fi
 
 sed -i "s/IP_CO/"$ip"/g" /home/etudis/Bureau/Relais/relais/Vagrantfile
