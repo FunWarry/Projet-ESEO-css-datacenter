@@ -693,6 +693,7 @@ const vagrant = {
 
                 this.updateDeploymentStatus(vm.id, 'Preparing', 25, 'Copying Ansible variables');
 
+                const privateKeyPath = `/home/etudis/ansible_${vm.id}/vagrant/files/id_rsa`;
                 // Copy all variables including inventory.ini
                 fs.readdirSync(sourceVariablesDir).forEach(file => {
                     const sourcePath = path.join(sourceVariablesDir, file);
@@ -703,6 +704,8 @@ const vagrant = {
                         let inventoryContent = fs.readFileSync(sourcePath, 'utf8');
                         // Replace X.X.X.X with the VM's IP address
                         inventoryContent = inventoryContent.replace(/X\.X\.X\.X/g, vm.ip_address);
+                        // Replace the path of the private key by the our
+                        inventoryContent = inventoryContent.replace(/\/home\/etudis\/\.ssh\/id_rsa/g, privateKeyPath);
                         // Write the modified content
                         fs.writeFileSync(destPath, inventoryContent);
                     } else {
@@ -761,6 +764,10 @@ const vagrant = {
                     // Copy files to remote host
                     this.updateDeploymentStatus(vm.id, 'Deploying', 75, 'Copying files to target host');
                     await execPromise(`scp -o StrictHostKeyChecking=no -r ${ansibleDir}/* etudis@${vm.host}:${remoteDir}/`, vm.id);
+                    // changer les permision du répertoire path.dirname(privateKeyPath)
+                    await execPromise(`ssh -o StrictHostKeyChecking=no etudis@${vm.host} "chmod 700 ${remoteDir}"`, vm.id);
+                    // Set permissions for the private key
+                    await execPromise(`ssh -o StrictHostKeyChecking=no etudis@${vm.host} "chmod 600 ${privateKeyPath}"`, vm.id);
 
                     // Run Ansible playbook
                     this.updateDeploymentStatus(vm.id, 'Deploying', 85, 'Running Ansible playbook');
