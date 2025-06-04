@@ -1,0 +1,36 @@
+---
+- name: Configure pg_hba.conf for remote access
+  blockinfile:
+    path: /etc/postgresql/15/main/pg_hba.conf
+    block: |
+      # TYPE  DATABASE        USER            ADDRESS                 METHOD
+      local   all             all                                     md5
+      host    all             all             127.0.0.1/32            md5
+      host    all             all             ::1/128                 md5
+      # Allow connections from any host in the 192.168.232.0/23 network
+      host    all             all             192.168.232.0/23        md5
+      # Allow connections from any host in the 192.168.234.0/23 network (Vagrant network)
+      host    all             all             192.168.234.0/23        md5
+    marker: "# {mark} ANSIBLE MANAGED BLOCK - POSTGRESQL REMOTE ACCESS"
+    state: present
+  become: yes
+  notify: restart postgresql
+
+- name: Ensure PostgreSQL listens on all interfaces
+  lineinfile:
+    path: /etc/postgresql/15/main/postgresql.conf
+    line: "listen_addresses = '*'  # Listen on all interfaces"
+    regexp: '^#?listen_addresses'
+    state: present
+  notify: restart postgresql
+
+- name: Ensure PostgreSQL port is set
+  lineinfile:
+    path: /etc/postgresql/15/main/postgresql.conf
+    line: "port = {{ db_port | default(5432) }}  # Default PostgreSQL port"
+    regexp: '^port'
+    state: present
+  notify: restart postgresql
+
+- name: Apply PostgreSQL configuration changes
+  meta: flush_handlers

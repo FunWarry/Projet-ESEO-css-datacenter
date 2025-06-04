@@ -3,9 +3,3 @@
   service:
     name: postgresql
     state: restarted
-    enabled: yes
-    daemon_reload: yes
-  register: postgresql_restarted
-  until: postgresql_restarted is succeeded
-  retries: 3
-  delay: 5

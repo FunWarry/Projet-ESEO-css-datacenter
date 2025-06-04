@@ -25,7 +25,6 @@
       delay: 15
       until: wait_ssh is succeeded
 
-    # Attendre un peu plus pour que le système d'init se charge complètement
     - name: Attendre que la VM soit complètement initialisée
       pause:
         seconds: 5
@@ -37,24 +36,31 @@
   gather_facts: true
   
   pre_tasks:
-    - name: Mettre à jour le cache apt
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-      tags: [system, packages]
-      
-    - name: Installer les dépendances système
-      apt:
-        name: "{{ system_packages }}"
-        state: present
-        update_cache: yes
-      tags: [system, packages]
+    - name: Essai de connexion SSH avec réessais
+      wait_for_connection:
+        delay: 5
+        timeout: 30
+      register: connection_result
+      retries: 5
+      delay: 10
+      until: connection_result is not failed
+      ignore_errors: yes
 
   roles:
-    - { role: sys, tags: ['system', 'packages'] }
-    - { role: firewall, tags: ['firewall', 'security'] }
-    - { role: postgresql, tags: ['database', 'postgresql'] }
-    - { role: agent_zabbix, tags: ['monitoring', 'zabbix'] }
+    - role: sys
+      tags: [ system, packages ]
+
+    - role: users
+      tags: [ users, system ]
+
+    - role: firewall
+      tags: ['firewall', 'security']
+
+    - role: postgresql
+      tags: ['database', 'postgresql']
+
+    - role: agent_zabbix
+      tags: ['monitoring', 'zabbix']
 
   post_tasks:
     - name: Vérifier que PostgreSQL est en cours d'exécution

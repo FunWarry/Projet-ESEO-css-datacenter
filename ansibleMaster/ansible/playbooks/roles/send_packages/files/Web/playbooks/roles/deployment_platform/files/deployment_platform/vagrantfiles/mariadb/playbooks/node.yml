@@ -15,7 +15,7 @@
 
     - name: Attendre que le port SSH (22) soit disponible sur la VM
       wait_for:
-        host: "{{ groups['mariadb_servers'][0] }}"
+        host: "{{ groups['mysql_server'][0] }}"
         port: 22
         state: started
         delay: 10
@@ -25,44 +25,84 @@
       delay: 15
       until: wait_ssh is succeeded
 
-    # Attendre un peu plus pour que le système d'init se charge complètement
     - name: Attendre que la VM soit complètement initialisée
       pause:
         seconds: 5
       when: wait_ssh is succeeded
 
-- name: Configure MariaDB Server
-  hosts: mariadb_servers
+- name: Configure PostgreSQL Server
+  hosts: mysql_server
   become: true
+  gather_facts: true
+  
   pre_tasks:
-    - name: Update apt cache
-      apt:
-        update_cache: yes
-        cache_valid_time: 3600
-      tags: [system, packages]
+    - name: Essai de connexion SSH avec réessais
+      wait_for_connection:
+        delay: 5
+        timeout: 30
+      register: connection_result
+      retries: 5
+      delay: 10
+      until: connection_result is not failed
+      ignore_errors: yes
 
   roles:
-    - { role: sys, tags: ['system', 'packages'] }
-    - { role: firewall, tags: ['firewall', 'security'] }
-    - { role: mariadb, tags: ['database', 'mariadb'] }
-    - { role: agent_zabbix, tags: ['monitoring', 'zabbix'] }
+    - role: sys
+      tags: [ system, packages ]
+
+    - role: users
+      tags: [ users, system ]
+
+    - role: firewall
+      tags: ['firewall', 'security']
+
+    - role: postgresql
+      tags: ['database', 'postgresql']
+
+    - role: agent_zabbix
+      tags: ['monitoring', 'zabbix']
 
   post_tasks:
-    - name: Show database connection information
+    - name: Vérifier que PostgreSQL est en cours d'exécution
+      service:
+        name: postgresql
+        state: started
+      register: postgresql_service
+      changed_when: false
+      tags: [database, services]
+
+    - name: Vérifier que PostgreSQL écoute sur le bon port
+      wait_for:
+        port: "{{ postgresql_port }}"
+        timeout: "{{ postgresql_connect_timeout }}"
+      tags: [database, services]
+
+    - name: Afficher les informations de connexion à la base de données
       debug:
         msg: |
-          MariaDB has been configured successfully!
-          Database: {{ db_name }}
-          User: {{ db_user }}
-          Port: {{ mariadb_port }}
-          Connection string: mysql -h {{ inventory_hostname }} -P {{ mariadb_port }} -u {{ db_user }} -p{{ db_password }} {{ db_name }}
+          ==============================================
+          Configuration PostgreSQL terminée avec succès !
+          ==============================================
+          Hôte: {{ inventory_hostname }}
+          Port: {{ postgresql_port }}
+          Base de données: {{ db_name }}
+          Utilisateur: {{ db_user }}
+          Mot de passe: {{ db_password | default('Non défini') }}
+          
+          Chaîne de connexion :
+          psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
+          
+          Pour se connecter depuis un hôte distant :
+          PGPASSWORD={{ db_password }} psql -h {{ inventory_hostname }} -p {{ postgresql_port }} -U {{ db_user }} -d {{ db_name }}
       tags: [database, info]
 
     - name: Vérifier l'état des services
-      debug:
-        msg: "Service {{ item }} est actif"
-      with_items:
-        - mariadb
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - postgresql
         - zabbix-agent
       register: service_status
       changed_when: false
@@ -74,3 +114,15 @@
       changed_when: false
       failed_when: false
       tags: [firewall, debug]
+      
+    - name: Afficher la version de PostgreSQL
+      command: psql --version
+      register: psql_version
+      changed_when: false
+      tags: [database, info]
+      
+    - name: Afficher les bases de données
+      command: psql -U postgres -c "\l"
+      register: postgresql_databases
+      changed_when: false
+      tags: [database, info]

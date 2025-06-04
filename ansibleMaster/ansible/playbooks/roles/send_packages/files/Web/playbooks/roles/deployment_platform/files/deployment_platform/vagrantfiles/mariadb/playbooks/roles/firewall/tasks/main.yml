@@ -17,8 +17,10 @@
     policy: '{{ item.policy }}'
     direction: '{{ item.direction }}'
   with_items:
-    - { policy: 'deny', direction: 'incoming' }
-    - { policy: 'allow', direction: 'outgoing' }
+    - policy: 'deny'
+      direction: 'incoming'
+    - policy: 'allow'
+      direction: 'outgoing'
   tags: [firewall, config]
 
 - name: Autoriser le trafic SSH

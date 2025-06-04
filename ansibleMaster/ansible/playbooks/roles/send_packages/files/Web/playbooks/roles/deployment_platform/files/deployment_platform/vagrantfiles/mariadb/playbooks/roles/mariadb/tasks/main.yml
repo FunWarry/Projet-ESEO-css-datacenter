@@ -1,15 +1,28 @@
 ---
-- name: Install MariaDB server
+- name: Install MariaDB server and client
   apt:
-    name: mariadb-server
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql  # Requis pour le module mysql_* d'Ansible
     state: present
     update_cache: yes
+    cache_valid_time: 3600
+  tags: install
 
 - name: Ensure MariaDB is running and enabled
   service:
     name: mariadb
     state: started
     enabled: yes
+  tags: service
+
+- name: Wait for MariaDB to start
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    state: started
+    timeout: 30
+  tags: service
 
 - name: Set root password
   mysql_user:
@@ -18,9 +31,11 @@
     password: "{{ db_root_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
     check_implicit_admin: yes
-    priv: '*.*:ALL,GRANT'
+    priv: '*.*:ALL,GRANT,PROCESS,RELOAD,SHOW DATABASES'
     state: present
   no_log: true
+  register: root_password_set
+  tags: config
 
 - name: Create application database
   mysql_db:
@@ -28,6 +43,9 @@
     state: present
     login_user: root
     login_password: "{{ db_root_password }}"
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+  tags: database
 
 - name: Create application database user
   mysql_user:
@@ -39,6 +57,7 @@
     login_user: root
     login_password: "{{ db_root_password }}"
   no_log: true
+  tags: database
 
 - name: Configure MariaDB to listen on all interfaces
   template:
@@ -47,6 +66,16 @@
     owner: root
     group: root
     mode: '0644'
-  notify: restart mariadb
+    validate: 'mysqld --defaults-file=%s --validate-config'
+  notify:
+    - restart mariadb
+    - wait for mariadb
+  tags: config
 
-# Les règles UFW sont gérées par le rôle firewall
+- name: Flush privileges
+  mysql_query:
+    login_user: root
+    login_password: "{{ db_root_password }}"
+    query: FLUSH PRIVILEGES
+  when: root_password_set is changed
+  tags: config

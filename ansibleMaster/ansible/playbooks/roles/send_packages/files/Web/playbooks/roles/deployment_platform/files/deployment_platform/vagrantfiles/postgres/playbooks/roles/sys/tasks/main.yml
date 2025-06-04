@@ -1,9 +1,14 @@
 ---
-- name: Mise à jour et installation des paquets système
+- name: Mise a jour des paquets
   apt:
-    name: "{{ system_packages | default([]) }}"
-    state: present
     update_cache: yes
-    upgrade: dist
-    force_apt_get: yes
-  tags: [system, packages]
+    upgrade: no
+
+- name: Installation des outils
+  apt:
+    name:
+      - wget
+      - gnupg
+      - unzip
+      - curl
+    state: present

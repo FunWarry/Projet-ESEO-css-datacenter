@@ -1,18 +1,21 @@
 # Configuration for Apache as reverse proxy for Tomcat
 
+# Load required modules
+LoadModule proxy_module /usr/lib/apache2/modules/mod_proxy.so
+LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
+LoadModule proxy_ajp_module /usr/lib/apache2/modules/mod_proxy_ajp.so
+LoadModule headers_module /usr/lib/apache2/modules/mod_headers.so
+LoadModule rewrite_module /usr/lib/apache2/modules/mod_rewrite.so
+
 # Proxy configuration
 <IfModule mod_proxy.c>
-    # Enable the proxy module
-    LoadModule proxy_module /usr/lib/apache2/modules/mod_proxy.so
-    LoadModule proxy_http_module /usr/lib/apache2/modules/mod_proxy_http.so
-    LoadModule proxy_ajp_module /usr/lib/apache2/modules/mod_proxy_ajp.so
 
     # Basic proxy configuration
     ProxyRequests Off
     ProxyPreserveHost On
     ProxyVia On
 
-    # Don't proxy requests for static content
+    # Access control for proxy
     <Proxy *>
         Require all granted
     </Proxy>
@@ -31,16 +34,24 @@
     RewriteRule /(.*) ws://localhost:8080/$1 [P,L]
 
     # Timeout settings
-    <Proxy *>
-        # Timeout in seconds for reading the response from the proxied server
-        ProxyTimeout 300
-    </Proxy>
+    # Timeout in seconds for reading the response from the proxied server
+    ProxyTimeout 300
 </IfModule>
+
+# Server-wide configuration
+ServerSignature Off
+ServerTokens Prod
 
 # Virtual Host configuration
 <VirtualHost *:80>
     ServerAdmin webmaster@localhost
+    ServerName localhost
     DocumentRoot /var/www/html
+    
+    # Enable KeepAlive
+    KeepAlive On
+    KeepAliveTimeout 5
+    MaxKeepAliveRequests 100
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -50,10 +61,6 @@
     Header always set X-Frame-Options "SAMEORIGIN"
     Header always set X-XSS-Protection "1; mode=block"
     Header always set Referrer-Policy "strict-origin-when-cross-origin"
-
-    # Disable server signature
-    ServerSignature Off
-    ServerTokens Prod
 </VirtualHost>
 
 # vim: syntax=apache ts=4 sw=4 sts=4 sr noet

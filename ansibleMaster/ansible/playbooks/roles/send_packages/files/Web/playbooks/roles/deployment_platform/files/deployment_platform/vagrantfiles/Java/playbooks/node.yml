@@ -1,7 +1,4 @@
 ---
-# Playbook principal pour le déploiement de la pile LAMJ complète
-# Utilisation : ansible-playbook -i variables/inventory.ini playbooks/node.yml
-
 - name: Lancer la VM avec Vagrant
   hosts: localhost
   become: false

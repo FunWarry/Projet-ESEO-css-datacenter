@@ -1,93 +1,46 @@
 ---
-- name: Add PostgreSQL APT repository key
-  apt_key:
-    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
-    state: present
-
-- name: Add PostgreSQL APT repository
-  apt_repository:
-    repo: deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main
-    state: present
-    filename: postgresql
-    update_cache: yes
-
-- name: Install PostgreSQL and Python PostgreSQL client
+- name: Install PostgreSQL and its dependencies
   apt:
-    name:
-      - postgresql-14
-      - postgresql-contrib-14
-      - python3-psycopg2
-      - libpq-dev
+    name: "{{ item }}"
     state: present
     update_cache: yes
+  loop:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+    - python3-psycopg2
 
-- name: Ensure PostgreSQL is running and enabled
+- name: Ensure PostgreSQL is running and enabled on boot
   service:
     name: postgresql
     state: started
     enabled: yes
 
-- name: Configure PostgreSQL to listen on all interfaces
-  lineinfile:
-    path: /etc/postgresql/14/main/postgresql.conf
-    regexp: '^#?listen_addresses\s*='
-    line: "listen_addresses = '*'"
-    backup: yes
-  notify: restart postgresql
+- name: Include remote access configuration
+  include_tasks: access.yml
 
-- name: Configure client authentication
-  copy:
-    dest: /etc/postgresql/14/main/pg_hba.conf
-    content: |
-      # TYPE  DATABASE        USER            ADDRESS                 METHOD
-      local   all             postgres                                peer
-      local   all             all                                     peer
-      host    all             all             127.0.0.1/32            md5
-      host    all             all             ::1/128                 md5
-      host    all             all             0.0.0.0/0               md5
-    backup: yes
-  notify: restart postgresql
+- name: Create PostgreSQL database
+  command: sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} ENCODING 'UTF8';"
+  register: db_creation
+  changed_when: db_creation.rc == 0
+  failed_when: db_creation.rc != 0 and "already exists" not in db_creation.stderr
 
 - name: Create PostgreSQL user
-  postgresql_user:
-    name: "{{ db_user }}"
-    password: "{{ db_password }}"
-    role_attr_flags: "CREATEDB,LOGIN"
-    state: present
-  become: yes
-  become_user: postgres
-  no_log: true
-  register: user_created
-  until: user_created is succeeded
-  retries: 5
-  delay: 5
+  shell: |
+    sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_password }}';"
+  args:
+    executable: /bin/bash
+  register: user_creation
+  changed_when: user_creation.rc == 0
+  failed_when: user_creation.rc != 0 and "already exists" not in user_creation.stderr
   when: db_user is defined and db_password is defined
 
-- name: Create application database
-  postgresql_db:
-    name: "{{ db_name }}"
-    owner: "{{ db_user }}"
-    state: present
-    encoding: 'UTF-8'
-    lc_ctype: 'en_US.UTF-8'
-    lc_collate: 'en_US.UTF-8'
-    template: template0
-  become: yes
-  become_user: postgres
-  when: db_name is defined
-
-- name: Ensure PostgreSQL service is restarted if needed
-  meta: flush_handlers
-
-- name: Ensure PostgreSQL is accepting connections
-  postgresql_ping:
-    login_host: localhost
-    login_user: postgres
-    login_password: ""
-  register: pg_ping
-  until: pg_ping.is_available
-  retries: 5
-  delay: 5
-  changed_when: false
-  become: yes
-  become_user: postgres
+- name: Grant privileges to user on database
+  shell: |
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE {{ db_name }} TO {{ db_user }};"
+  args:
+    executable: /bin/bash
+  when: db_user is defined and db_name is defined
+  register: grant_privileges
+  changed_when: grant_privileges.rc == 0
+  failed_when: grant_privileges.rc != 0 and "does not exist" not in grant_privileges.stderr

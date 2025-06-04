@@ -16,28 +16,8 @@
     state: started
     enabled: yes
 
-- name: Configure pg_hba.conf for password authentication
-  blockinfile:
-    path: /etc/postgresql/15/main/pg_hba.conf
-    block: |
-      # TYPE  DATABASE        USER            ADDRESS                 METHOD
-      local   all             all                                     md5
-      host    all             all             127.0.0.1/32            md5
-      host    all             all             ::1/128                 md5
-    marker: "# {mark} ANSIBLE MANAGED BLOCK - POSTGRESQL AUTH CONFIG"
-    state: present
-  become: yes
-  notify: restart postgresql
-
-- name: Update PostgreSQL configuration to allow remote connections
-  lineinfile:
-    path: /etc/postgresql/15/main/postgresql.conf
-    line: "listen_addresses = '*'"
-    regexp: '^#?listen_addresses'
-  notify: restart postgresql
-
-- name: Apply PostgreSQL configuration changes
-  meta: flush_handlers
+- name: Include remote access configuration
+  include_tasks: access.yml
 
 - name: Create PostgreSQL database
   command: sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} ENCODING 'UTF8';"
