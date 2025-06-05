@@ -24,7 +24,9 @@ Vagrant.configure("2") do |config|
 
 	 # Define Number of RAM for each node
 	 config.vm.provider "virtualbox" do |v|
-		  v.customize ["modifyvm", :id, "--memory", 2048]
+         v.customize ["modifyvm", :id, "--groups", "/projet"]
+         v.customize ["modifyvm", :id, "--cpus", "4"]
+         v.customize ["modifyvm", :id, "--memory", 4096]
 	 end
 
 	 # Download the initial box from this url

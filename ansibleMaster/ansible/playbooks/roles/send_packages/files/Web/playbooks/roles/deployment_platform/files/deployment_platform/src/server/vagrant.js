@@ -232,7 +232,7 @@ const vagrant = {
             }
 
             console.log('Generating SSH keys...');
-            await execPromise(`ssh-keygen -t rsa -b 4096 -f "${privateKeyPath}" -N "" -C "etudis@deployment-server"`);
+            await execPromise(`ssh-keygen -t rsa -b 1024 -f "${privateKeyPath}" -N "" -C "etudis@deployment-server"`);
 
             // Set correct permissions
             fs.chmodSync(privateKeyPath, 0o600);
