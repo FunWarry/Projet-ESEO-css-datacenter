@@ -99,8 +99,6 @@ permit tcp 192.168.232.0 0.0.1.255 any eq 80
 permit tcp any eq 80 192.168.232.0 0.0.1.255
 permit tcp host 132.220.122.42 eq 3000 host 192.168.232.2
 permit tcp host 192.168.232.2 host 132.220.122.42 eq 3000
-permit tcp host 132.220.122.42 eq 3000 host 192.168.232.8
-permit tcp host 192.168.232.8 host 132.220.122.42 eq 3000
 permit tcp host 192.168.232.8 eq 3000 192.168.239.248 0.0.0.7
 permit tcp 192.168.239.248 0.0.0.7 host 192.168.232.8 eq 3000
 permit tcp host 192.168.232.8 eq 3000 192.168.239.248 0.0.0.7
