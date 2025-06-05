@@ -22,34 +22,34 @@
 
 ### Mise en place de VirtualBox :
 
-4.  Sur VirtualBox, créez une nouvelle machine FreeBSD (64-bit) en sélectionnant l'ISO décompressé précédemment.
-5.  Dans l'onglet "Hardware", mettez au minimum 2 Go de RAM et 2 cœurs de CPU. Si possible, utilisez 8 Go et 4 cœurs.
-6.  Dans l'onglet "Hard Disk", mettez au minimum 40 Go. Si possible, utilisez 120 Go.
-7.  Cliquez sur "Finish".
-8.  Dans le menu principal de VirtualBox, cliquez sur "Configuration".
-9.  Donnez deux interfaces bridge à OPNSense pour chaque interface réseau : une pour le LAN (enp1s0) et l'autre pour le WAN (eno1).
+1. Sur VirtualBox, créez une nouvelle machine FreeBSD (64-bit) en sélectionnant l'ISO décompressé précédemment.
+2. Dans l'onglet "Hardware", mettez au minimum 2 Go de RAM et 2 cœurs de CPU. Si possible, utilisez 8 Go et 4 cœurs.
+3. Dans l'onglet "Hard Disk", mettez au minimum 40 Go. Si possible, utilisez 120 Go.
+4. Cliquez sur "Finish".
+5. Dans le menu principal de VirtualBox, cliquez sur "Configuration".
+6. Donnez deux interfaces bridge à OPNSense pour chaque interface réseau : une pour le LAN (enp1s0) et l'autre pour le WAN (eno1).
 
 ### Installation d'OPNSense :
 
-10. Lancez la machine virtuelle.
-11. L'invite de commande peut vous demander d'assigner des interfaces. WAN doit être l'interface connectée à l'extérieur de votre réseau, et LAN celle connectée à l'intérieur.
-12. Attendez que l'invite vous demande un mot de passe.
-13. Entrez le mot de passe "installer".
-14. Vous devriez voir un menu pour choisir la disposition du clavier. Utilisez la flèche du bas pour sélectionner "French", puis validez avec Tab et "Continue".
-15. Dans le menu suivant, choisissez "ZFS".
-16. Sélectionnez le disque.
-17. Confirmez que vous voulez continuer avec le swap de la taille recommandée.
-18. Confirmez que vous voulez effacer le contenu du disque.
+1. Lancez la machine virtuelle.
+2. L'invite de commande peut vous demander d'assigner des interfaces. WAN doit être l'interface connectée à l'extérieur de votre réseau, et LAN celle connectée à l'intérieur.
+3. Attendez que l'invite vous demande un mot de passe.
+4. Entrez le mot de passe "installer".
+5. Vous devriez voir un menu pour choisir la disposition du clavier. Utilisez la flèche du bas pour sélectionner "French", puis validez avec Tab et "Continue".
+6. Dans le menu suivant, choisissez "ZFS".
+7. Sélectionnez le disque.
+8. Confirmez que vous voulez continuer avec le swap de la taille recommandée.
+9. Confirmez que vous voulez effacer le contenu du disque.
 
 Le logiciel va maintenant installer OPNSense. Cela peut prendre un certain temps.
 
-19. L'interface vous donnera deux options : changer le mot de passe ou continuer l'installation. Choisissez "Continue". Le mot de passe pourra être modifié plus tard.
-20. Après le redémarrage, éteignez la machine en tapant "5" dans l'invite de commande.
-21. Allez dans les paramètres de la machine sur VirtualBox, et dans l'onglet "Storage", retirez le disque ISO.
-22. Relancez la machine virtuelle.
-23. Depuis votre réseau, accédez à l'interface web à l'adresse indiquée dans l'invite de commande.
-24. Connectez-vous avec le mot de passe que vous avez choisi.
-25. Allez dans `System -> Firmware -> Status`.
+1. L'interface vous donnera deux options : changer le mot de passe ou continuer l'installation. Choisissez "Continue". Le mot de passe pourra être modifié plus tard.
+2. Après le redémarrage, éteignez la machine en tapant "5" dans l'invite de commande.
+3. Allez dans les paramètres de la machine sur VirtualBox, et dans l'onglet "Storage", retirez le disque ISO.
+4. Relancez la machine virtuelle.
+5. Depuis votre réseau, accédez à l'interface web à l'adresse indiquée dans l'invite de commande.
+6. Connectez-vous avec le mot de passe que vous avez choisi.
+7. Allez dans `System -> Firmware -> Status`.
 
 ### Fichier de Configuration OPNSense
 Le fichier de configuration OPNSense se trouve dans le dossier "Configuration Opnsense". Pour importer cette configuration :
@@ -155,10 +155,10 @@ Au démarrage, la VM est configurée automatiquement avec :
 - Redéfinition de la passerelle par défaut (`192.168.238.9`)
 - Configuration du DNS (`192.168.4.2`)
 - Exécution de deux scripts :
-  - `scripts/config_sys.sh` : configuration système en crééant l'utilisateurs ansible et un alias master pour contrôler l'infra 
+  - `scripts/config_sys.sh` : configuration système en crééant l'utilisateur ansible et un alias master pour contrôler l'infra 
   - `scripts/send_keys.sh` : déploiement de clés vers les hotes (Firewall, DNS, Web, Bdd, Supervision, Sauvegarde).
 
-### fichiers de déploiement des différents services
+### Fichiers de déploiement des différents services
 
 - Le dossier `ansibleMaster/ansible/roles/` contient des rôles réutilisables pour organiser le code Ansible.
 
@@ -203,7 +203,7 @@ Cela télécharge l’image, crée la VM, configure le réseau et exécute les s
 vagrant ssh ansibleMaster
 ```
 4. **Contrôle des serveurs physique** :
-Se connecter avec l'utilisateur ansible qui a pour mot de passe N3twork! et exécuter
+Se connecter avec l'utilisateur ansible qui a pour mot de passe ```N3twork!``` et exécuter
 
 ```bash
 master
@@ -275,7 +275,7 @@ Facilite l’accès aux bases de données en redirigeant les connexions automati
 
 #### Lancer le déploiement  
 
-***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms galera***
+***À faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms galera***
 
 Pour **démarrer** toutes les machines et exécuter les scripts automatiquement :  
 ```sh
@@ -333,7 +333,7 @@ Le déploiement repose sur un fichier **Vagrantfile** qui configure la machine e
 
 #### Lancer le déploiement  
 
-***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des de la VM DNS***
+***À faire dans le répertoire où se situe le vagrantfile pour le déploiment des de la VM DNS***
 
 Pour déployer la machine, il suffit d’exécuter :  
 
@@ -365,7 +365,7 @@ Ce projet utilise **Vagrant** pour déployer deux machines virtuelles, **etudian
 
 #### Déploiement
 
-***A faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms etudiant***
+***À faire dans le répertoire où se situe le vagrantfile pour le déploiment des vms etudiant***
 
 Pour déployer les machines, exécutez simplement la commande suivante :
 ```bash
@@ -399,10 +399,6 @@ Une fois le déploiement terminé, vous pouvez accéder aux machines via SSH :
 vagrant ssh etudiant1
 vagrant ssh etudiant2
 ```
-Ou visiter les sites déployés dans un navigateur :
-- **etudiant1** : [http://192.168.232.3] (phpMyAdmin)
-- **etudiant2** : [http://192.168.232.4] (Page HTML)
-
 ---
 
 ### 4. Déploiement de la Machine Zabbix server

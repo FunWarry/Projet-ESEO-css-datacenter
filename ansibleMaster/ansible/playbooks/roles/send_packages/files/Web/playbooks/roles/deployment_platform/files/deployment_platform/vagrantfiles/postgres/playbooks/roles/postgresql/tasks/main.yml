@@ -1,0 +1,46 @@
+---
+- name: Install PostgreSQL and its dependencies
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  loop:
+    - postgresql
+    - postgresql-contrib
+    - libpq-dev
+    - python3-psycopg2
+
+- name: Ensure PostgreSQL is running and enabled on boot
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+
+- name: Include remote access configuration
+  include_tasks: access.yml
+
+- name: Create PostgreSQL database
+  command: sudo -u postgres psql -c "CREATE DATABASE {{ db_name }} ENCODING 'UTF8';"
+  register: db_creation
+  changed_when: db_creation.rc == 0
+  failed_when: db_creation.rc != 0 and "already exists" not in db_creation.stderr
+
+- name: Create PostgreSQL user
+  shell: |
+    sudo -u postgres psql -c "CREATE USER {{ db_user }} WITH PASSWORD '{{ db_password }}';"
+  args:
+    executable: /bin/bash
+  register: user_creation
+  changed_when: user_creation.rc == 0
+  failed_when: user_creation.rc != 0 and "already exists" not in user_creation.stderr
+  when: db_user is defined and db_password is defined
+
+- name: Grant privileges to user on database
+  shell: |
+    sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE {{ db_name }} TO {{ db_user }};"
+  args:
+    executable: /bin/bash
+  when: db_user is defined and db_name is defined
+  register: grant_privileges
+  changed_when: grant_privileges.rc == 0
+  failed_when: grant_privileges.rc != 0 and "does not exist" not in grant_privileges.stderr

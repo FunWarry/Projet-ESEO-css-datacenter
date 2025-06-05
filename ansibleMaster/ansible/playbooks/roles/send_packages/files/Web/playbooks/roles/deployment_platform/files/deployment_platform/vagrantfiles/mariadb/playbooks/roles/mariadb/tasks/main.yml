@@ -1,0 +1,85 @@
+---
+- name: Install MariaDB server and client
+  apt:
+    name:
+      - mariadb-server
+      - mariadb-client
+      - python3-pymysql  # Requis pour le module mysql_* d'Ansible
+    state: present
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: install
+
+- name: Ensure MariaDB is running and enabled
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+  tags: service
+
+- name: Wait for MariaDB to start
+  wait_for:
+    path: /var/run/mysqld/mysqld.sock
+    state: started
+    timeout: 30
+  tags: service
+
+- name: Set root password
+  mysql_user:
+    name: root
+    host: localhost
+    password: "{{ db_root_password }}"
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+    priv: '*.*:ALL,GRANT'
+    state: present
+  register: root_password_set
+  tags: config
+
+- name: Create application database
+  mysql_db:
+    name: "{{ db_name }}"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+  tags: database
+
+- name: Create application database user
+  mysql_user:
+    name: "{{ db_user }}"
+    host: '%'
+    password: "{{ db_password }}"
+    priv: "{{ db_name }}.*:ALL"
+    state: present
+    login_user: root
+    login_password: "{{ db_root_password }}"
+  no_log: true
+  tags: database
+
+- name: Flush privileges
+  mysql_query:
+    login_user: root
+    login_password: "{{ db_root_password }}"
+    query: FLUSH PRIVILEGES
+  when: root_password_set is changed
+  tags: config
+
+- name: Configure MariaDB to listen on all interfaces
+  become: yes
+  template:
+    src: 50-server.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mariadb
+  tags: config
+
+- name: Ensure MariaDB is started and enabled
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+  become: yes

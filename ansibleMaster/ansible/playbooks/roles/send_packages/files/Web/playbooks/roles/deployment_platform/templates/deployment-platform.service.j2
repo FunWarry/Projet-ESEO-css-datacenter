@@ -1,0 +1,31 @@
+[Unit]
+Description=Deployment Platform Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/deployment_platform
+Environment="NODE_ENV=production"
+ExecStart=/usr/bin/node /opt/deployment_platform/src/server/index.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=deployment-platform
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+
+# Security options
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+RestrictRealtime=true
+
+[Install]
+WantedBy=multi-user.target

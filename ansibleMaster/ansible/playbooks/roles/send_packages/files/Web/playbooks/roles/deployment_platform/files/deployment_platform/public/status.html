@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status - VM Deployment</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="icon" href="./java.ico" type="image/x-icon">
+</head>
+<body>
+    <header>
+        <h1>VM Deployment System</h1>
+        <nav>
+            <ul>
+                <li><a href="./index.html">Déployer des VMs</a></li>
+                <li><a href="./status.html" class="active">État du Système</a></li>
+                <li><a href="./ssh-keys.html">Clés SSH</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="system-status">
+            <h2>System Status</h2>
+            <div class="status-card">
+                <h3>Database Connection</h3>
+                <div id="database-status" class="status-indicator"></div>
+                <p id="database-message">Checking database status...</p>
+            </div>
+
+            <div class="status-card">
+                <h3>Host Connectivity</h3>
+                <div id="host-status-container">
+                    <!-- Host status will be populated by JavaScript -->
+                    <p>Checking host connectivity...</p>
+                </div>
+            </div>
+
+            <div class="status-card">
+                <h3>Last Status Check</h3>
+                <p id="last-checked">Never</p>
+                <div class="button-group">
+                    <button id="refresh-status">Refresh Status</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="vm-list-section">
+            <div class="section-header">
+                <h2>Virtual Machines</h2>
+                <div class="actions">
+                    <button id="select-all" class="button">Select All</button>
+                    <button id="deselect-all" class="button">Deselect All</button>
+                    <button id="destroy-selected" class="button button-danger" disabled>Destroy Selected</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table id="vm-table">
+                    <thead>
+                        <tr>
+                            <th><label for="select-all-checkbox"></label><input type="checkbox" id="select-all-checkbox"></th>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>IP Address</th>
+                            <th>Host</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="vm-table-body">
+                        <!-- VMs will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div id="no-vms-message" class="no-data-message">
+                <p>No virtual machines found. Deploy your first VM from the Deploy page.</p>
+            </div>
+        </section>
+    </main>
+    
+    <!-- Template for VM details row -->
+    <template id="vm-details-template">
+        <tr class="vm-details-row">
+            <td colspan="7">
+                <div class="vm-details-container">
+                    <div class="vm-details-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">RAM:</span>
+                            <span class="detail-value" data-detail="ram"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">CPU Cores:</span>
+                            <span class="detail-value" data-detail="cores"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Created:</span>
+                            <span class="detail-value" data-detail="created"></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Status:</span>
+                            <span class="detail-value" data-detail="status"></span>
+                        </div>
+                    </div>
+                    <div class="vm-actions">
+                        <button class="button button-small" data-action="view-logs">View Logs</button>
+                        <button class="button button-small button-danger" data-action="destroy">Destroy VM</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </template>
+
+    <footer>
+        <p>&copy; 2025 VM Deployment System, CSS group B</p>
+    </footer>
+
+    <script src="./script.js"></script>
+</body>
+</html>

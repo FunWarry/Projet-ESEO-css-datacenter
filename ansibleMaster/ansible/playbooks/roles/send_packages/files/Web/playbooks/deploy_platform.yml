@@ -1,0 +1,7 @@
+---
+- name: Deploy Deployment Platform
+  hosts: web
+  become: yes
+  vars:
+  roles:
+    - deployment_platform

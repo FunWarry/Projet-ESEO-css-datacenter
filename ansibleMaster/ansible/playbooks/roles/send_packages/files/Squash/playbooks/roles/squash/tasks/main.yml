@@ -30,7 +30,7 @@
     sudo systemctl daemon-reload
   args:
     executable: /bin/bash
-    
+
 - name: Restart squash
   systemd:
     name: squash-tm

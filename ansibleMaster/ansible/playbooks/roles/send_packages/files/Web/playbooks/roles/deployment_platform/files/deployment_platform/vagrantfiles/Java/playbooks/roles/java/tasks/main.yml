@@ -1,0 +1,54 @@
+---
+- name: Create Java installation directory
+  file:
+    path: /opt
+    state: directory
+    mode: '0755'
+
+- name: Download OpenJDK 18
+  get_url:
+    url: https://download.java.net/java/GA/jdk18/43f95e8614114aeaa8e8a5fcf20a682d/36/GPL/openjdk-18_linux-x64_bin.tar.gz
+    dest: /tmp/openjdk-18_linux-x64_bin.tar.gz
+    mode: '0644'
+
+- name: Extract OpenJDK 18
+  unarchive:
+    src: /tmp/openjdk-18_linux-x64_bin.tar.gz
+    dest: /opt/
+    remote_src: yes
+    creates: /opt/jdk-18
+
+- name: Set JAVA_HOME environment variable
+  blockinfile:
+    path: /etc/profile.d/jdk18.sh
+    create: yes
+    mode: '0644'
+    block: |
+      export JAVA_HOME=/opt/jdk-18
+      export PATH=$PATH:$JAVA_HOME/bin
+
+- name: Set JAVA_HOME for all users
+  lineinfile:
+    path: /etc/environment
+    line: 'JAVA_HOME="/opt/jdk-18"'
+    state: present
+    create: yes
+    mode: '0644'
+    regexp: '^JAVA_HOME='
+
+- name: Update alternatives for Java
+  alternatives:
+    name: java
+    path: /opt/jdk-18/bin/java
+    link: /usr/bin/java
+    priority: 100
+
+- name: Verify Java installation
+  command: java -version
+  register: java_version
+  changed_when: false
+  ignore_errors: yes
+
+- name: Display Java version
+  debug:
+    msg: "{{ java_version.stderr | default(java_version.stdout) }}"

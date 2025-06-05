@@ -1,0 +1,103 @@
+---
+- name: Lancer la VM avec Vagrant
+  hosts: localhost
+  become: false
+  tasks:
+    - name: Lancer la machine Vagrant
+      command: vagrant up
+      args:
+        chdir: /home/etudis/Bureau/vagrant/
+      register: vagrant_up
+      changed_when: false
+      retries: 3
+      delay: 10
+      until: vagrant_up is succeeded
+
+    - name: Attendre que le port SSH (22) soit disponible sur la VM
+      wait_for:
+        host: "{{ groups['postgresql_servers'][0] }}"
+        port: 22
+        state: started
+        delay: 10
+        timeout: 300
+      register: wait_ssh
+      retries: 10
+      delay: 15
+      until: wait_ssh is succeeded
+
+    - name: Attendre que la VM soit complètement initialisée
+      pause:
+        seconds: 5
+      when: wait_ssh is succeeded
+
+- name: Configure PostgreSQL Server
+  hosts: postgresql_servers
+  gather_facts: true
+  become: true
+
+  vars:
+    max_retries: 10
+    retry_delay: 30
+    connection_timeout: 300
+  max_fail_percentage: 0
+  force_handlers: true
+
+  pre_tasks:
+    - name: Essai de connexion SSH avec réessais
+      wait_for_connection:
+        delay: 5
+        timeout: 30
+      register: connection_result
+      retries: 5
+      delay: 10
+      until: connection_result is not failed
+      ignore_errors: yes
+
+  roles:
+    - role: sys
+      tags: [ system, packages ]
+
+    - role: users
+      tags: [ users, system ]
+
+- name: Installation et configuration de postgreSQL
+  hosts: postgresql_servers
+  become: true
+
+  roles:
+    - role: firewall
+      tags: [firewall, security]
+
+    - role: postgresql
+      tags: [database, postgresql]
+
+    - role: agent_zabbix
+      tags: [monitoring, zabbix]
+
+- name: Vérification de l'installation et de la configuration de PostgreSQL
+  hosts: postgresql_servers
+  become: true
+
+  tasks:
+    - name: Vérifier que PostgreSQL est en cours d'exécution
+      service:
+        name: postgresql
+        state: started
+      changed_when: false
+      tags: [database, services]
+
+    - name: Vérifier que PostgreSQL écoute sur le bon port
+      wait_for:
+        port: "{{ postgresql_port }}"
+        timeout: "{{ postgresql_connect_timeout }}"
+      tags: [database, services]
+
+    - name: Vérifier l'état des services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - postgresql
+        - zabbix-agent
+      tags: [system, services]

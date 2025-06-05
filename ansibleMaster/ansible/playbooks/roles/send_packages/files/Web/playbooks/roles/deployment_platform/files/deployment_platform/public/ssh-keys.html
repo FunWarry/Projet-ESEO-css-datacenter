@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clés SSH des Étudiants - VM Deployment</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="icon" href="./java.ico" type="image/x-icon">
+    <style>
+        .private-key {
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+            margin: 0;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            /* Espace pour le bouton de copie */
+            padding: 0.5rem 30px 0.5rem 0.5rem;
+        }
+
+        .private-key.expanded {
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow: visible;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            margin-bottom: 0;
+            margin-right: auto;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .button:active {
+            background-color: #3e8e41;
+        }
+
+        .button-icon {
+            font-size: 1rem;
+        }
+
+        .copy-button {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            text-align: center;
+            text-decoration: none;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s, background-color 0.2s;
+        }
+
+        .private-key:hover .copy-button {
+            opacity: 1;
+        }
+
+        .copy-button:hover {
+            background-color: #45a049;
+        }
+
+        .copy-button:active {
+            background-color: #3e8e41;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        th, td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th:nth-child(1), td:nth-child(1) {
+            width: 15%;
+        }
+
+        th:nth-child(2), td:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            width: 70%;
+        }
+
+        tr {
+            transition: background-color 0.2s;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>VM Deployment System</h1>
+    <nav>
+        <ul>
+            <li><a href="./index.html">Déployer des VMs</a></li>
+            <li><a href="./status.html">État du Système</a></li>
+            <li><a href="./ssh-keys.html" class="active">Clés SSH</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <section>
+        <div class="section-header">
+            <h2>Clés SSH des Étudiants</h2>
+            <div class="button-group">
+                <button id="export-keys" class="button" title="Exporter en CSV">
+                    <span class="button-icon">📥</span> Exporter
+                </button>
+                <button id="refresh-keys" class="button" title="Rafraîchir la liste">
+                    <span class="button-icon">🔄</span> Rafraîchir
+                </button>
+            </div>
+        </div>
+
+        <div id="loading-message" class="status-message">Chargement des clés SSH en cours...</div>
+
+        <div id="error-message" class="error-message" style="display: none;"></div>
+
+        <div id="ssh-keys-container" class="table-container" style="display: none;">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Adresse IP</th>
+                    <th>Nom d'utilisateur</th>
+                    <th>Clé privée</th>
+                </tr>
+                </thead>
+                <tbody id="ssh-keys-table-body">
+                <!-- Les clés SSH seront insérées ici dynamiquement -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>&copy; 2025 VM Deployment System, CSS group B</p>
+</footer>
+
+<script src="./ssh-keys.script.js"></script>
+<script src="./script.js"></script>
+
+</body>
+</html>
