@@ -31,9 +31,8 @@
     password: "{{ db_root_password }}"
     login_unix_socket: /var/run/mysqld/mysqld.sock
     check_implicit_admin: yes
-    priv: '*.*:ALL,GRANT,PROCESS,RELOAD,SHOW DATABASES'
+    priv: '*.*:ALL,GRANT'
     state: present
-  no_log: true
   register: root_password_set
   tags: config
 
@@ -59,19 +58,6 @@
   no_log: true
   tags: database
 
-- name: Configure MariaDB to listen on all interfaces
-  template:
-    src: 50-server.cnf.j2
-    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
-    owner: root
-    group: root
-    mode: '0644'
-    validate: 'mysqld --defaults-file=%s --validate-config'
-  notify:
-    - restart mariadb
-    - wait for mariadb
-  tags: config
-
 - name: Flush privileges
   mysql_query:
     login_user: root
@@ -79,3 +65,23 @@
     query: FLUSH PRIVILEGES
   when: root_password_set is changed
   tags: config
+
+- name: Configure MariaDB to listen on all interfaces
+  become: yes
+  template:
+    src: 50-server.cnf.j2
+    dest: /etc/mysql/mariadb.conf.d/50-server.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify:
+    - restart mariadb
+    - wait for mariadb
+  tags: config
+
+- name: Ensure MariaDB is started and enabled
+  service:
+    name: mariadb
+    state: started
+    enabled: yes
+  become: yes
