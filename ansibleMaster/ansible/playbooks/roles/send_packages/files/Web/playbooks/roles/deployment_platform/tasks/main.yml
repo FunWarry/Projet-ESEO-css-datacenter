@@ -19,11 +19,10 @@
   apt:
     update_cache: yes
 
-- name: Install Node.js and npm
+- name: Install Node.js
   apt:
     name:
       - nodejs
-      - npm
     state: present
     update_cache: yes
 
@@ -48,15 +47,16 @@
 - name: Copy deployment platform files
   copy:
     src: deployment_platform
-    dest: /opt/deployment_platform
+    dest: /opt
     owner: www-data
     group: www-data
     mode: '0644'
     directory_mode: '0755'
 
-- name: Install Node.js dependencies
+- name: Install production dependencies
   npm:
     path: /opt/deployment_platform
+    production: yes
     state: present
 
 - name: Create systemd service file
