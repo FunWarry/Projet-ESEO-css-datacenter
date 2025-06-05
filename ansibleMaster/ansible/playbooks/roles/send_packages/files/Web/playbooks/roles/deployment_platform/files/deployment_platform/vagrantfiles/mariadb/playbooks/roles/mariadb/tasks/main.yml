@@ -74,9 +74,7 @@
     owner: root
     group: root
     mode: '0644'
-  notify:
-    - restart mariadb
-    - wait for mariadb
+  notify: restart mariadb
   tags: config
 
 - name: Ensure MariaDB is started and enabled
