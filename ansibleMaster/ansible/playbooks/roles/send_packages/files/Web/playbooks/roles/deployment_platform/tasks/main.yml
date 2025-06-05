@@ -59,6 +59,12 @@
     production: yes
     state: present
 
+- name: Ajout des droits sudoer
+  lineinfile:
+    path: /etc/sudoers
+    line: "www-data ALL=(ALL) NOPASSWD: /usr/bin/node /opt/deployment_platform/src/server/index.js"
+    state: present
+
 - name: Create systemd service file
   template:
     src: deployment-platform.service.j2

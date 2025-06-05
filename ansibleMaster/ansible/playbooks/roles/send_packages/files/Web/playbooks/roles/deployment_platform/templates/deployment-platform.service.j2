@@ -7,7 +7,7 @@ User=www-data
 Group=www-data
 WorkingDirectory=/opt/deployment_platform
 Environment="NODE_ENV=production"
-ExecStart=/usr/bin/node /opt/deployment_platform/src/server/index.js
+ExecStart=/usr/bin/sudo -n /usr/bin/node /opt/deployment_platform/src/server/index.js
 Restart=always
 RestartSec=10
 StandardOutput=syslog
