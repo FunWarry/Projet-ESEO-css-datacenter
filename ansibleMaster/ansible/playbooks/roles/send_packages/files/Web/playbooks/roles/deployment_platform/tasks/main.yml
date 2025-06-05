@@ -19,11 +19,10 @@
   apt:
     update_cache: yes
 
-- name: Install Node.js and npm
+- name: Install Node.js
   apt:
     name:
       - nodejs
-      - npm
     state: present
     update_cache: yes
 
@@ -54,10 +53,12 @@
     mode: '0644'
     directory_mode: '0755'
 
-- name: Install Node.js dependencies
+- name: Install production dependencies
   npm:
-    path: /opt/deployment_platform
-    state: present
+    cmd: install
+    args:
+      cwd: /opt/deployment_platform
+    production: yes
 
 - name: Create systemd service file
   template:
