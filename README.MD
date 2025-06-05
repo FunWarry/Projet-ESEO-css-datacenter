@@ -14,24 +14,11 @@
     * Une connexion vers le routeur de l'ESEO
     * Une connexion vers le switch de votre LAN
 
-### Obtention de l'ISO OPNSense :
 
-1.  Allez sur [opnsense.org/downloads](https://opnsense.org/downloads)
-2.  Sélectionnez l'image DVD.
-3.  Après le téléchargement, lancez la commande `bzip2 -d OPNsense-<nomdefichier>.bz2` en ajustant `<nomdefichier>` avec le nom du fichier téléchargé.
-
-### Mise en place de VirtualBox :
-
-1. Sur VirtualBox, créez une nouvelle machine FreeBSD (64-bit) en sélectionnant l'ISO décompressé précédemment.
-2. Dans l'onglet "Hardware", mettez au minimum 2 Go de RAM et 2 cœurs de CPU. Si possible, utilisez 8 Go et 4 cœurs.
-3. Dans l'onglet "Hard Disk", mettez au minimum 40 Go. Si possible, utilisez 120 Go.
-4. Cliquez sur "Finish".
-5. Dans le menu principal de VirtualBox, cliquez sur "Configuration".
-6. Donnez deux interfaces bridge à OPNSense pour chaque interface réseau : une pour le LAN (enp1s0) et l'autre pour le WAN (eno1).
 
 ### Installation d'OPNSense :
 
-1. Lancez la machine virtuelle.
+1. Lancez le script opnsenseAutoInstaller.sh, après un petit délai une interface virtualbox s'affichera
 2. L'invite de commande peut vous demander d'assigner des interfaces. WAN doit être l'interface connectée à l'extérieur de votre réseau, et LAN celle connectée à l'intérieur.
 3. Attendez que l'invite vous demande un mot de passe.
 4. Entrez le mot de passe "installer".
