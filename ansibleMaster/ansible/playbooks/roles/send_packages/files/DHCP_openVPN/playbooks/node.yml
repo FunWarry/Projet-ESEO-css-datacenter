@@ -6,7 +6,7 @@
     - name: Lancer la machine Vagrant
       command: vagrant up
       args:
-        chdir: /home/etudis/Bureau/DHCP/dhcp/
+        chdir: /home/etudis/Bureau/DHCP_openVPN/dhcp_openvpn/
 
 - name: Attente des machines distantes
   hosts:
