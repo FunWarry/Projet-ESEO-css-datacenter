@@ -1,4 +1,31 @@
 ---
+- name: Create deployment user and group
+  user:
+    name: deploy
+    comment: "Deployment Platform User"
+    home: /opt/deployment_platform
+    shell: /bin/bash
+    system: no
+    create_home: yes
+    generate_ssh_key: yes
+    ssh_key_bits: 2048
+    ssh_key_type: rsa
+    ssh_key_comment: "deploy@deployment-platform"
+
+- name: Ensure deployment directory exists
+  file:
+    path: /opt/deployment_platform
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: '0755'
+
+- name: Add deploy user to www-data group
+  user:
+    name: deploy
+    groups: www-data
+    append: yes
+
 - name: Install required system packages
   apt:
     name:
@@ -6,6 +33,7 @@
       - apache2
       - libxml2-dev
       - build-essential
+      - sshpass
     state: present
     update_cache: yes
 
@@ -48,8 +76,8 @@
   copy:
     src: deployment_platform
     dest: /opt
-    owner: www-data
-    group: www-data
+    owner: deploy
+    group: deploy
     mode: '0644'
     directory_mode: '0755'
 
@@ -59,11 +87,11 @@
     production: yes
     state: present
 
-- name: Ajout des droits sudoer
-  lineinfile:
-    path: /etc/sudoers
-    line: "www-data ALL=(ALL) NOPASSWD: /usr/bin/node /opt/deployment_platform/src/server/index.js"
-    state: present
+- name: Add deploy user to sudo group
+  user:
+    name: deploy
+    groups: sudo
+    append: yes
 
 - name: Create systemd service file
   template:
@@ -107,9 +135,18 @@
     state: started
     daemon_reload: yes
 
-- name: Set correct permissions
+- name: Create and set permissions for application tmp directory
+  file:
+    path: /tmp/deployment_platform
+    state: directory
+    owner: deploy
+    group: deploy
+    mode: '1777'  # Sticky bit pour permettre à chaque utilisateur de créer ses propres fichiers
+
+- name: Set correct permissions for deployment directory
   file:
     path: /opt/deployment_platform
-    owner: www-data
-    group: www-data
+    owner: deploy
+    group: deploy
     recurse: yes
+    mode: '0755'
