@@ -54,6 +54,9 @@ function handleRequest(req, res, pathname) {
         case '/api/export/student-ssh-keys':
             handleExportStudentSSHKeys(req, res).then();
             break;
+        case '/api/vpn-config':
+            handleVpnConfigDownload(req, res).then();
+            break;
         default:
             res.writeHead(404, {'Content-Type': 'application/json'});
             res.end(JSON.stringify({error: 'API endpoint not found'}));
@@ -412,6 +415,46 @@ async function handleExportStudentSSHKeys(req, res) {
     } else {
         res.writeHead(405, {'Content-Type': 'application/json'});
         res.end(JSON.stringify({error: 'Method not allowed'}));
+    }
+}
+
+// Handle VPN config download
+async function handleVpnConfigDownload(req, res) {
+    if (req.method !== 'GET') {
+        res.writeHead(405, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Method not allowed' }));
+        return;
+    }
+
+    try {
+        const fs = require('fs');
+        const path = require('path');
+        
+        // Chemin vers le fichier de configuration VPN
+        const vpnConfigPath = path.join('/vagrant/files/client.ovpn');
+        
+        // Vérifier si le fichier existe
+        if (!fs.existsSync(vpnConfigPath)) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'VPN configuration file not found' }));
+            return;
+        }
+        
+        // Lire le fichier de configuration
+        const vpnConfig = fs.readFileSync(vpnConfigPath, 'utf8');
+        
+        // Envoyer le fichier en réponse
+        res.writeHead(200, {
+            'Content-Type': 'application/x-openvpn-profile',
+            'Content-Disposition': 'attachment; filename="client.ovpn"',
+            'Content-Length': Buffer.byteLength(vpnConfig, 'utf8')
+        });
+        
+        res.end(vpnConfig);
+    } catch (error) {
+        console.error('Error serving VPN config:', error);
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Failed to serve VPN configuration' }));
     }
 }
 
