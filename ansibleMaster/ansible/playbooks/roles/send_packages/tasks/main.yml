@@ -15,7 +15,7 @@
     owner: etudis
     group: etudis
     mode: '0755'
-    
+
 - name: Copier la clé publique vers DNS
   when: "'Dns' in group_names"
   shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Dns/dns/files/
@@ -46,7 +46,21 @@
 
 - name: Copier la cle publique vers Web
   when: "'Web' in group_names"
-  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Web/etudiant/files/
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/Web/web/files/
+
+
+- name: Copier les configurations de phpmyadmin vers le PC physique
+  when: "'Web' in group_names"
+  copy:
+    src: PHPmyadmin
+    dest: /home/etudis/Bureau/
+    owner: etudis
+    group: etudis
+    mode: '0755'
+
+- name: Copier la cle publique vers PHPmyadmin
+  when: "'Web' in group_names"
+  shell: cp ~/.ssh/id_rsa.pub /home/etudis/Bureau/PHPmyadmin/phpmyadmin/files/
 
 
 - name: Copier les configurations de la Supervision vers le PC physique

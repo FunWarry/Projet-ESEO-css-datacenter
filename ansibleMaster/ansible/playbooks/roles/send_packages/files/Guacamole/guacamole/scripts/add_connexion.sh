@@ -17,8 +17,8 @@ web=(
   "PC Physique Web|192.168.232.2"
   "Web|192.168.232.8"
   "Squash|192.168.232.7"
-  "PHPmyAdmin|192.168.232.3"
-  "Guacamole|192.168.232.4"
+  "Guacamole|192.168.232.3"
+  "PHPmyAdmin|192.168.232.4"
   "Relais|192.168.232.5"
 )
 

@@ -7,7 +7,7 @@ SCRIPT
 
 $script_config = <<-SCRIPT
 sudo ip addr flush dev enp0s8
-sudo ip addr add 192.168.232.4/23 dev enp0s8
+sudo ip addr add 192.168.232.3/23 dev enp0s8
 sudo echo "search .                     
 nameserver 192.168.238.10" > /etc/resolv.conf
 
@@ -38,7 +38,7 @@ Vagrant.configure("2") do |config|
 		config.vm.define nodeName do |node|
 			node.vm.host_name = nodeName
 			node.vm.box = "chavinje/fr-book-64"
-			node.vm.network :public_network, bridge:"eno1" ,ip: "192.168.232.4"
+			node.vm.network :public_network, bridge:"eno1" ,ip: "192.168.232.3"
 			node.vm.provider "virtualbox" do |v|
 			v.name = "guacamole1"
 		end
