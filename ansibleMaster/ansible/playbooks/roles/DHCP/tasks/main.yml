@@ -1,5 +1,0 @@
-- name: Executer le playbook node.yml dans le repertoire /home/etudis/Bureau/DHCP/
-  ansible.builtin.shell: |
-    ansible-playbook -i variables/inventory.ini playbooks/node.yml
-  args:
-    chdir: /home/etudis/Bureau/DHCP/

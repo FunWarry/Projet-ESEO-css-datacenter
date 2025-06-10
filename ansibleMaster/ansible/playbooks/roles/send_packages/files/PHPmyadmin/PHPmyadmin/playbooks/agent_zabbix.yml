@@ -1,0 +1,7 @@
+- name: Installation Systeme
+  hosts: phpmyadmin
+  become: true
+  vars:
+  roles:
+    - agent_zabbix
+

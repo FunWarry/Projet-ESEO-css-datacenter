@@ -8,16 +8,17 @@ while true; do
     echo "0) Envoi des packages"
     echo "1) Déploiement standard (tous les services)"
     echo "2) DNS"
-    echo "3) DHCP"
+    echo "3) DHCP & openVPN"
     echo "4) Relais"
     echo "5) Web"
-    echo "6) Base de Données (BDD)"
-    echo "7) Squash"
-    echo "8) Supervision"
-    echo "9) Sauvegarde"
-    echo "10) Guacamole"
-    echo "11) Je détruis tout :)"
-    echo "12) Quitter"
+    echo "6) Web"
+    echo "7) Base de Données (BDD)"
+    echo "8) Squash"
+    echo "9) Supervision"
+    echo "10) Sauvegarde"
+    echo "11) Guacamole"
+    echo "12) Je détruis tout :)"
+    echo "13) Quitter"
     echo "-----------------------------------------------"
     read -p "Choisis un ou plusieurs services (ex: 1 4 6): " choix
 
@@ -32,7 +33,7 @@ while true; do
             1)
                 echo "Déploiement standard : Teaching Cloud ..."
                 sleep 1
-                for playbook in Dns Dhcp Relais Web Bdd Squash Supervision; do
+                for playbook in Dns DHCP_openVPN Relais Web PHPmyadmin Bdd Squash Supervision; do
                     sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/${playbook}.yml
                 done
                 ;;
@@ -44,7 +45,7 @@ while true; do
             3)
                 echo "Déploiement de DHCP..."
                 sleep 1
-                sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Dhcp.yml
+                sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/DHCP_openVPN.yml
                 ;;
             4)
                 echo "Déploiement de Relais..."
@@ -57,36 +58,41 @@ while true; do
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Web.yml
                 ;;
             6)
+                echo "Déploiement de PHPmyadmin.."
+                sleep 1
+                sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/PHPmyadmin.yml
+                ;;
+            7)
                 echo "Déploiement de BDD..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Bdd.yml
                 ;;
-            7)
+            8)
                 echo "Déploiement de Squash..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Squash.yml
                 ;;
-            8)
+            9)
                 echo "Déploiement de Supervision..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Supervision.yml
                 ;;
-            9)
+            10)
                 echo "Déploiement de Sauvegarde..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Sauvegarde.yml
                 ;;
-            10)
+            11)
                 echo "Déploiement de Guacamole..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/Guacamole.yml
                 ;;
-            11)
+            12)
                 echo "Destruction massive ..."
                 sleep 1
                 sudo -u ansible ansible-playbook -i /vagrant/ansible/variables/inventory.ini /vagrant/ansible/playbooks/destroy_all.yml
                 ;;
-            12)
+            13)
                 echo "Quitter... À bientôt !"
                 exit 0
                 ;;
