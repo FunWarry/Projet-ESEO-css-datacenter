@@ -44,6 +44,13 @@ window.addEventListener('load', () => {
     // Initialize DOM elements
     initializeDOMElements();
 
+
+    // Add event listener for VPN download button
+    const downloadVpnBtn = document.getElementById('download-vpn-config');
+    if (downloadVpnBtn) {
+        downloadVpnBtn.addEventListener('click', downloadVpnConfig);
+    }
+
     // Vérifier si nous sommes sur la page de statut
     const isStatusPage = window.location.pathname.includes('status.html');
     console.log('Is status page:', isStatusPage);
@@ -1003,6 +1010,9 @@ function addVMToTable(vm) {
     const viewLogsBtn = detailsContainer.querySelector('[data-action="view-logs"]');
     viewLogsBtn.addEventListener('click', () => viewVMLogs(vm.id));
 
+    const downloadVpnBtn = detailsContainer.querySelector('[data-action="download-vpn"]');
+    downloadVpnBtn.addEventListener('click', () => downloadVpnConfig(vm.id));
+
     const destroyBtn = detailsContainer.querySelector('[data-action="destroy"]');
     destroyBtn.addEventListener('click', () => destroyVM(vm.id, false));
 
@@ -1204,4 +1214,31 @@ function viewVMLogs(vmId) {
     // Implementation for viewing VM logs
     alert(`Viewing logs for VM ${vmId}`);
     // You can implement this function to show logs in a modal or new page
+}
+
+// Download VPN configuration
+function downloadVpnConfig() {
+    console.log('Downloading VPN configuration...');
+    
+    // Create a temporary link element
+    const link = document.createElement('a');
+    
+    // Set the download attribute with a filename
+    link.download = 'client.ovpn';
+    
+    // Set the href to the server endpoint that serves the VPN config
+    // The server should handle authentication and file serving
+    link.href = '/api/vpn-config';
+    
+    // Append the link to the body (required for Firefox)
+    document.body.appendChild(link);
+    
+    // Trigger the download
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    
+    // Show success message
+    showSuccess('Téléchargement de la configuration VPN démarré');
 }

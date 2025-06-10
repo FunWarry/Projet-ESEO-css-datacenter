@@ -1,0 +1,102 @@
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://security.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:3 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:4 http://security.debian.org/debian-security bookworm-security/main Sources [129 kB]
+Get:5 http://security.debian.org/debian-security bookworm-security/main amd64 Packages [258 kB]
+Get:6 http://security.debian.org/debian-security bookworm-security/main Translation-en [155 kB]
+Get:7 http://deb.debian.org/debian bookworm/non-free-firmware Sources [6,440 B]
+Get:8 http://deb.debian.org/debian bookworm/main Sources [9,495 kB]
+Get:9 http://deb.debian.org/debian bookworm/main amd64 Packages [8,792 kB]
+Get:10 http://deb.debian.org/debian bookworm/main Translation-en [6,109 kB]
+Get:11 http://deb.debian.org/debian bookworm/non-free-firmware amd64 Packages [6,240 B]
+Get:12 http://deb.debian.org/debian bookworm-updates/main Sources.diff/Index [16.2 kB]
+Get:13 http://deb.debian.org/debian bookworm-updates/main amd64 Packages.diff/Index [16.2 kB]
+Get:14 http://deb.debian.org/debian bookworm-updates/main Translation-en.diff/Index [16.2 kB]
+Get:15 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
+Get:16 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
+Get:15 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
+Get:16 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
+Get:17 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
+Get:17 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
+Fetched 25.3 MB in 7s (3,825 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+gnupg is already the newest version (2.2.40-1.1).
+gnupg set to manually installed.
+Suggested packages:
+  zip
+The following NEW packages will be installed:
+  unzip
+The following packages will be upgraded:
+  wget
+1 upgraded, 1 newly installed, 0 to remove and 44 not upgraded.
+Need to get 1,104 kB of archives.
+After this operation, 302 kB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 wget amd64 1.21.3-1+deb12u1 [937 kB]
+Get:2 http://deb.debian.org/debian bookworm/main amd64 unzip amd64 6.0-28 [166 kB]
+apt-listchanges: Reading changelogs...
+dpkg-preconfigure: unable to re-open stdin: No such file or directory
+Fetched 1,104 kB in 0s (6,343 kB/s)
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 74440 files and directories currently installed.)
+Preparing to unpack .../wget_1.21.3-1+deb12u1_amd64.deb ...
+Unpacking wget (1.21.3-1+deb12u1) over (1.21.3-1+b2) ...
+Selecting previously unselected package unzip.
+Preparing to unpack .../unzip_6.0-28_amd64.deb ...
+Unpacking unzip (6.0-28) ...
+Setting up wget (1.21.3-1+deb12u1) ...
+Setting up unzip (6.0-28) ...
+Processing triggers for mailcap (3.70+nmu1) ...
+Processing triggers for man-db (2.11.2-2) ...
+Get:1 http://deb.debian.org/debian bookworm InRelease [151 kB]
+Get:2 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
+Get:3 http://deb.debian.org/debian bookworm/non-free-firmware Sources [6,440 B]
+Get:4 http://deb.debian.org/debian bookworm-updates/main Sources.diff/Index [16.2 kB]
+Get:5 http://deb.debian.org/debian bookworm-updates/main amd64 Packages.diff/Index [16.2 kB]
+Get:6 http://deb.debian.org/debian bookworm-updates/main Translation-en.diff/Index [16.2 kB]
+Get:7 http://security.debian.org/debian-security bookworm-security InRelease [48.0 kB]
+Get:8 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
+Get:9 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
+Get:8 http://deb.debian.org/debian bookworm-updates/main Sources T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [291 B]
+Get:9 http://deb.debian.org/debian bookworm-updates/main amd64 Packages T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [187 B]
+Get:10 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
+Get:10 http://deb.debian.org/debian bookworm-updates/main Translation-en T-2025-03-27-1414.15-F-2025-03-27-1414.15.pdiff [39 B]
+Get:11 http://deb.debian.org/debian bookworm/main Sources [9,495 kB]
+Get:12 http://security.debian.org/debian-security bookworm-security/main Sources [129 kB]
+Get:13 http://security.debian.org/debian-security bookworm-security/main amd64 Packages [258 kB]
+Get:14 http://security.debian.org/debian-security bookworm-security/main Translation-en [155 kB]
+Get:15 http://deb.debian.org/debian bookworm/main amd64 Packages [8,792 kB]
+Get:16 http://deb.debian.org/debian bookworm/main Translation-en [6,109 kB]
+Get:17 http://deb.debian.org/debian bookworm/non-free-firmware amd64 Packages [6,240 B]
+Fetched 25.3 MB in 5s (4,802 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+gnupg is already the newest version (2.2.40-1.1).
+gnupg set to manually installed.
+Suggested packages:
+  zip
+The following NEW packages will be installed:
+  unzip
+The following packages will be upgraded:
+  wget
+1 upgraded, 1 newly installed, 0 to remove and 44 not upgraded.
+Need to get 1,104 kB of archives.
+After this operation, 302 kB of additional disk space will be used.
+Get:1 http://deb.debian.org/debian bookworm/main amd64 wget amd64 1.21.3-1+deb12u1 [937 kB]
+Get:2 http://deb.debian.org/debian bookworm/main amd64 unzip amd64 6.0-28 [166 kB]
+apt-listchanges: Reading changelogs...
+dpkg-preconfigure: unable to re-open stdin: No such file or directory
+Fetched 1,104 kB in 1s (1,968 kB/s)
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 74440 files and directories currently installed.)
+Preparing to unpack .../wget_1.21.3-1+deb12u1_amd64.deb ...
+Unpacking wget (1.21.3-1+deb12u1) over (1.21.3-1+b2) ...
+Selecting previously unselected package unzip.
+Preparing to unpack .../unzip_6.0-28_amd64.deb ...
+Unpacking unzip (6.0-28) ...
+Setting up wget (1.21.3-1+deb12u1) ...
+Setting up unzip (6.0-28) ...
+Processing triggers for mailcap (3.70+nmu1) ...
+Processing triggers for man-db (2.11.2-2) ...

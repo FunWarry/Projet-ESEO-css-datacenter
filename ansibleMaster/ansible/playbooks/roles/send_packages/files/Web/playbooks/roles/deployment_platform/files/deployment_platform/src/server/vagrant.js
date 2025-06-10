@@ -6,6 +6,7 @@ const {v4: uuidv4} = require('uuid');
 const {format} = require('date-fns');
 const db = require('../../db');
 const os = require('os');
+const { spawn } = require('child_process');
 
 // Ensure logs directory exists
 const logsDir = path.join(__dirname, '../../logs');
@@ -186,208 +187,219 @@ const vagrant = {
         return deploymentStatus[vmId];
     },
 
-    // Check if SSH keys exist for the current user
-    checkSSHKeys: async function () {
-        console.log('os.homedir():', os.homedir());
-        const sshDir = path.join(os.homedir(), '.ssh');
-        const privateKeyPath = path.join(sshDir, 'id_rsa');
-        const publicKeyPath = path.join(sshDir, 'id_rsa.pub');
-
+    // Check if SSH keys exist and are valid for the current user
+    checkSSHKeys: function () {
         try {
-            // Check if SSH directory exists
+            console.log('os.homedir():', os.homedir());
+            const sshDir = path.join(os.homedir(), '.ssh');
+            const privateKeyPath = path.join(sshDir, 'id_rsa');
+            const publicKeyPath = path.join(sshDir, 'id_rsa.pub');
+
+            // Check if SSH directory exists, create it if not
             if (!fs.existsSync(sshDir)) {
                 console.log('SSH directory does not exist, creating it...');
                 fs.mkdirSync(sshDir, {recursive: true, mode: 0o700});
+                return { exists: false, privateKeyPath, publicKeyPath };
             }
 
-            // Check if private and public keys exist
+            // Check if both keys exist and are valid
             const privateKeyExists = fs.existsSync(privateKeyPath);
             const publicKeyExists = fs.existsSync(publicKeyPath);
-
-            // Save keys in .ssh directory
-            if (!privateKeyExists) {
-                fs.writeFileSync(privateKeyPath, 'private key content');
-            }
-            if (!publicKeyExists) {
-                fs.writeFileSync(publicKeyPath, 'public key content');
+            
+            // If either key is missing, we need to generate new ones
+            if (!privateKeyExists || !publicKeyExists) {
+                console.log('SSH keys are missing, need to generate new ones');
+                return { exists: false, privateKeyPath, publicKeyPath };
             }
 
-            return {
-                exists: privateKeyExists && publicKeyExists, privateKeyPath, publicKeyPath
-            };
+            try {
+                // Read key files to verify their content
+                const privateKeyContent = fs.readFileSync(privateKeyPath, 'utf8');
+                const publicKeyContent = fs.readFileSync(publicKeyPath, 'utf8');
+                
+                // Check if keys are valid
+                const isPrivateKeyValid = privateKeyContent.includes('BEGIN RSA PRIVATE KEY') || 
+                                       privateKeyContent.includes('BEGIN OPENSSH PRIVATE KEY');
+                const isPublicKeyValid = publicKeyContent.startsWith('ssh-rsa');
+                
+                if (!isPrivateKeyValid || !isPublicKeyValid) {
+                    console.log('SSH keys exist but are not valid, will regenerate them');
+                    return { exists: false, privateKeyPath, publicKeyPath };
+                }
+                
+                // Check and fix permissions
+                const privateKeyStats = fs.statSync(privateKeyPath);
+                const publicKeyStats = fs.statSync(publicKeyPath);
+                
+                // Check if permissions are correct (600 for private key, 644 for public)
+                const privateKeyPerms = privateKeyStats.mode & 0o777;
+                const publicKeyPerms = publicKeyStats.mode & 0o777;
+                
+                if (privateKeyPerms !== 0o600 || publicKeyPerms !== 0o644) {
+                    console.log('Fixing SSH key permissions...');
+                    if (privateKeyPerms !== 0o600) {
+                        fs.chmodSync(privateKeyPath, 0o600);
+                    }
+                    if (publicKeyPerms !== 0o644) {
+                        fs.chmodSync(publicKeyPath, 0o644);
+                    }
+                }
+                
+                console.log('SSH keys exist and are valid');
+                return { exists: true, privateKeyPath, publicKeyPath };
+                
+            } catch (error) {
+                console.error('Error validating SSH keys:', error);
+                return { exists: false, privateKeyPath, publicKeyPath };
+            }
+            
         } catch (error) {
-            console.error('Error checking SSH keys:', error);
+            console.error('Error in checkSSHKeys:', error);
             throw error;
         }
     },
 
     // Generate SSH keys if they don't exist
     generateSSHKeys: async function () {
+        console.log('Starting SSH key generation process...');
+        const {exists, privateKeyPath, publicKeyPath} = this.checkSSHKeys();
+        const sshDir = path.join(os.homedir(), '.ssh');
+        
         try {
-            const {exists, privateKeyPath, publicKeyPath} = await this.checkSSHKeys();
-
             if (exists) {
-                console.log('SSH keys already exist');
+                console.log('SSH keys already exist and are valid');
                 return {privateKeyPath, publicKeyPath};
             }
 
-            console.log('Generating SSH keys...');
-            await execPromise(`ssh-keygen -t rsa -b 1024 -f "${privateKeyPath}" -N "" -C "etudis@deployment-server"`);
-
-            // Set correct permissions
-            fs.chmodSync(privateKeyPath, 0o600);
-            fs.chmodSync(publicKeyPath, 0o644);
-
-            console.log('SSH keys generated successfully');
-            return {privateKeyPath, publicKeyPath};
+            console.log('Generating new SSH keys...');
+            
+            // Ensure .ssh directory exists with correct permissions
+            if (!fs.existsSync(sshDir)) {
+                console.log('Creating .ssh directory...');
+                fs.mkdirSync(sshDir, {recursive: true, mode: 0o700});
+            } else {
+                console.log('.ssh directory already exists');
+            }
+            
+            // Remove any existing key files to avoid conflicts
+            if (fs.existsSync(privateKeyPath)) {
+                console.log('Removing existing private key');
+                fs.unlinkSync(privateKeyPath);
+            }
+            if (fs.existsSync(publicKeyPath)) {
+                console.log('Removing existing public key');
+                fs.unlinkSync(publicKeyPath);
+            }
+            
+            // Generate keys using simple execSync
+            console.log('Generating RSA 4096-bit key pair...');
+            const keyComment = `etudis@deployment-${Date.now()}`;
+            
+            // Create the key generation command
+            const keygenCmd = `ssh-keygen -t rsa -b 4096 -f "${privateKeyPath}" -N "" -C "${keyComment}"`;
+            console.log(`Executing: ${keygenCmd}`);
+            
+            try {
+                // Execute the command synchronously
+                const { execSync } = require('child_process');
+                const output = execSync(keygenCmd, { stdio: 'pipe' }).toString();
+                console.log('Key generation output:', output);
+                
+                // Set permissions
+                fs.chmodSync(privateKeyPath, 0o600);
+                fs.chmodSync(publicKeyPath, 0o644);
+                
+                // Verify keys were created
+                if (!fs.existsSync(privateKeyPath) || !fs.existsSync(publicKeyPath)) {
+                    throw new Error('Failed to generate SSH keys: Key files were not created');
+                }
+                
+                console.log('SSH keys generated successfully');
+                return {privateKeyPath, publicKeyPath};
+                
+            } catch (execError) {
+                console.error('Error executing ssh-keygen:', execError.message);
+                console.error('stderr:', execError.stderr?.toString() || 'No stderr');
+                console.error('stdout:', execError.stdout?.toString() || 'No stdout');
+                throw new Error(`SSH key generation failed: ${execError.message}`);
+            }
+            
         } catch (error) {
-            console.error('Error generating SSH keys:', error);
-            throw error;
+            console.error('Error in generateSSHKeys:', error);
+            
+            // Clean up any partial key files
+            try {
+                if (privateKeyPath && fs.existsSync(privateKeyPath)) fs.unlinkSync(privateKeyPath);
+                if (publicKeyPath && fs.existsSync(publicKeyPath)) fs.unlinkSync(publicKeyPath);
+            } catch (cleanupError) {
+                console.error('Error cleaning up after key generation failure:', cleanupError);
+            }
+            
+            throw new Error(`Failed to generate SSH keys: ${error.message}`);
         }
     },
 
     // Copy public key to target machine
     copyPublicKeyToHost: async function (host) {
-        console.log(`[copyPublicKeyToHost] Starting process to copy key to ${host}`);
-        const tempSshConfigPath = path.join(os.tmpdir(), `ssh_config_${Date.now()}`);
-        const tempCmdPath = path.join(os.tmpdir(), `ssh_cmd_${Date.now()}.sh`);
+        console.log(`[SSH] Starting to copy public key to ${host}`);
         const password = "N3twork!"; // Hardcoded password
 
-        console.log(`[copyPublicKeyToHost] Temp file paths:
-            - SSH config: ${tempSshConfigPath}
-            - Command script: ${tempCmdPath}`);
-
         try {
-            // Verify SSH keys exist first
-            console.log(`[copyPublicKeyToHost] Checking SSH keys...`);
-            const {exists, publicKeyPath} = await this.checkSSHKeys();
-
+            // Ensure SSH keys exist
+            console.log('[SSH] Checking SSH keys...');
+            const {exists, publicKeyPath} = this.checkSSHKeys();
             if (!exists) {
-                console.log(`[copyPublicKeyToHost] SSH keys don't exist, generating new ones...`);
+                console.log('[SSH] SSH keys not found, generating new ones...');
                 await this.generateSSHKeys();
-                console.log(`[copyPublicKeyToHost] SSH keys generated`);
-            } else {
-                console.log(`[copyPublicKeyToHost] Using existing SSH keys at ${publicKeyPath}`);
             }
 
-            // Verify the file exists before reading
+            // Read the public key
             if (!fs.existsSync(publicKeyPath)) {
-                throw new Error(`Public key file does not exist at path: ${publicKeyPath}`);
+                throw new Error(`Public key not found at: ${publicKeyPath}`);
             }
+            
+            const publicKey = fs.readFileSync(publicKeyPath, 'utf8').trim();
+            console.log(`[SSH] Using public key: ${publicKey.substring(0, 30)}...`);
 
-            console.log(`[copyPublicKeyToHost] Reading public key from ${publicKeyPath}`);
-            const publicKey = fs.readFileSync(publicKeyPath, 'utf8');
-            console.log(`[copyPublicKeyToHost] Public key loaded: ${publicKey.substring(0, 30)}...`);
-
-            // Create temporary SSH config file
-            console.log(`[copyPublicKeyToHost] Creating temporary SSH config file`);
-            const sshConfig = `Host ${host}
-              User etudis
-              StrictHostKeyChecking no
-              PreferredAuthentications password
-              PubkeyAuthentication no
-            `;
-            fs.writeFileSync(tempSshConfigPath, sshConfig, {mode: 0o600});
-            console.log(`[copyPublicKeyToHost] SSH config file created at ${tempSshConfigPath}`);
-
-            // Create temporary command file
-            console.log(`[copyPublicKeyToHost] Creating temporary command script`);
-            const sshCmd = `#!/bin/bash
-                mkdir -p ~/.ssh
-                chmod 700 ~/.ssh
-                echo '${publicKey}' >> ~/.ssh/authorized_keys
+            // Create the command to execute on the remote host
+            const setupCmd = `
+                mkdir -p ~/.ssh && \
+                chmod 700 ~/.ssh && \
+                echo '${publicKey}' >> ~/.ssh/authorized_keys && \
                 chmod 600 ~/.ssh/authorized_keys
-                `;
-            fs.writeFileSync(tempCmdPath, sshCmd, {mode: 0o700});
-            console.log(`[copyPublicKeyToHost] Command script created at ${tempCmdPath}`);
+            `;
 
-            // Execute SSH command using spawn
-            const {spawn} = require('child_process');
-            return new Promise((resolve, reject) => {
-                console.log(`[copyPublicKeyToHost] Spawning SSH process with command: ssh -F ${tempSshConfigPath} etudis@${host} bash -s`);
+            // Execute the command using sshpass
+            const cmd = 'sshpass';
+            const args = [
+                '-p', password,
+                'ssh',
+                '-o', 'StrictHostKeyChecking=no',
+                '-o', 'UserKnownHostsFile=/dev/null',
+                '-o', 'PreferredAuthentications=password',
+                '-o', 'PubkeyAuthentication=no',
+                `etudis@${host}`,
+                setupCmd
+            ];
 
-                const sshProcess = spawn('ssh', ['-F', tempSshConfigPath, `etudis@${host}`, 'bash -s'], {
-                    stdio: ['pipe', 'pipe', 'pipe'], shell: true // Add shell option for Windows
-                });
+            console.log(`[SSH] Executing: ${cmd} ${args.slice(0, 2).join(' ')} ${args.slice(2).join(' ').substring(0, 100)}...`);
 
-                let stdoutData = '';
-                let stderrData = '';
-
-                sshProcess.stdout.on('data', (data) => {
-                    stdoutData += data.toString();
-                    console.log(`[copyPublicKeyToHost] SSH stdout: ${data}`);
-                });
-
-                sshProcess.stderr.on('data', (data) => {
-                    stderrData += data.toString();
-                    console.log(`[copyPublicKeyToHost] SSH stderr: ${data}`);
-
-                    // Check for password prompt
-                    if (data.toString().includes('password:')) {
-                        console.log(`[copyPublicKeyToHost] Detected password prompt, sending password`);
-                        sshProcess.stdin.write(`${password}\n`);
-                    }
-                });
-
-                sshProcess.on('error', (error) => {
-                    console.error(`[copyPublicKeyToHost] SSH process error: ${error.message}`);
-
-                    // Clean up temporary files
-                    cleanupFiles();
-
-                    reject(new Error(`SSH process error: ${error.message}`));
-                });
-
-                sshProcess.on('close', (code) => {
-                    console.log(`[copyPublicKeyToHost] SSH process exited with code: ${code}`);
-
-                    // Clean up temporary files
-                    cleanupFiles();
-
-                    if (code === 0) {
-                        console.log(`[copyPublicKeyToHost] Public key copied to ${host} successfully`);
-                        resolve(true);
-                    } else {
-                        console.error(`[copyPublicKeyToHost] SSH failed with code ${code}`);
-                        console.error(`[copyPublicKeyToHost] stdout: ${stdoutData}`);
-                        console.error(`[copyPublicKeyToHost] stderr: ${stderrData}`);
-                        reject(new Error(`SSH failed with code ${code}: ${stderrData}`));
-                    }
-                });
-
-                // Read script content and send it to SSH stdin
-                console.log(`[copyPublicKeyToHost] Reading command script content`);
-                const scriptContent = fs.readFileSync(tempCmdPath, 'utf8');
-                console.log(`[copyPublicKeyToHost] Sending script to SSH process`);
-                sshProcess.stdin.write(scriptContent);
-                sshProcess.stdin.end();
-
-                // Function to clean up temporary files
-                function cleanupFiles() {
-                    console.log(`[copyPublicKeyToHost] Cleaning up temporary files`);
-                    if (fs.existsSync(tempSshConfigPath)) {
-                        console.log(`[copyPublicKeyToHost] Removing SSH config file: ${tempSshConfigPath}`);
-                        fs.unlinkSync(tempSshConfigPath);
-                    }
-                    if (fs.existsSync(tempCmdPath)) {
-                        console.log(`[copyPublicKeyToHost] Removing command script: ${tempCmdPath}`);
-                        fs.unlinkSync(tempCmdPath);
-                    }
-                }
+            const { execSync } = require('child_process');
+            const output = execSync(`"${cmd}" ${args.map(arg => `"${arg}"`).join(' ')}`, { 
+                stdio: 'pipe',
+                timeout: 30000, // 30 seconds timeout
+                encoding: 'utf8'
             });
-        } catch (error) {
-            console.error(`[copyPublicKeyToHost] Error copying public key to ${host}:`, error);
+            
+            console.log('[SSH] Public key copied successfully');
+            console.log('[SSH] Output:', output);
+            return true;
 
-            // Clean up temporary files in case of error
-            if (fs.existsSync(tempSshConfigPath)) {
-                console.log(`[copyPublicKeyToHost] Removing SSH config file: ${tempSshConfigPath}`);
-                fs.unlinkSync(tempSshConfigPath);
-            }
-            if (fs.existsSync(tempCmdPath)) {
-                console.log(`[copyPublicKeyToHost] Removing command script: ${tempCmdPath}`);
-                fs.unlinkSync(tempCmdPath);
-            }
-            throw error;
+        } catch (error) {
+            console.error('[SSH] Error copying public key:', error.message);
+            if (error.stderr) console.error('[SSH] stderr:', error.stderr);
+            if (error.stdout) console.error('[SSH] stdout:', error.stdout);
+            throw new Error(`Failed to copy public key: ${error.message}`);
         }
     },
 
