@@ -1010,9 +1010,6 @@ function addVMToTable(vm) {
     const viewLogsBtn = detailsContainer.querySelector('[data-action="view-logs"]');
     viewLogsBtn.addEventListener('click', () => viewVMLogs(vm.id));
 
-    const downloadVpnBtn = detailsContainer.querySelector('[data-action="download-vpn"]');
-    downloadVpnBtn.addEventListener('click', () => downloadVpnConfig(vm.id));
-
     const destroyBtn = detailsContainer.querySelector('[data-action="destroy"]');
     destroyBtn.addEventListener('click', () => destroyVM(vm.id, false));
 
@@ -1219,26 +1216,26 @@ function viewVMLogs(vmId) {
 // Download VPN configuration
 function downloadVpnConfig() {
     console.log('Downloading VPN configuration...');
-    
+
     // Create a temporary link element
     const link = document.createElement('a');
-    
+
     // Set the download attribute with a filename
     link.download = 'client.ovpn';
-    
+
     // Set the href to the server endpoint that serves the VPN config
     // The server should handle authentication and file serving
     link.href = '/api/vpn-config';
-    
+
     // Append the link to the body (required for Firefox)
     document.body.appendChild(link);
-    
+
     // Trigger the download
     link.click();
-    
+
     // Clean up
     document.body.removeChild(link);
-    
+
     // Show success message
     showSuccess('Téléchargement de la configuration VPN démarré');
 }
